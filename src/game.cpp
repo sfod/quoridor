@@ -49,6 +49,7 @@ void Game::add_player(Player *player)
         throw Exception();
     }
     player->set_pos(pos);
+    board_->add_occupied(pos);
     player_list_.push_back(pl_side);
 }
 
@@ -70,7 +71,10 @@ void Game::make_move(std::pair<Player*, int> &pl_side)
         std::cout << player->name() << ": ("
             << player->pos().first << "," << player->pos().second << " => ("
             << fin_pos.first << "," << fin_pos.second << ")" << std::endl;
+
+        board_->rm_occupied(player->pos());
         player->set_pos(fin_pos);
+        board_->add_occupied(fin_pos);
     }
 }
 
