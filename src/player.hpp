@@ -7,23 +7,17 @@ namespace Quoridor {
 
 class Player {
 public:
-    Player(const std::string &name, Board *board);
+    explicit Player(const std::string &name);
     virtual ~Player();
 
     const std::string& name() const { return name_; }
-    int make_move();
 
-private:
-    int move_forward();
-    int move_back();
-    int move_right();
-    int move_left();
+    pos_t pos() const { return pos_; }
+    void set_pos(const pos_t &pos);
 
 private:
     std::string name_;
-    Board *board_;
-    int cur_row_;
-    int cur_col_;
+    pos_t pos_;
 };
 
 }  /* namespace Quoridor */

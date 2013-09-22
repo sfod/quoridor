@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <vector>
 
 #include "board.hpp"
@@ -9,16 +10,17 @@ namespace Quoridor {
 
 class Game {
 public:
-    explicit Game(const Board &board);
+    explicit Game(Board *board);
     virtual ~Game();
 
-    void add_player(const Player &player);
     void main_loop();
-    void make_move(Player &player);
+
+    void add_player(Player *player);
+    void make_move(std::pair<Player*, int> &pl_side);
 
 private:
-    Board board_;
-    std::vector<Player> player_list_;
+    Board *board_;
+    std::vector<std::pair<Player*, int>> player_list_;
 };
 
 }  /* namespace Quoridor */

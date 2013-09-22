@@ -4,6 +4,10 @@
 
 #include <set>
 #include <utility>
+#include <vector>
+
+
+typedef std::pair<int, int> pos_t;
 
 namespace Quoridor {
 
@@ -13,14 +17,18 @@ public:
     virtual ~Board();
 
     void set_size(size_t row_num, size_t col_num);
+    int next_side();
 
-    void add_occupied(int row, int col);
-    void rm_occupied(int row, int col);
+    void add_occupied(const pos_t &pos);
+    void rm_occupied(const pos_t &pos);
+
+    int make_move(int move, pos_t cur_pos, pos_t *fin_pos);
 
 private:
     size_t row_num_;
     size_t col_num_;
-    std::set<std::pair<int, int>> occ_fields_;
+    std::set<pos_t> occ_fields_;
+    std::vector<pos_t> sides_;
 };
 
 }  /* namespace Quoridor */

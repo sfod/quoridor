@@ -1,20 +1,16 @@
 #include "game.hpp"
 
 #include <iostream>
+#include "exception.hpp"
 
 namespace Quoridor {
 
-Game::Game(const Board &board) : board_(board), player_list_()
+Game::Game(Board *board) : board_(board), player_list_()
 {
 }
 
 Game::~Game()
 {
-}
-
-void Game::add_player(const Player &player)
-{
-    player_list_.push_back(player);
 }
 
 void Game::main_loop()
@@ -26,11 +22,56 @@ void Game::main_loop()
     }
 }
 
-void Game::make_move(Player &player)
+void Game::add_player(Player *player)
 {
-    do {
-        std::cout << player.name() << ": ";
-    } while (player.make_move() != 0);
+    int board_side = board_->next_side();
+    std::pair<Player*, int> pl_side(player, board_side);
+    pos_t pos;
+
+    switch (board_side) {
+    case 0:
+        pos.first = 0;
+        pos.second = 4;
+        break;
+    case 1:
+        pos.first = 4;
+        pos.second = 0;
+        break;
+    case 2:
+        pos.first = 8;
+        pos.second = 4;
+        break;
+    case 3:
+        pos.first = 4;
+        pos.second = 8;
+        break;
+    default:
+        throw Exception();
+    }
+    player->set_pos(pos);
+    player_list_.push_back(pl_side);
+}
+
+void Game::make_move(std::pair<Player*, int> &pl_side)
+{
+    int move;
+    while (true) {
+        std::cout << "make move ";
+        std::cin >> move;
+        if ((move >= 0) && (move <= 4)) {
+            break;
+        }
+    }
+
+    Player *player = pl_side.first;
+    pos_t fin_pos;
+    move = (move + pl_side.second) % 4;
+    if (board_->make_move(move, player->pos(), &fin_pos) == 0) {
+        std::cout << player->name() << ": ("
+            << player->pos().first << "," << player->pos().second << " => ("
+            << fin_pos.first << "," << fin_pos.second << ")" << std::endl;
+        player->set_pos(fin_pos);
+    }
 }
 
 }  /* namespace Quoridor */
