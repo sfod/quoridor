@@ -17,6 +17,7 @@ public:
 
     void add_player(Player *player);
     void make_move(std::pair<Player*, int> &pl_side);
+    bool is_win(int board_side, const pos_t &pos);
 
 private:
     Board *board_;

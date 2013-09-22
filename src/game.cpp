@@ -78,4 +78,21 @@ void Game::make_move(std::pair<Player*, int> &pl_side)
     }
 }
 
+bool Game::is_win(int board_side, const pos_t &pos)
+{
+    if (board_side == 0) {
+        return pos.first == (int) board_->row_num() - 1;
+    }
+    if (board_side == 1) {
+        return pos.second == (int) board_->col_num() - 1;
+    }
+    if (board_side == 2) {
+        return pos.first == 0;
+    }
+    if (board_side == 3) {
+        return pos.second == 0;
+    }
+    return false;
+}
+
 }  /* namespace Quoridor */
