@@ -17,6 +17,8 @@ public:
     virtual ~Board();
 
     void set_size(size_t row_num, size_t col_num);
+    size_t row_num() const { return row_num_; }
+    size_t col_num() const { return col_num_; }
     int next_side();
 
     void add_occupied(const pos_t &pos);
