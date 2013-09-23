@@ -16,8 +16,11 @@ Game::~Game()
 void Game::main_loop()
 {
     while (true) {
-        for (auto &player: player_list_) {
-            make_move(player);
+        for (auto &pl_side: player_list_) {
+            make_move(pl_side);
+            if (is_win(pl_side.second, pl_side.first->pos())) {
+                std::cout << pl_side.first->name() << " won" << std::endl;
+            }
         }
     }
 }
