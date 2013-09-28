@@ -18,6 +18,9 @@ void Game::main_loop()
     while (true) {
         for (auto *player: player_list_) {
             make_move(player);
+            if (is_win(player)) {
+                std::cout << player->name() << " win" << std::endl;
+            }
         }
     }
 }
