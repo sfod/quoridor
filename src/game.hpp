@@ -16,12 +16,12 @@ public:
     void main_loop();
 
     void add_player(Player *player);
-    void make_move(std::pair<Player*, int> &pl_side);
-    bool is_win(int board_side, const pos_t &pos);
+    void make_move(Player *player);
+    bool is_win(const Player *player) const;
 
 private:
     Board *board_;
-    std::vector<std::pair<Player*, int>> player_list_;
+    std::vector<Player*> player_list_;
 };
 
 }  /* namespace Quoridor */

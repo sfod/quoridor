@@ -16,11 +16,8 @@ Game::~Game()
 void Game::main_loop()
 {
     while (true) {
-        for (auto &pl_side: player_list_) {
-            make_move(pl_side);
-            if (is_win(pl_side.second, pl_side.first->pos())) {
-                std::cout << pl_side.first->name() << " won" << std::endl;
-            }
+        for (auto *player: player_list_) {
+            make_move(player);
         }
     }
 }
@@ -28,7 +25,7 @@ void Game::main_loop()
 void Game::add_player(Player *player)
 {
     int board_side = board_->next_side();
-    std::pair<Player*, int> pl_side(player, board_side);
+    player->set_board_side(board_side);
     pos_t pos;
 
     switch (board_side) {
@@ -53,10 +50,10 @@ void Game::add_player(Player *player)
     }
     player->set_pos(pos);
     board_->add_occupied(pos);
-    player_list_.push_back(pl_side);
+    player_list_.push_back(player);
 }
 
-void Game::make_move(std::pair<Player*, int> &pl_side)
+void Game::make_move(Player *player)
 {
     int move;
     while (true) {
@@ -67,9 +64,8 @@ void Game::make_move(std::pair<Player*, int> &pl_side)
         }
     }
 
-    Player *player = pl_side.first;
     pos_t fin_pos;
-    move = (move + pl_side.second) % 4;
+    move = (move + player->board_side()) % 4;
     if (board_->make_move(move, player->pos(), &fin_pos) == 0) {
         std::cout << player->name() << ": ("
             << player->pos().first << "," << player->pos().second << " => ("
@@ -81,21 +77,9 @@ void Game::make_move(std::pair<Player*, int> &pl_side)
     }
 }
 
-bool Game::is_win(int board_side, const pos_t &pos)
+bool Game::is_win(const Player *player) const
 {
-    if (board_side == 0) {
-        return pos.first == (int) board_->row_num() - 1;
-    }
-    if (board_side == 1) {
-        return pos.second == (int) board_->col_num() - 1;
-    }
-    if (board_side == 2) {
-        return pos.first == 0;
-    }
-    if (board_side == 3) {
-        return pos.second == 0;
-    }
-    return false;
+    return board_->is_at_opposite_side(player->board_side(), player->pos());
 }
 
 }  /* namespace Quoridor */
