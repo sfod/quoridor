@@ -25,6 +25,7 @@ public:
     void rm_occupied(const pos_t &pos);
 
     int make_move(int move, pos_t cur_pos, pos_t *fin_pos);
+    bool is_at_opposite_side(int side, const pos_t &pos);
 
 private:
     size_t row_num_;

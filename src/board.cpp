@@ -112,4 +112,21 @@ int Board::make_move(int move, pos_t cur_pos, pos_t *fin_pos)
     return 0;
 }
 
+bool Board::is_at_opposite_side(int side, const pos_t &pos)
+{
+    if (side == 0) {
+        return pos.first == (int) row_num() - 1;
+    }
+    if (side == 1) {
+        return pos.second == (int) col_num() - 1;
+    }
+    if (side == 2) {
+        return pos.first == 0;
+    }
+    if (side == 3) {
+        return pos.second == 0;
+    }
+    return false;
+}
+
 }  /* namespace Quoridor */
