@@ -15,11 +15,14 @@ Game::~Game()
 
 void Game::main_loop()
 {
-    while (true) {
+    bool is_run = true;
+    while (is_run) {
         for (auto *player: player_list_) {
             make_move(player);
             if (is_win(player)) {
                 std::cout << player->name() << " win" << std::endl;
+                is_run = false;
+                break;
             }
         }
     }
