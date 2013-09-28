@@ -5,7 +5,8 @@
 
 namespace Quoridor {
 
-Game::Game(Board *board) : board_(board), player_list_()
+Game::Game(std::shared_ptr<Quoridor::Board> board)
+    : board_(board), player_list_()
 {
 }
 
@@ -17,7 +18,7 @@ void Game::main_loop()
 {
     bool is_run = true;
     while (is_run) {
-        for (auto *player: player_list_) {
+        for (auto player: player_list_) {
             make_move(player);
             if (is_win(player)) {
                 std::cout << player->name() << " win" << std::endl;
@@ -28,7 +29,7 @@ void Game::main_loop()
     }
 }
 
-void Game::add_player(Player *player)
+void Game::add_player(std::shared_ptr<Player> player)
 {
     int board_side = board_->next_side();
     player->set_board_side(board_side);
@@ -59,7 +60,7 @@ void Game::add_player(Player *player)
     player_list_.push_back(player);
 }
 
-void Game::make_move(Player *player)
+void Game::make_move(std::shared_ptr<Player> player)
 {
     int move;
     while (true) {
@@ -83,7 +84,7 @@ void Game::make_move(Player *player)
     }
 }
 
-bool Game::is_win(const Player *player) const
+bool Game::is_win(std::shared_ptr<Player> player) const
 {
     return board_->is_at_opposite_side(player->board_side(), player->pos());
 }
