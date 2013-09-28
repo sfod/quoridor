@@ -13,12 +13,12 @@ namespace Quoridor {
 
 class Board {
 public:
-    Board(size_t row_num, size_t col_num);
+    Board(int row_num, int col_num);
     virtual ~Board();
 
-    void set_size(size_t row_num, size_t col_num);
-    size_t row_num() const { return row_num_; }
-    size_t col_num() const { return col_num_; }
+    void set_size(int row_num, int col_num);
+    int row_num() const { return row_num_; }
+    int col_num() const { return col_num_; }
     int next_side();
 
     void add_occupied(const pos_t &pos);
@@ -28,8 +28,8 @@ public:
     bool is_at_opposite_side(int side, const pos_t &pos);
 
 private:
-    size_t row_num_;
-    size_t col_num_;
+    int row_num_;
+    int col_num_;
     std::set<pos_t> occ_fields_;
     std::vector<pos_t> sides_;
 };

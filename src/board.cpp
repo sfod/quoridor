@@ -5,7 +5,7 @@
 
 namespace Quoridor {
 
-Board::Board(size_t row_num, size_t col_num)
+Board::Board(int row_num, int col_num)
     : row_num_(row_num), col_num_(col_num), occ_fields_()
 {
     if (row_num == 0) {
@@ -24,7 +24,7 @@ Board::~Board()
 {
 }
 
-void Board::set_size(size_t row_num, size_t col_num)
+void Board::set_size(int row_num, int col_num)
 {
     row_num_ = row_num;
     col_num_ = col_num;
@@ -115,10 +115,10 @@ int Board::make_move(int move, pos_t cur_pos, pos_t *fin_pos)
 bool Board::is_at_opposite_side(int side, const pos_t &pos)
 {
     if (side == 0) {
-        return pos.first == (int) row_num() - 1;
+        return pos.first == row_num() - 1;
     }
     if (side == 1) {
-        return pos.second == (int) col_num() - 1;
+        return pos.second == col_num() - 1;
     }
     if (side == 2) {
         return pos.first == 0;
