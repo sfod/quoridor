@@ -4,7 +4,7 @@
 
 namespace Quoridor {
 
-Player::Player(const std::string &name) : name_(name), pos_()
+Player::Player(const std::string &name) : name_(name), board_side_(-1), pos_()
 {
 }
 
