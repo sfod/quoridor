@@ -1,12 +1,14 @@
 #include "board.hpp"
+
 #include <cstring>
+
 #include "exception.hpp"
 
 
 namespace Quoridor {
 
-Board::Board(int row_num, int col_num)
-    : row_num_(row_num), col_num_(col_num), occ_fields_()
+Board::Board(int row_num, int col_num) : row_num_(row_num), col_num_(col_num),
+        occ_fields_(), player_pos_(), sides_(), player_sides_()
 {
     if (row_num == 0) {
         throw Exception();
@@ -41,12 +43,45 @@ int Board::next_side()
     return -1;
 }
 
-void Board::add_occupied(const pos_t &pos)
+int Board::add_player(std::shared_ptr<Player> player)
+{
+    player_sides_[player] = next_side();
+    pos_t pos;
+
+    switch (player_sides_[player]) {
+    case 0:
+        pos.first = 0;
+        pos.second = 4;
+        break;
+    case 1:
+        pos.first = 4;
+        pos.second = 0;
+        break;
+    case 2:
+        pos.first = 8;
+        pos.second = 4;
+        break;
+    case 3:
+        pos.first = 4;
+        pos.second = 8;
+        break;
+    default:
+        throw Exception();
+    }
+
+    occ_fields_[pos] = player;
+    player_pos_[player] = pos;
+
+    return 0;
+}
+
+void Board::add_occupied(const pos_t &pos, std::shared_ptr<Player> player)
 {
     if (occ_fields_.count(pos) > 0) {
         throw Exception();
     }
-    occ_fields_.insert(pos);
+    occ_fields_[pos] = player;
+    player_pos_[player] = pos;
 }
 
 void Board::rm_occupied(const pos_t &pos)
@@ -54,37 +89,42 @@ void Board::rm_occupied(const pos_t &pos)
     occ_fields_.erase(pos);
 }
 
-int Board::make_move(int move, pos_t cur_pos, pos_t *fin_pos)
+pos_t Board::player_pos(std::shared_ptr<Player> player)
 {
-    pos_t pos = cur_pos;
+    return player_pos_[player];
+}
+
+int Board::make_move(int move, std::shared_ptr<Player> player)
+{
+    pos_t pos = player_pos_[player];
+
+    move = (move + player_sides_[player]) % 4;
 
     switch (move) {
     case 0:
-        if (cur_pos.first == (int) row_num_ - 1) {
+        if (pos.first == row_num() - 1) {
             return -1;
         }
         do {
             pos.first++;
         } while (occ_fields_.count(pos) > 0);
-        if (pos.first > (int) row_num_ - 1) {
+        if (pos.first > row_num() - 1) {
             return -1;
         }
-        *fin_pos= pos;
         break;
     case 1:
-        if (cur_pos.second == (int) col_num_ - 1) {
+        if (pos.second == col_num() - 1) {
             return -1;
         }
         do {
             pos.second++;
         } while (occ_fields_.count(pos) > 0);
-        if (pos.second > (int) col_num_ - 1) {
+        if (pos.second > col_num() - 1) {
             return -1;
         }
-        *fin_pos= pos;
         break;
     case 2:
-        if (cur_pos.first == 0) {
+        if (pos.first == 0) {
             return -1;
         }
         do {
@@ -93,10 +133,9 @@ int Board::make_move(int move, pos_t cur_pos, pos_t *fin_pos)
         if (pos.first < 0) {
             return -1;
         }
-        *fin_pos= pos;
         break;
     case 3:
-        if (cur_pos.second == 0) {
+        if (pos.second == 0) {
             return -1;
         }
         do {
@@ -105,28 +144,30 @@ int Board::make_move(int move, pos_t cur_pos, pos_t *fin_pos)
         if (pos.second < 0) {
             return -1;
         }
-        *fin_pos= pos;
         break;
     }
+
+    occ_fields_.erase(player_pos_[player]);
+    player_pos_[player] = pos;
+    occ_fields_[pos] = player;
 
     return 0;
 }
 
-bool Board::is_at_opposite_side(int side, const pos_t &pos)
+bool Board::is_at_opposite_side(std::shared_ptr<Player> player)
 {
-    if (side == 0) {
-        return pos.first == row_num() - 1;
+    switch (player_sides_[player]) {
+    case 0:
+        return player_pos_[player].first == row_num() - 1;
+    case 1:
+        return player_pos_[player].second == col_num() - 1;
+    case 2:
+        return player_pos_[player].first == 0;
+    case 3:
+        return player_pos_[player].second == 0;
+    default:
+        throw Exception();
     }
-    if (side == 1) {
-        return pos.second == col_num() - 1;
-    }
-    if (side == 2) {
-        return pos.first == 0;
-    }
-    if (side == 3) {
-        return pos.second == 0;
-    }
-    return false;
 }
 
 }  /* namespace Quoridor */

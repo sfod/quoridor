@@ -3,9 +3,12 @@
 
 #include <cstdlib>
 
-#include <set>
+#include <map>
+#include <memory>
 #include <utility>
 #include <vector>
+
+#include "player.hpp"
 
 
 typedef std::pair<int, int> pos_t;
@@ -22,17 +25,21 @@ public:
     int col_num() const { return col_num_; }
     int next_side();
 
-    void add_occupied(const pos_t &pos);
+    int add_player(std::shared_ptr<Player> player);
+    void add_occupied(const pos_t &pos, std::shared_ptr<Player> player);
     void rm_occupied(const pos_t &pos);
+    pos_t player_pos(std::shared_ptr<Player> player);
 
-    int make_move(int move, pos_t cur_pos, pos_t *fin_pos);
-    bool is_at_opposite_side(int side, const pos_t &pos);
+    int make_move(int move, std::shared_ptr<Player> player);
+    bool is_at_opposite_side(std::shared_ptr<Player> player);
 
 private:
     int row_num_;
     int col_num_;
-    std::set<pos_t> occ_fields_;
-    std::vector<pos_t> sides_;
+    std::map<pos_t, std::shared_ptr<Player>> occ_fields_;
+    std::map<std::shared_ptr<Player>, pos_t> player_pos_;
+    std::vector<std::pair<int, int>> sides_;
+    std::map<std::shared_ptr<Player>, int> player_sides_;
 };
 
 }  /* namespace Quoridor */
