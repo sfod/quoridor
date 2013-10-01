@@ -1,3 +1,6 @@
+#ifndef QUORIDOR_EXCEPTION_HPP_
+#define QUORIDOR_EXCEPTION_HPP_
+
 #include <stdexcept>
 
 namespace Quoridor {
@@ -8,3 +11,5 @@ public:
 };
 
 }  /* namespace Quoridor */
+
+#endif  /* QUORIDOR_EXCEPTION_HPP_ */

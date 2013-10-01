@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QUORIDOR_BOARD_HPP_
+#define QUORIDOR_BOARD_HPP_
 
 #include <cstdlib>
 
@@ -35,3 +36,5 @@ private:
 };
 
 }  /* namespace Quoridor */
+
+#endif  /* QUORIDOR_BOARD_HPP_ */

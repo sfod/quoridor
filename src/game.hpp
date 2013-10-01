@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QUORIDOR_GAME_HPP_
+#define QUORIDOR_GAME_HPP_
 
 #include <memory>
 #include <utility>
@@ -26,3 +27,5 @@ private:
 };
 
 }  /* namespace Quoridor */
+
+#endif  /* QUORIDOR_GAME_HPP_ */

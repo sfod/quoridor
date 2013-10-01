@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QUORIDOR_PLAYER_HPP_
+#define QUORIDOR_PLAYER_HPP_
 
 #include <string>
 #include "board.hpp"
@@ -25,3 +26,5 @@ private:
 };
 
 }  /* namespace Quoridor */
+
+#endif  /* QUORIDOR_PLAYER_HPP_ */
