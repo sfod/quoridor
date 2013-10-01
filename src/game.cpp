@@ -1,5 +1,5 @@
 #include "game.hpp"
-
+#include <unistd.h>
 #include <iostream>
 #include "exception.hpp"
 
@@ -26,37 +26,13 @@ void Game::main_loop()
                 break;
             }
         }
+        usleep(500000);
     }
 }
 
 void Game::add_player(std::shared_ptr<Player> player)
 {
-    int board_side = board_->next_side();
-    player->set_board_side(board_side);
-    pos_t pos;
-
-    switch (board_side) {
-    case 0:
-        pos.first = 0;
-        pos.second = 4;
-        break;
-    case 1:
-        pos.first = 4;
-        pos.second = 0;
-        break;
-    case 2:
-        pos.first = 8;
-        pos.second = 4;
-        break;
-    case 3:
-        pos.first = 4;
-        pos.second = 8;
-        break;
-    default:
-        throw Exception();
-    }
-    player->set_pos(pos);
-    board_->add_occupied(pos);
+    board_->add_player(player);
     player_list_.push_back(player);
 }
 
@@ -65,28 +41,25 @@ void Game::make_move(std::shared_ptr<Player> player)
     int move;
     while (true) {
         std::cout << "make move ";
-        std::cin >> move;
+        // std::cin >> move;
+        move = 0;
         if ((move >= 0) && (move <= 4)) {
             break;
         }
     }
 
-    pos_t fin_pos;
-    move = (move + player->board_side()) % 4;
-    if (board_->make_move(move, player->pos(), &fin_pos) == 0) {
-        std::cout << player->name() << ": ("
-            << player->pos().first << "," << player->pos().second << " => ("
-            << fin_pos.first << "," << fin_pos.second << ")" << std::endl;
+    pos_t start_pos = board_->player_pos(player);
+    board_->make_move(move, player);
+    pos_t end_pos = board_->player_pos(player);
 
-        board_->rm_occupied(player->pos());
-        player->set_pos(fin_pos);
-        board_->add_occupied(fin_pos);
-    }
+    std::cout << player->name()
+        << ": (" << start_pos.first << "," << start_pos.second <<
+        ") => (" << end_pos.first << "," << end_pos.second << ")" << std::endl;
 }
 
 bool Game::is_win(std::shared_ptr<Player> player) const
 {
-    return board_->is_at_opposite_side(player->board_side(), player->pos());
+    return board_->is_at_opposite_side(player);
 }
 
 }  /* namespace Quoridor */
