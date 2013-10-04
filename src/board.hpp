@@ -11,9 +11,9 @@
 #include "player.hpp"
 
 
-typedef std::pair<int, int> pos_t;
-
 namespace Quoridor {
+
+typedef std::pair<int, int> pos_t;
 
 class Board {
 public:
