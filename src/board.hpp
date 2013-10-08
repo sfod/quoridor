@@ -15,6 +15,23 @@ namespace Quoridor {
 
 typedef std::pair<int, int> pos_t;
 
+class Wall {
+public:
+    Wall(int orientation, int line, int start_pos, int cnt);
+    virtual ~Wall();
+
+    int orientation() const { return orientation_; }
+    int line() const { return line_; }
+    int start_pos() const { return start_pos_; }
+    int cnt() const { return cnt_; }
+
+private:
+    int orientation_;
+    int line_;
+    int start_pos_;
+    int cnt_;
+};
+
 class Board {
 public:
     Board(int row_num, int col_num);
@@ -33,6 +50,9 @@ public:
     int make_move(int move, std::shared_ptr<Player> player);
     bool is_at_opposite_side(std::shared_ptr<Player> player);
 
+    int add_wall(const Wall &wall);
+    bool wall_intersects(const Wall &wall);
+
 private:
     int row_num_;
     int col_num_;
@@ -40,6 +60,7 @@ private:
     std::map<std::shared_ptr<Player>, pos_t> player_pos_;
     std::vector<std::pair<int, int>> sides_;
     std::map<std::shared_ptr<Player>, int> player_sides_;
+    std::map<int, std::map<int, Wall>> walls_;
 };
 
 }  /* namespace Quoridor */

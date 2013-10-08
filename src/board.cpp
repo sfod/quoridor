@@ -7,8 +7,19 @@
 
 namespace Quoridor {
 
+
+Wall::Wall(int orientation, int line, int start_pos, int cnt)
+    : orientation_(orientation), line_(line), start_pos_(start_pos), cnt_(cnt)
+{
+}
+
+Wall::~Wall()
+{
+}
+
+
 Board::Board(int row_num, int col_num) : row_num_(row_num), col_num_(col_num),
-        occ_fields_(), player_pos_(), sides_(), player_sides_()
+        occ_fields_(), player_pos_(), sides_(), player_sides_(), walls_()
 {
     if (row_num == 0) {
         throw Exception();
@@ -168,6 +179,38 @@ bool Board::is_at_opposite_side(std::shared_ptr<Player> player)
     default:
         throw Exception();
     }
+}
+
+int Board::add_wall(const Wall &wall)
+{
+    int line_lim = wall.orientation() ? col_num() : row_num();
+    int start_pos_lim = wall.orientation() ? row_num() : col_num();
+    if ((wall.line() >= line_lim)
+            || (wall.start_pos() + wall.cnt() >= start_pos_lim)) {
+        return -1;
+    }
+
+    if (wall_intersects(wall)) {
+        return -2;
+    }
+
+    walls_[wall.orientation()].insert(std::map<int, Wall>::value_type(wall.line(), Wall(wall)));
+
+    return 0;
+}
+
+bool Board::wall_intersects(const Wall &wall)
+{
+    if (walls_[1 - wall.orientation()].count(wall.start_pos() - 1) != 0) {
+        return true;
+    }
+    if (walls_[wall.orientation()].count(wall.start_pos() - 1) != 0) {
+        return true;
+    }
+    if (walls_[wall.orientation()].count(wall.start_pos()) != 0) {
+        return true;
+    }
+    return false;
 }
 
 }  /* namespace Quoridor */
