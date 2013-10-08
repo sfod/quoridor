@@ -15,6 +15,23 @@ typedef std::pair<int, int> pos_t;
 
 namespace Quoridor {
 
+class Wall {
+public:
+    Wall(int orientation, int line, int start_pos, int cnt);
+    virtual ~Wall();
+
+    int orientation() const { return orientation_; }
+    int line() const { return line_; }
+    int start_pos() const { return start_pos_; }
+    int cnt() const { return cnt_; }
+
+private:
+    int orientation_;
+    int line_;
+    int start_pos_;
+    int cnt_;
+};
+
 class Board {
 public:
     Board(int row_num, int col_num);
