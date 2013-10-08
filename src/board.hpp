@@ -51,6 +51,7 @@ public:
     bool is_at_opposite_side(std::shared_ptr<Player> player);
 
     int add_wall(const Wall &wall);
+    bool wall_intersects(const Wall &wall);
 
 private:
     int row_num_;
@@ -59,7 +60,7 @@ private:
     std::map<std::shared_ptr<Player>, pos_t> player_pos_;
     std::vector<std::pair<int, int>> sides_;
     std::map<std::shared_ptr<Player>, int> player_sides_;
-    std::map<int, Wall> walls_;
+    std::map<int, std::map<int, Wall>> walls_;
 };
 
 }  /* namespace Quoridor */
