@@ -19,7 +19,7 @@ Wall::~Wall()
 
 
 Board::Board(int row_num, int col_num) : row_num_(row_num), col_num_(col_num),
-        occ_fields_(), player_pos_(), sides_(), player_sides_()
+        occ_fields_(), player_pos_(), sides_(), player_sides_(), walls_()
 {
     if (row_num == 0) {
         throw Exception();
@@ -179,6 +179,16 @@ bool Board::is_at_opposite_side(std::shared_ptr<Player> player)
     default:
         throw Exception();
     }
+}
+
+int Board::add_wall(const Wall &wall)
+{
+    if (wall.orientation() == 0) {
+        for (int i = 0; i < wall.cnt(); ++i) {
+            walls_[1000000 + wall.start_pos() + i] = wall;
+        }
+    }
+    return 0;
 }
 
 }  /* namespace Quoridor */
