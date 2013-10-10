@@ -18,15 +18,10 @@ Wall::~Wall()
 }
 
 
-Board::Board(int row_num, int col_num) : row_num_(row_num), col_num_(col_num),
+Board::Board(int row_num, int col_num) : row_num_(), col_num_(),
         occ_fields_(), player_pos_(), sides_(), player_sides_(), walls_()
 {
-    if (row_num == 0) {
-        throw Exception();
-    }
-    if (col_num == 0) {
-        throw Exception();
-    }
+    set_size(row_num, col_num);
     sides_.push_back(std::pair<int, int>(0, 0));
     sides_.push_back(std::pair<int, int>(2, 0));
     sides_.push_back(std::pair<int, int>(1, 0));
@@ -39,6 +34,12 @@ Board::~Board()
 
 void Board::set_size(int row_num, int col_num)
 {
+    if (row_num <= 0) {
+        throw Exception();
+    }
+    if (col_num <= 0) {
+        throw Exception();
+    }
     row_num_ = row_num;
     col_num_ = col_num;
 }
