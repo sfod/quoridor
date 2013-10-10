@@ -40,25 +40,27 @@ public:
     void set_size(int row_num, int col_num);
     int row_num() const { return row_num_; }
     int col_num() const { return col_num_; }
-    int next_side();
+    int next_side() const;
 
     int add_player(std::shared_ptr<Player> player);
     void add_occupied(const pos_t &pos, std::shared_ptr<Player> player);
     void rm_occupied(const pos_t &pos);
-    pos_t player_pos(std::shared_ptr<Player> player);
+    pos_t player_pos(std::shared_ptr<Player> player) const;
 
     int make_move(int move, std::shared_ptr<Player> player);
-    bool is_at_opposite_side(std::shared_ptr<Player> player);
+    bool is_at_opposite_side(std::shared_ptr<Player> player) const;
 
     int add_wall(const Wall &wall);
-    bool wall_intersects(const Wall &wall);
+
+private:
+    bool wall_intersects(const Wall &wall) const;
 
 private:
     int row_num_;
     int col_num_;
     std::map<pos_t, std::shared_ptr<Player>> occ_fields_;
     std::map<std::shared_ptr<Player>, pos_t> player_pos_;
-    std::vector<std::pair<int, int>> sides_;
+    mutable std::vector<std::pair<int, int>> sides_;
     std::map<std::shared_ptr<Player>, int> player_sides_;
     std::map<int, std::map<int, Wall>> walls_;
 };

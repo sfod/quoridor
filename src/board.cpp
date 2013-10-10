@@ -44,7 +44,7 @@ void Board::set_size(int row_num, int col_num)
     col_num_ = col_num;
 }
 
-int Board::next_side()
+int Board::next_side() const
 {
     for (auto &side : sides_) {
         if (side.second == 0) {
@@ -101,9 +101,9 @@ void Board::rm_occupied(const pos_t &pos)
     occ_fields_.erase(pos);
 }
 
-pos_t Board::player_pos(std::shared_ptr<Player> player)
+pos_t Board::player_pos(std::shared_ptr<Player> player) const
 {
-    return player_pos_[player];
+    return player_pos_.at(player);
 }
 
 int Board::make_move(int move, std::shared_ptr<Player> player)
@@ -166,17 +166,17 @@ int Board::make_move(int move, std::shared_ptr<Player> player)
     return 0;
 }
 
-bool Board::is_at_opposite_side(std::shared_ptr<Player> player)
+bool Board::is_at_opposite_side(std::shared_ptr<Player> player) const
 {
-    switch (player_sides_[player]) {
+    switch (player_sides_.at(player)) {
     case 0:
-        return player_pos_[player].first == row_num() - 1;
+        return player_pos_.at(player).first == row_num() - 1;
     case 1:
-        return player_pos_[player].second == col_num() - 1;
+        return player_pos_.at(player).second == col_num() - 1;
     case 2:
-        return player_pos_[player].first == 0;
+        return player_pos_.at(player).first == 0;
     case 3:
-        return player_pos_[player].second == 0;
+        return player_pos_.at(player).second == 0;
     default:
         throw Exception();
     }
@@ -200,15 +200,15 @@ int Board::add_wall(const Wall &wall)
     return 0;
 }
 
-bool Board::wall_intersects(const Wall &wall)
+bool Board::wall_intersects(const Wall &wall) const
 {
-    if (walls_[1 - wall.orientation()].count(wall.start_pos() - 1) != 0) {
+    if (walls_.at(1 - wall.orientation()).count(wall.start_pos() - 1) != 0) {
         return true;
     }
-    if (walls_[wall.orientation()].count(wall.start_pos() - 1) != 0) {
+    if (walls_.at(wall.orientation()).count(wall.start_pos() - 1) != 0) {
         return true;
     }
-    if (walls_[wall.orientation()].count(wall.start_pos()) != 0) {
+    if (walls_.at(wall.orientation()).count(wall.start_pos()) != 0) {
         return true;
     }
     return false;
