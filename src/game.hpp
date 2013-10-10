@@ -21,6 +21,8 @@ public:
     void make_move(std::shared_ptr<Pawn> pawn);
     bool is_win(std::shared_ptr<Pawn> pawn) const;
 
+    std::vector<std::shared_ptr<Pawn>> pawn_list() const { return pawn_list_; }
+
 private:
     std::shared_ptr<Quoridor::Board> board_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
