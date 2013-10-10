@@ -2,7 +2,7 @@ set(MAIN_SOURCES
     main
     board
     game
-    player
+    pawn
 )
 
 set(SOURCES)

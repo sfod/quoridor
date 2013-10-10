@@ -5,13 +5,13 @@
 
 #include "board.hpp"
 #include "game.hpp"
-#include "player.hpp"
+#include "pawn.hpp"
 
 int main()
 {
     Quoridor::Game game(std::shared_ptr<Quoridor::Board>(new Quoridor::Board(9, 9)));
-    game.add_player(std::shared_ptr<Quoridor::Player>(new Quoridor::Player("white")));
-    game.add_player(std::shared_ptr<Quoridor::Player>(new Quoridor::Player("black")));
+    game.add_pawn(std::shared_ptr<Quoridor::Pawn>(new Quoridor::Pawn("white")));
+    game.add_pawn(std::shared_ptr<Quoridor::Pawn>(new Quoridor::Pawn("black")));
 
     game.main_loop();
 

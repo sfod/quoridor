@@ -6,7 +6,7 @@
 namespace Quoridor {
 
 Game::Game(std::shared_ptr<Quoridor::Board> board)
-    : board_(board), player_list_()
+    : board_(board), pawn_list_()
 {
 }
 
@@ -18,10 +18,10 @@ void Game::main_loop()
 {
     bool is_run = true;
     while (is_run) {
-        for (auto player: player_list_) {
-            make_move(player);
-            if (is_win(player)) {
-                std::cout << player->name() << " win" << std::endl;
+        for (auto pawn: pawn_list_) {
+            make_move(pawn);
+            if (is_win(pawn)) {
+                std::cout << pawn->color() << " win" << std::endl;
                 is_run = false;
                 break;
             }
@@ -30,13 +30,13 @@ void Game::main_loop()
     }
 }
 
-void Game::add_player(std::shared_ptr<Player> player)
+void Game::add_pawn(std::shared_ptr<Pawn> pawn)
 {
-    board_->add_player(player);
-    player_list_.push_back(player);
+    board_->add_pawn(pawn);
+    pawn_list_.push_back(pawn);
 }
 
-void Game::make_move(std::shared_ptr<Player> player)
+void Game::make_move(std::shared_ptr<Pawn> pawn)
 {
     BoardMoves move;
     while (true) {
@@ -48,18 +48,18 @@ void Game::make_move(std::shared_ptr<Player> player)
         }
     }
 
-    pos_t start_pos = board_->player_pos(player);
-    board_->make_move(move, player);
-    pos_t end_pos = board_->player_pos(player);
+    pos_t start_pos = board_->pawn_pos(pawn);
+    board_->make_move(move, pawn);
+    pos_t end_pos = board_->pawn_pos(pawn);
 
-    std::cout << player->name()
+    std::cout << pawn->color()
         << ": (" << start_pos.first << "," << start_pos.second <<
         ") => (" << end_pos.first << "," << end_pos.second << ")" << std::endl;
 }
 
-bool Game::is_win(std::shared_ptr<Player> player) const
+bool Game::is_win(std::shared_ptr<Pawn> pawn) const
 {
-    return board_->is_at_opposite_side(player);
+    return board_->is_at_opposite_side(pawn);
 }
 
 }  /* namespace Quoridor */

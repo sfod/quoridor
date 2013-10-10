@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "player.hpp"
+#include "pawn.hpp"
 
 
 namespace Quoridor {
@@ -52,27 +52,27 @@ public:
     int col_num() const { return col_num_; }
     int next_side() const;
 
-    int add_player(std::shared_ptr<Player> player);
-    void add_occupied(const pos_t &pos, std::shared_ptr<Player> player);
+    int add_pawn(std::shared_ptr<Pawn> pawn);
+    void add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn);
     void rm_occupied(const pos_t &pos);
-    pos_t player_pos(std::shared_ptr<Player> player) const;
+    pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
 
-    int make_move(BoardMoves move, std::shared_ptr<Player> player);
-    bool is_at_opposite_side(std::shared_ptr<Player> player) const;
+    int make_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
+    bool is_at_opposite_side(std::shared_ptr<Pawn> pawn) const;
     int add_wall(const Wall &wall);
 
 private:
-    BoardMoves recalc_move(BoardMoves move, std::shared_ptr<Player> player);
-    int make_walking_move(BoardMoves move, std::shared_ptr<Player> player);
+    BoardMoves recalc_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
+    int make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
     bool wall_intersects(const Wall &wall) const;
 
 private:
     int row_num_;
     int col_num_;
-    std::map<pos_t, std::shared_ptr<Player>> occ_fields_;
-    std::map<std::shared_ptr<Player>, pos_t> player_pos_;
+    std::map<pos_t, std::shared_ptr<Pawn>> occ_fields_;
+    std::map<std::shared_ptr<Pawn>, pos_t> pawn_pos_;
     mutable std::vector<std::pair<int, int>> sides_;
-    std::map<std::shared_ptr<Player>, int> player_sides_;
+    std::map<std::shared_ptr<Pawn>, int> pawn_sides_;
     std::map<int, std::map<int, Wall>> walls_;
 };
 

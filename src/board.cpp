@@ -19,7 +19,7 @@ Wall::~Wall()
 
 
 Board::Board(int row_num, int col_num) : row_num_(), col_num_(),
-        occ_fields_(), player_pos_(), sides_(), player_sides_(), walls_()
+        occ_fields_(), pawn_pos_(), sides_(), pawn_sides_(), walls_()
 {
     set_size(row_num, col_num);
     sides_.push_back(std::pair<int, int>(0, 0));
@@ -55,12 +55,12 @@ int Board::next_side() const
     return -1;
 }
 
-int Board::add_player(std::shared_ptr<Player> player)
+int Board::add_pawn(std::shared_ptr<Pawn> pawn)
 {
-    player_sides_[player] = next_side();
+    pawn_sides_[pawn] = next_side();
     pos_t pos;
 
-    switch (player_sides_[player]) {
+    switch (pawn_sides_[pawn]) {
     case 0:
         pos.first = 0;
         pos.second = 4;
@@ -81,19 +81,19 @@ int Board::add_player(std::shared_ptr<Player> player)
         throw Exception();
     }
 
-    occ_fields_[pos] = player;
-    player_pos_[player] = pos;
+    occ_fields_[pos] = pawn;
+    pawn_pos_[pawn] = pos;
 
     return 0;
 }
 
-void Board::add_occupied(const pos_t &pos, std::shared_ptr<Player> player)
+void Board::add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn)
 {
     if (occ_fields_.count(pos) > 0) {
         throw Exception();
     }
-    occ_fields_[pos] = player;
-    player_pos_[player] = pos;
+    occ_fields_[pos] = pawn;
+    pawn_pos_[pawn] = pos;
 }
 
 void Board::rm_occupied(const pos_t &pos)
@@ -101,15 +101,15 @@ void Board::rm_occupied(const pos_t &pos)
     occ_fields_.erase(pos);
 }
 
-pos_t Board::player_pos(std::shared_ptr<Player> player) const
+pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
 {
-    return player_pos_.at(player);
+    return pawn_pos_.at(pawn);
 }
 
-int Board::make_move(BoardMoves move, std::shared_ptr<Player> player)
+int Board::make_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
 {
     if (move < kPutWall) {
-        return make_walking_move(move, player);
+        return make_walking_move(move, pawn);
     }
     else if (move == kPutWall) {
         return -1;
@@ -119,35 +119,35 @@ int Board::make_move(BoardMoves move, std::shared_ptr<Player> player)
     }
 }
 
-bool Board::is_at_opposite_side(std::shared_ptr<Player> player) const
+bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
 {
-    switch (player_sides_.at(player)) {
+    switch (pawn_sides_.at(pawn)) {
     case 0:
-        return player_pos_.at(player).first == row_num() - 1;
+        return pawn_pos_.at(pawn).first == row_num() - 1;
     case 1:
-        return player_pos_.at(player).second == col_num() - 1;
+        return pawn_pos_.at(pawn).second == col_num() - 1;
     case 2:
-        return player_pos_.at(player).first == 0;
+        return pawn_pos_.at(pawn).first == 0;
     case 3:
-        return player_pos_.at(player).second == 0;
+        return pawn_pos_.at(pawn).second == 0;
     default:
         throw Exception();
     }
 }
 
-BoardMoves Board::recalc_move(BoardMoves move, std::shared_ptr<Player> player)
+BoardMoves Board::recalc_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
 {
-    int m = (move + player_sides_[player]) % 4;
+    int m = (move + pawn_sides_[pawn]) % 4;
     if (m >= kEND) {
         return kEND;
     }
     return static_cast<BoardMoves>(m);
 }
 
-int Board::make_walking_move(BoardMoves move, std::shared_ptr<Player> player)
+int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
 {
-    move = recalc_move(move, player);
-    pos_t pos = player_pos_[player];
+    move = recalc_move(move, pawn);
+    pos_t pos = pawn_pos_[pawn];
 
     int *ch_pos = NULL;
     int lim = -1;
@@ -180,7 +180,7 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Player> player)
         return -1;
     }
 
-    // error, player is already at the opposite side
+    // error, pawn is already at the opposite side
     if (*ch_pos == lim) {
         return -1;
     }
@@ -189,7 +189,7 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Player> player)
     // the next field is occupied
     if (occ_fields_.count(pos) > 0) {
         // if the field after the next is also occupied or there is a wall,
-        // player may go to the left or to the right of the next field
+        // pawn may go to the left or to the right of the next field
         (*ch_pos) += inc;
         if (occ_fields_.count(pos) > 0) {
         }
@@ -200,15 +200,15 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Player> player)
         (*ch_pos) += inc;
     } while (occ_fields_.count(pos) > 0);
 
-    // player cannot make specified move
+    // pawn cannot make specified move
     if (((lim > 0) && (*ch_pos > lim)) || ((lim == 0) && (*ch_pos < lim))) {
         return -1;
     }
 
-    // update player's position
-    occ_fields_.erase(player_pos_[player]);
-    player_pos_[player] = pos;
-    occ_fields_[pos] = player;
+    // update pawn's position
+    occ_fields_.erase(pawn_pos_[pawn]);
+    pawn_pos_[pawn] = pos;
+    occ_fields_[pos] = pawn;
 
     return 0;
 }
