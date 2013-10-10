@@ -38,11 +38,11 @@ void Game::add_player(std::shared_ptr<Player> player)
 
 void Game::make_move(std::shared_ptr<Player> player)
 {
-    int move;
+    BoardMoves move;
     while (true) {
         std::cout << "make move ";
         // std::cin >> move;
-        move = 0;
+        move = kForward;
         if ((move >= 0) && (move <= 4)) {
             break;
         }

@@ -15,6 +15,16 @@ namespace Quoridor {
 
 typedef std::pair<int, int> pos_t;
 
+enum BoardMoves {
+    kForward = 0,
+    kRight = 1,
+    kBackward = 2,
+    kLeft = 3,
+    kPutWall = 4,
+    kCancel = 5,
+    kEND,
+};
+
 class Wall {
 public:
     Wall(int orientation, int line, int start_pos, int cnt);
@@ -47,12 +57,13 @@ public:
     void rm_occupied(const pos_t &pos);
     pos_t player_pos(std::shared_ptr<Player> player) const;
 
-    int make_move(int move, std::shared_ptr<Player> player);
+    int make_move(BoardMoves move, std::shared_ptr<Player> player);
     bool is_at_opposite_side(std::shared_ptr<Player> player) const;
-
     int add_wall(const Wall &wall);
 
 private:
+    BoardMoves recalc_move(BoardMoves move, std::shared_ptr<Player> player);
+    int make_walking_move(BoardMoves move, std::shared_ptr<Player> player);
     bool wall_intersects(const Wall &wall) const;
 
 private:

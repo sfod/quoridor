@@ -106,64 +106,17 @@ pos_t Board::player_pos(std::shared_ptr<Player> player) const
     return player_pos_.at(player);
 }
 
-int Board::make_move(int move, std::shared_ptr<Player> player)
+int Board::make_move(BoardMoves move, std::shared_ptr<Player> player)
 {
-    pos_t pos = player_pos_[player];
-
-    move = (move + player_sides_[player]) % 4;
-
-    switch (move) {
-    case 0:
-        if (pos.first == row_num() - 1) {
-            return -1;
-        }
-        do {
-            pos.first++;
-        } while (occ_fields_.count(pos) > 0);
-        if (pos.first > row_num() - 1) {
-            return -1;
-        }
-        break;
-    case 1:
-        if (pos.second == col_num() - 1) {
-            return -1;
-        }
-        do {
-            pos.second++;
-        } while (occ_fields_.count(pos) > 0);
-        if (pos.second > col_num() - 1) {
-            return -1;
-        }
-        break;
-    case 2:
-        if (pos.first == 0) {
-            return -1;
-        }
-        do {
-            pos.first--;
-        } while (occ_fields_.count(pos) > 0);
-        if (pos.first < 0) {
-            return -1;
-        }
-        break;
-    case 3:
-        if (pos.second == 0) {
-            return -1;
-        }
-        do {
-            pos.second--;
-        } while (occ_fields_.count(pos) > 0);
-        if (pos.second < 0) {
-            return -1;
-        }
-        break;
+    if (move < kPutWall) {
+        return make_walking_move(move, player);
     }
-
-    occ_fields_.erase(player_pos_[player]);
-    player_pos_[player] = pos;
-    occ_fields_[pos] = player;
-
-    return 0;
+    else if (move == kPutWall) {
+        return -1;
+    }
+    else {
+        return -1;
+    }
 }
 
 bool Board::is_at_opposite_side(std::shared_ptr<Player> player) const
@@ -180,6 +133,84 @@ bool Board::is_at_opposite_side(std::shared_ptr<Player> player) const
     default:
         throw Exception();
     }
+}
+
+BoardMoves Board::recalc_move(BoardMoves move, std::shared_ptr<Player> player)
+{
+    int m = (move + player_sides_[player]) % 4;
+    if (m >= kEND) {
+        return kEND;
+    }
+    return static_cast<BoardMoves>(m);
+}
+
+int Board::make_walking_move(BoardMoves move, std::shared_ptr<Player> player)
+{
+    move = recalc_move(move, player);
+    pos_t pos = player_pos_[player];
+
+    int *ch_pos = NULL;
+    int lim = -1;
+    int inc = 0;
+
+    switch (move) {
+    case kForward:
+        ch_pos = &pos.first;
+        lim = row_num() - 1;
+        inc = 1;
+        break;
+    case kRight:
+        ch_pos = &pos.second;
+        lim = col_num() - 1;
+        inc = 1;
+        break;
+    case kBackward:
+        ch_pos = &pos.first;
+        lim = 0;
+        inc = -1;
+        break;
+    case kLeft:
+        ch_pos = &pos.second;
+        lim = 0;
+        inc = -1;
+        break;
+    case kPutWall:
+    case kEND:
+    default:
+        return -1;
+    }
+
+    // error, player is already at the opposite side
+    if (*ch_pos == lim) {
+        return -1;
+    }
+
+    (*ch_pos) += inc;
+    // the next field is occupied
+    if (occ_fields_.count(pos) > 0) {
+        // if the field after the next is also occupied or there is a wall,
+        // player may go to the left or to the right of the next field
+        (*ch_pos) += inc;
+        if (occ_fields_.count(pos) > 0) {
+        }
+        else {}
+    }
+
+    do {
+        (*ch_pos) += inc;
+    } while (occ_fields_.count(pos) > 0);
+
+    // player cannot make specified move
+    if (((lim > 0) && (*ch_pos > lim)) || ((lim == 0) && (*ch_pos < lim))) {
+        return -1;
+    }
+
+    // update player's position
+    occ_fields_.erase(player_pos_[player]);
+    player_pos_[player] = pos;
+    occ_fields_[pos] = player;
+
+    return 0;
 }
 
 int Board::add_wall(const Wall &wall)
