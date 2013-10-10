@@ -1,4 +1,6 @@
 #include "console.hpp"
+#include <unistd.h>
+#include <iostream>
 #include "exception.hpp"
 
 namespace Quoridor {
@@ -36,6 +38,16 @@ void Console::run()
         }
         usleep(500000);
     }
+}
+
+int Console::read_move(BoardMoves *move)
+{
+    int m;
+    std::cin >> m;
+    if (m < kEND) {
+        *move = static_cast<BoardMoves>(m);
+    }
+    return 0;
 }
 
 }  /* namespace UI */

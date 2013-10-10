@@ -12,6 +12,7 @@ public:
     virtual ~Console();
 
     void run();
+    int read_move(BoardMoves *move);
 
 private:
     Game game_;
