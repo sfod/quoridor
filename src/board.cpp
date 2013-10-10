@@ -202,14 +202,21 @@ int Board::add_wall(const Wall &wall)
 
 bool Board::wall_intersects(const Wall &wall) const
 {
-    if (walls_.at(1 - wall.orientation()).count(wall.start_pos() - 1) != 0) {
-        return true;
+    // check intersections
+    if (walls_.count(1 - wall.orientation()) > 0) {
+        for (int i = 1; i < wall.cnt(); ++i) {
+            if (walls_.at(1 - wall.orientation()).count(wall.start_pos() - i) != 0) {
+                return true;
+            }
+        }
     }
-    if (walls_.at(wall.orientation()).count(wall.start_pos() - 1) != 0) {
-        return true;
-    }
-    if (walls_.at(wall.orientation()).count(wall.start_pos()) != 0) {
-        return true;
+    // check overlaps
+    if (walls_.count(wall.orientation()) > 0) {
+        for (int i = 1 - wall.cnt(); i < wall.cnt(); ++i) {
+            if (walls_.at(wall.orientation()).count(wall.start_pos() + i) != 0) {
+                return true;
+            }
+        }
     }
     return false;
 }
