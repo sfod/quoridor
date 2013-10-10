@@ -27,10 +27,16 @@ Console::~Console()
 void Console::run()
 {
     bool is_run = true;
+    BoardMoves move;
     while (is_run) {
-        for (auto pawn: pawn_list_) {
-            make_move(pawn);
-            if (is_win(pawn)) {
+        for (auto pawn: game_.pawn_list()) {
+            while (true) {
+                while (read_move(&move) < 0) {
+                }
+                while (game_.make_move(pawn) < 0) {
+                }
+            }
+            if (game_.is_win(pawn)) {
                 std::cout << pawn->color() << " win" << std::endl;
                 is_run = false;
                 break;
