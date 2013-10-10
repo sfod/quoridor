@@ -1,29 +1,22 @@
-set(MAIN_SOURCE_CXX main.cpp)
-set(BOARD_SOURCES_CXX board)
-set(GAME_SOURCES_CXX game)
-set(PLAYER_SOURCES_CXX player)
+set(MAIN_SOURCES
+    main
+    board
+    game
+    player
+)
 
 set(SOURCES)
-set(HEADERS)
-
-foreach (source ${BOARD_SOURCES_CXX})
+foreach (source ${MAIN_SOURCES})
     LIST(APPEND SOURCES ${source}.cpp)
-    LIST(APPEND HEADERS ${source}.hpp)
     add_library(${source}_cxx_obj OBJECT ${source}.cpp)
 endforeach()
 
-foreach (source ${GAME_SOURCES_CXX})
-    LIST(APPEND SOURCES ${source}.cpp)
-    LIST(APPEND HEADERS ${source}.hpp)
-    add_library(${source}_cxx_obj OBJECT ${source}.cpp)
-endforeach()
+set(ADDITIONAL_LIBRARIES)
 
-foreach (source ${PLAYER_SOURCES_CXX})
-    LIST(APPEND SOURCES ${source}.cpp)
-    LIST(APPEND HEADERS ${source}.hpp)
-    add_library(${source}_cxx_obj OBJECT ${source}.cpp)
-endforeach()
+include_directories(${${PROJECT}_SOURCE_DIR}/src)
+include_directories(${${PROJECT}_SOURCE_DIR}/)
 
-add_executable(${PROJECT} ${MAIN_SOURCE_CXX} ${SOURCES})
+add_executable(${PROJECT} ${SOURCES})
 set_target_properties(${PROJECT} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ../bin)
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+target_link_libraries(${PROJECT} ${ADDITIONAL_LIBRARIES})
