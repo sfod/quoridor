@@ -1,6 +1,4 @@
 #include "game.hpp"
-#include <unistd.h>
-#include <iostream>
 #include "exception.hpp"
 
 namespace Quoridor {
@@ -12,22 +10,6 @@ Game::Game(std::shared_ptr<Quoridor::Board> board)
 
 Game::~Game()
 {
-}
-
-void Game::main_loop()
-{
-    bool is_run = true;
-    while (is_run) {
-        for (auto pawn: pawn_list_) {
-            make_move(pawn);
-            if (is_win(pawn)) {
-                std::cout << pawn->color() << " win" << std::endl;
-                is_run = false;
-                break;
-            }
-        }
-        usleep(500000);
-    }
 }
 
 void Game::add_pawn(std::shared_ptr<Pawn> pawn)

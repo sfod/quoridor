@@ -15,8 +15,6 @@ public:
     explicit Game(std::shared_ptr<Quoridor::Board> board);
     virtual ~Game();
 
-    void main_loop();
-
     void add_pawn(std::shared_ptr<Pawn> pawn);
     void make_move(std::shared_ptr<Pawn> pawn);
     bool is_win(std::shared_ptr<Pawn> pawn) const;
