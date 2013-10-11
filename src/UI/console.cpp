@@ -12,7 +12,7 @@ Console::Console(int player_num)
     static std::string colors[4] = {
         "red", "green", "pink", "blue"
     };
-    if ((player_num != 2) || (player_num != 4)) {
+    if ((player_num != 2) && (player_num != 4)) {
         throw Exception();
     }
     for (int i = 0; i < player_num; ++i) {
