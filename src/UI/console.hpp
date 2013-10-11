@@ -12,6 +12,8 @@ public:
     virtual ~Console();
 
     void run();
+
+private:
     int read_move(BoardMoves *move);
 
 private:

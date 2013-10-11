@@ -28,14 +28,42 @@ void Console::run()
 {
     bool is_run = true;
     BoardMoves move;
+    pos_t start_pos;
+    pos_t end_pos;
+    int rc;
+
+    // main loop
     while (is_run) {
         for (auto pawn: game_.pawn_list()) {
+            start_pos = game_.pawn_pos(pawn);
+
             while (true) {
                 while (read_move(&move) < 0) {
                 }
-                while (game_.make_move(pawn) < 0) {
+
+                std::cout << "make move ";
+                while ((rc = game_.make_move(move, pawn)) == -1) {
+                }
+
+                // player have to continue turn
+                if (rc == 0) {
+                    break;
+                }
+                else if (rc == -2) {
+                    continue;
+                }
+                // not possible
+                else {
+                    throw Exception();
                 }
             }
+
+            start_pos = game_.pawn_pos(pawn);
+            std::cout << pawn->color()
+                << ": (" << start_pos.first << "," << start_pos.second <<
+                ") => (" << end_pos.first << "," << end_pos.second << ")"
+                << std::endl;
+
             if (game_.is_win(pawn)) {
                 std::cout << pawn->color() << " win" << std::endl;
                 is_run = false;
@@ -49,7 +77,8 @@ void Console::run()
 int Console::read_move(BoardMoves *move)
 {
     int m;
-    std::cin >> m;
+    // std::cin >> m;
+    m = 0;
     if (m < kEND) {
         *move = static_cast<BoardMoves>(m);
     }
