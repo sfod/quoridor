@@ -1,14 +1,27 @@
 set(MAIN_SOURCES
     main
+)
+set(CORE_SOURCES
     board
     game
     pawn
+)
+set(UI_SOURCES
+    console
 )
 
 set(SOURCES)
 foreach (source ${MAIN_SOURCES})
     LIST(APPEND SOURCES ${source}.cpp)
     add_library(${source}_cxx_obj OBJECT ${source}.cpp)
+endforeach()
+foreach (source ${CORE_SOURCES})
+    LIST(APPEND SOURCES ${source}.cpp)
+    add_library(${source}_cxx_obj OBJECT ${source}.cpp)
+endforeach()
+foreach (source ${UI_SOURCES})
+    LIST(APPEND SOURCES UI/${source}.cpp)
+    add_library(${source}_cxx_obj OBJECT UI/${source}.cpp)
 endforeach()
 
 set(ADDITIONAL_LIBRARIES)
