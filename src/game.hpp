@@ -16,7 +16,8 @@ public:
     virtual ~Game();
 
     void add_pawn(std::shared_ptr<Pawn> pawn);
-    void make_move(std::shared_ptr<Pawn> pawn);
+    pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
+    int make_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
     bool is_win(std::shared_ptr<Pawn> pawn) const;
 
     std::vector<std::shared_ptr<Pawn>> pawn_list() const { return pawn_list_; }
