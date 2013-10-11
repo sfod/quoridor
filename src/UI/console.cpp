@@ -58,7 +58,7 @@ void Console::run()
                 }
             }
 
-            start_pos = game_.pawn_pos(pawn);
+            end_pos = game_.pawn_pos(pawn);
             std::cout << pawn->color()
                 << ": (" << start_pos.first << "," << start_pos.second <<
                 ") => (" << end_pos.first << "," << end_pos.second << ")"
