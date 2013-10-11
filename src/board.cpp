@@ -185,17 +185,6 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
         return -1;
     }
 
-    (*ch_pos) += inc;
-    // the next field is occupied
-    if (occ_fields_.count(pos) > 0) {
-        // if the field after the next is also occupied or there is a wall,
-        // pawn may go to the left or to the right of the next field
-        (*ch_pos) += inc;
-        if (occ_fields_.count(pos) > 0) {
-        }
-        else {}
-    }
-
     do {
         (*ch_pos) += inc;
     } while (occ_fields_.count(pos) > 0);
