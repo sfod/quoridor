@@ -1,12 +1,13 @@
 #ifndef QUORIDOR_UI_CONSOLE_HPP_
 #define QUORIDOR_UI_CONSOLE_HPP_
 
+#include "irunnable.hpp"
 #include "game.hpp"
 
 namespace Quoridor {
 namespace UI {
 
-class Console {
+class Console : public IRunnable {
 public:
     explicit Console(int player_num);
     virtual ~Console();
