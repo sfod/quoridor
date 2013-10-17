@@ -24,7 +24,7 @@ foreach (source ${UI_SOURCES})
     add_library(${source}_cxx_obj OBJECT UI/${source}.cpp)
 endforeach()
 
-set(ADDITIONAL_LIBRARIES)
+set(ADDITIONAL_LIBRARIES boost_program_options)
 
 include_directories(${${PROJECT}_SOURCE_DIR}/src)
 include_directories(${${PROJECT}_SOURCE_DIR}/)
