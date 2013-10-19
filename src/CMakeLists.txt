@@ -5,6 +5,7 @@ set(CORE_SOURCES
     board
     game
     pawn
+    player
 )
 set(UI_SOURCES
     console

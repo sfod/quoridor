@@ -1,6 +1,7 @@
 #ifndef QUORIDOR_UI_CONSOLE_HPP_
 #define QUORIDOR_UI_CONSOLE_HPP_
 
+#include "iplayer.hpp"
 #include "irunnable.hpp"
 #include "game.hpp"
 
@@ -13,12 +14,14 @@ public:
     virtual ~Console();
 
     void run();
+    int set_player(int i, int type);
 
 private:
     int read_move(BoardMoves *move);
 
 private:
     Game game_;
+    std::vector<IPlayer *> players_;
 };
 
 }  /* namespace UI */

@@ -13,6 +13,7 @@ namespace po = boost::program_options;
 
 struct game_opts_t {
     int player_num;
+    std::vector<int> players;
 };
 
 
@@ -28,6 +29,11 @@ int main(int argc, char **argv)
     }
 
     Quoridor::UI::Console console(game_opts.player_num);
+
+    for (size_t i = 0; i < game_opts.players.size(); ++i) {
+        console.set_player(i, game_opts.players[i]);
+    }
+
     console.run();
 
     return EXIT_SUCCESS;
@@ -37,8 +43,11 @@ int init(int argc, char **argv, game_opts_t *game_opts)
 {
     po::options_description options("Options");
     options.add_options()
-        ("player-num,n", po::value<int>(&game_opts->player_num)->default_value(2),
-             "number of players")
+        ("player-num,n",
+            po::value<int>(&game_opts->player_num)->default_value(2),
+            "number of players")
+        ("players,p", po::value<std::vector<int>>(&game_opts->players),
+            "type of players")
         ("help,h", "show help message")
     ;
     po::variables_map vm;
