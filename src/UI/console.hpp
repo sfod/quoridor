@@ -17,9 +17,6 @@ public:
     int set_player(int i, int type);
 
 private:
-    int read_move(BoardMoves *move);
-
-private:
     Game game_;
     std::vector<IPlayer *> players_;
 };

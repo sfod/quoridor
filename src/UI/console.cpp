@@ -95,16 +95,5 @@ int Console::set_player(int i, int type)
     return 0;
 }
 
-int Console::read_move(BoardMoves *move)
-{
-    int m;
-    // std::cin >> m;
-    m = 0;
-    if (m < kEND) {
-        *move = static_cast<BoardMoves>(m);
-    }
-    return 0;
-}
-
 }  /* namespace UI */
 }  /* namespace Quoridor */
