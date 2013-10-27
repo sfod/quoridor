@@ -241,4 +241,12 @@ bool Board::wall_intersects(const Wall &wall) const
     return false;
 }
 
+bool Board::is_outside_board(const pos_t &pos) const
+{
+    if ((pos.row >= row_num()) || (pos.row < 0)
+            || (pos.col >= col_num()) || (pos.col < 0))
+        return false;
+    return true;
+}
+
 }  /* namespace Quoridor */
