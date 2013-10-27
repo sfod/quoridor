@@ -73,6 +73,7 @@ private:
     int make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
     bool wall_intersects(const Wall &wall) const;
     bool is_outside_board(const pos_t &pos) const;
+    bool is_possible_move(const pos_t &pos, const pos_t &inc_pos) const;
 
 private:
     int row_num_;

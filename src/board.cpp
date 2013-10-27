@@ -243,4 +243,32 @@ bool Board::is_outside_board(const pos_t &pos) const
     return true;
 }
 
+bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
+{
+    int orientation;
+    int st;
+
+    if (inc_pos.row != 0) {
+        orientation = 1;
+        st = pos.col;
+    }
+    else if (inc_pos.col != 0) {
+        orientation = 0;
+        st = pos.row;
+    }
+    else {
+        throw Exception();
+    }
+
+    for (int i = 0; i <= st; ++i) {
+        if (walls_.at(orientation).count(i)) {
+            if (i + walls_.at(orientation).at(i).cnt() >= st) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 }  /* namespace Quoridor */
