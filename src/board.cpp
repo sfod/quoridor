@@ -148,31 +148,25 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
 {
     move = recalc_move(move, pawn);
     pos_t pos = pawn_pos_[pawn];
-
-    int *ch_pos = NULL;
-    int lim = -1;
-    int inc = 0;
+    pos_t inc_pos;
+    pos_t lim_pos = pos;
 
     switch (move) {
     case kForward:
-        ch_pos = &pos.row;
-        lim = row_num() - 1;
-        inc = 1;
+        lim_pos.row = row_num() - 1;
+        inc_pos.row = 1;
         break;
     case kRight:
-        ch_pos = &pos.col;
-        lim = col_num() - 1;
-        inc = 1;
+        lim_pos.col = col_num() - 1;
+        inc_pos.col = 1;
         break;
     case kBackward:
-        ch_pos = &pos.row;
-        lim = 0;
-        inc = -1;
+        lim_pos.row = 0;
+        inc_pos.row = -1;
         break;
     case kLeft:
-        ch_pos = &pos.col;
-        lim = 0;
-        inc = -1;
+        lim_pos.col = 0;
+        inc_pos.col = -1;
         break;
     case kPutWall:
     case kEND:
@@ -181,16 +175,16 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
     }
 
     // error, pawn is already at the opposite side
-    if (*ch_pos == lim) {
+    if (pos == lim_pos) {
         return -1;
     }
 
     do {
-        (*ch_pos) += inc;
+        pos += inc_pos;
     } while (occ_fields_.count(pos) > 0);
 
     // pawn cannot make specified move
-    if (((lim > 0) && (*ch_pos > lim)) || ((lim == 0) && (*ch_pos < lim))) {
+    if (is_outside_board(pos)) {
         return -1;
     }
 
