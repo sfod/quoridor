@@ -179,9 +179,24 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
         return -1;
     }
 
-    do {
-        pos += inc_pos;
-    } while (occ_fields_.count(pos) > 0);
+    if (is_possible_move(pos, inc_pos)) {
+        pos_t possible_pos = pos + inc_pos;
+        if (occ_fields_.count(possible_pos) == 0) {
+            pos += inc_pos;
+        }
+        else {
+            if (is_possible_move(possible_pos, inc_pos)) {
+                pos += inc_pos;
+                pos += inc_pos;
+            }
+            else {
+                return -1;
+            }
+        }
+    }
+    else {
+        return -1;
+    }
 
     // pawn cannot make specified move
     if (is_outside_board(pos)) {
