@@ -23,7 +23,7 @@ Console::Console(int player_num)
 
 
     for (int i = 0; i < player_num; ++i) {
-        players_.push_back(new Player());
+        players_.push_back(std::shared_ptr<IPlayer>(new Player()));
         game_.add_pawn(std::shared_ptr<Pawn>(new Pawn(colors[i])));
     }
 }
@@ -86,12 +86,9 @@ void Console::run()
     }
 }
 
-int Console::set_player(int i, int type)
+int Console::set_player(int i, std::shared_ptr<IPlayer> player)
 {
-    if (type == 1) {
-        delete players_[i];
-        players_[i] = new Player();
-    }
+    players_[i] = player;
     return 0;
 }
 

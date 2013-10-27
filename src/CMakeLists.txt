@@ -5,7 +5,9 @@ set(CORE_SOURCES
     board
     game
     pawn
+    player_factory
     player
+    fake_player
 )
 set(UI_SOURCES
     console

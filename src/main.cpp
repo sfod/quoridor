@@ -5,8 +5,8 @@
 
 #include <boost/program_options.hpp>
 
+#include "player_factory.hpp"
 #include "UI/console.hpp"
-#include "pawn.hpp"
 
 namespace po = boost::program_options;
 
@@ -28,10 +28,11 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    Quoridor::PlayerFactory pf;
     Quoridor::UI::Console console(game_opts.player_num);
 
     for (size_t i = 0; i < game_opts.players.size(); ++i) {
-        console.set_player(i, game_opts.players[i]);
+        console.set_player(i, pf.make_player(game_opts.players[i]));
     }
 
     console.run();

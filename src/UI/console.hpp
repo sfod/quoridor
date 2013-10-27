@@ -14,11 +14,11 @@ public:
     virtual ~Console();
 
     void run();
-    int set_player(int i, int type);
+    int set_player(int i, std::shared_ptr<IPlayer> player);
 
 private:
     Game game_;
-    std::vector<IPlayer *> players_;
+    std::vector<std::shared_ptr<IPlayer>> players_;
 };
 
 }  /* namespace UI */
