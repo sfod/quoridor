@@ -239,8 +239,8 @@ bool Board::is_outside_board(const pos_t &pos) const
 {
     if ((pos.row >= row_num()) || (pos.row < 0)
             || (pos.col >= col_num()) || (pos.col < 0))
-        return false;
-    return true;
+        return true;
+    return false;
 }
 
 bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
@@ -258,6 +258,10 @@ bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
     }
     else {
         throw Exception();
+    }
+
+    if (walls_.count(orientation) == 0) {
+        return true;
     }
 
     for (int i = 0; i <= st; ++i) {

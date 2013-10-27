@@ -14,6 +14,8 @@
 namespace Quoridor {
 
 struct pos_t {
+    pos_t() : row(0), col(0) {}
+
     int row;
     int col;
 
