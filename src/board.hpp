@@ -13,7 +13,14 @@
 
 namespace Quoridor {
 
-typedef std::pair<int, int> pos_t;
+struct pos_t {
+    int row;
+    int col;
+
+    bool operator<(const pos_t &pos) const {
+        return (row * 1000 + col) < (pos.row * 1000 + pos.col);
+    }
+};
 
 enum BoardMoves {
     kForward = 0,

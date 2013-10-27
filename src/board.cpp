@@ -62,20 +62,20 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
 
     switch (pawn_sides_[pawn]) {
     case 0:
-        pos.first = 0;
-        pos.second = 4;
+        pos.row = 0;
+        pos.col = 4;
         break;
     case 1:
-        pos.first = 4;
-        pos.second = 0;
+        pos.row = 4;
+        pos.col = 0;
         break;
     case 2:
-        pos.first = 8;
-        pos.second = 4;
+        pos.row = 8;
+        pos.col = 4;
         break;
     case 3:
-        pos.first = 4;
-        pos.second = 8;
+        pos.row = 4;
+        pos.col = 8;
         break;
     default:
         throw Exception();
@@ -123,13 +123,13 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
 {
     switch (pawn_sides_.at(pawn)) {
     case 0:
-        return pawn_pos_.at(pawn).first == row_num() - 1;
+        return pawn_pos_.at(pawn).row == row_num() - 1;
     case 1:
-        return pawn_pos_.at(pawn).second == col_num() - 1;
+        return pawn_pos_.at(pawn).col == col_num() - 1;
     case 2:
-        return pawn_pos_.at(pawn).first == 0;
+        return pawn_pos_.at(pawn).row == 0;
     case 3:
-        return pawn_pos_.at(pawn).second == 0;
+        return pawn_pos_.at(pawn).col == 0;
     default:
         throw Exception();
     }
@@ -155,22 +155,22 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
 
     switch (move) {
     case kForward:
-        ch_pos = &pos.first;
+        ch_pos = &pos.row;
         lim = row_num() - 1;
         inc = 1;
         break;
     case kRight:
-        ch_pos = &pos.second;
+        ch_pos = &pos.col;
         lim = col_num() - 1;
         inc = 1;
         break;
     case kBackward:
-        ch_pos = &pos.first;
+        ch_pos = &pos.row;
         lim = 0;
         inc = -1;
         break;
     case kLeft:
-        ch_pos = &pos.second;
+        ch_pos = &pos.col;
         lim = 0;
         inc = -1;
         break;

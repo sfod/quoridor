@@ -71,8 +71,8 @@ void Console::run()
 
             end_pos = game_.pawn_pos(pawn);
             std::cout << pawn->color()
-                << ": (" << start_pos.first << "," << start_pos.second <<
-                ") => (" << end_pos.first << "," << end_pos.second << ")"
+                << ": (" << start_pos.row << "," << start_pos.col <<
+                ") => (" << end_pos.row << "," << end_pos.col << ")"
                 << std::endl;
 
             if (game_.is_win(pawn)) {
