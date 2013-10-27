@@ -20,6 +20,19 @@ struct pos_t {
     bool operator<(const pos_t &pos) const {
         return (row * 1000 + col) < (pos.row * 1000 + pos.col);
     }
+    bool operator==(const pos_t &pos) const {
+        return (row == pos.row) && (col == pos.col);
+    }
+    const pos_t &operator+=(const pos_t &pos) {
+        row += pos.row;
+        col += pos.col;
+        return *this;
+    }
+    const pos_t operator+(const pos_t &pos) {
+        pos_t p = *this;
+        p += pos;
+        return p;
+    }
 };
 
 enum BoardMoves {
