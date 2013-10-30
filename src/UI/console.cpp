@@ -35,7 +35,7 @@ Console::~Console()
 void Console::run()
 {
     bool is_run = true;
-    BoardMoves move;
+    Move move;
     pos_t start_pos;
     pos_t end_pos;
     int rc;

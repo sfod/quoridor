@@ -23,7 +23,7 @@ pos_t Game::pawn_pos(std::shared_ptr<Pawn> pawn) const
     return board_->pawn_pos(pawn);
 }
 
-int Game::make_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
+int Game::make_move(const Move &move, std::shared_ptr<Pawn> pawn)
 {
     return board_->make_move(move, pawn);
 }

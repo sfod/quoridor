@@ -11,16 +11,12 @@ Player::~Player()
 {
 }
 
-int Player::get_move(BoardMoves *move)
+int Player::get_move(Move *move)
 {
     int i;
     std::cin >> i;
 
-    if (i >= kEND) {
-        return -1;
-    }
-
-    *move = static_cast<BoardMoves>(i);
+    move->set_action(i);
 
     return 0;
 }

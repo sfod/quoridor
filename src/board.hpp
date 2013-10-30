@@ -37,14 +37,28 @@ struct pos_t {
     }
 };
 
-enum BoardMoves {
-    kForward = 0,
-    kRight = 1,
-    kBackward = 2,
-    kLeft = 3,
-    kPutWall = 4,
-    kCancel = 5,
-    kEND,
+class Move {
+public:
+    Move() : action_(kEND) {}
+    explicit Move(int action) : action_(action) {}
+    ~Move() {}
+
+    void set_action(int action) { action_ = action; }
+    int action() const { return action_; }
+
+public:
+    enum BoardMoves {
+        kForward = 0,
+        kRight = 1,
+        kBackward = 2,
+        kLeft = 3,
+        kPutWall = 4,
+        kCancel = 5,
+        kEND,
+    };
+
+private:
+    int action_;
 };
 
 class Wall {
@@ -79,13 +93,13 @@ public:
     void rm_occupied(const pos_t &pos);
     pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
 
-    int make_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
+    int make_move(const Move &move, std::shared_ptr<Pawn> pawn);
     bool is_at_opposite_side(std::shared_ptr<Pawn> pawn) const;
     int add_wall(const Wall &wall);
 
 private:
-    BoardMoves recalc_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
-    int make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn);
+    Move recalc_move(const Move &move, std::shared_ptr<Pawn> pawn);
+    int make_walking_move(const Move &move, std::shared_ptr<Pawn> pawn);
     bool wall_intersects(const Wall &wall) const;
     bool is_outside_board(const pos_t &pos) const;
     bool is_possible_move(const pos_t &pos, const pos_t &inc_pos) const;

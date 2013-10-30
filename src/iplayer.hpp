@@ -8,7 +8,7 @@ namespace Quoridor {
 class IPlayer {
 public:
     virtual ~IPlayer() {}
-    virtual int get_move(BoardMoves *move) = 0;
+    virtual int get_move(Move *move) = 0;
 };
 
 }  /* namespace Quoridor */

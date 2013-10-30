@@ -106,13 +106,13 @@ pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
     return pawn_pos_.at(pawn);
 }
 
-int Board::make_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
+int Board::make_move(const Move &move, std::shared_ptr<Pawn> pawn)
 {
-    if (move < kPutWall) {
+    if (move.action() < Move::kPutWall) {
         return make_walking_move(move, pawn);
     }
-    else if (move == kPutWall) {
-        return -1;
+    else if (move.action() == Move::kPutWall) {
+        return -2;
     }
     else {
         return -1;
@@ -135,41 +135,38 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
     }
 }
 
-BoardMoves Board::recalc_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
+Move Board::recalc_move(const Move &move, std::shared_ptr<Pawn> pawn)
 {
-    int m = (move + pawn_sides_[pawn]) % 4;
-    if (m >= kEND) {
-        return kEND;
-    }
-    return static_cast<BoardMoves>(m);
+    int m = (move.action() + pawn_sides_[pawn]) % 4;
+    return Move(m);
 }
 
-int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
+int Board::make_walking_move(const Move &move, std::shared_ptr<Pawn> pawn)
 {
-    move = recalc_move(move, pawn);
+    Move r_move = recalc_move(move, pawn);
     pos_t pos = pawn_pos_[pawn];
     pos_t inc_pos;
     pos_t lim_pos = pos;
 
-    switch (move) {
-    case kForward:
+    switch (r_move.action()) {
+    case Move::kForward:
         lim_pos.row = row_num() - 1;
         inc_pos.row = 1;
         break;
-    case kRight:
+    case Move::kRight:
         lim_pos.col = col_num() - 1;
         inc_pos.col = 1;
         break;
-    case kBackward:
+    case Move::kBackward:
         lim_pos.row = 0;
         inc_pos.row = -1;
         break;
-    case kLeft:
+    case Move::kLeft:
         lim_pos.col = 0;
         inc_pos.col = -1;
         break;
-    case kPutWall:
-    case kEND:
+    case Move::kPutWall:
+    case Move::kEND:
     default:
         return -1;
     }

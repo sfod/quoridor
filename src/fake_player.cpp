@@ -10,9 +10,9 @@ FakePlayer::~FakePlayer()
 {
 }
 
-int FakePlayer::get_move(BoardMoves *move)
+int FakePlayer::get_move(Move *move)
 {
-    *move = static_cast<BoardMoves>(0);
+    move->set_action(0);
     return 0;
 }
 
