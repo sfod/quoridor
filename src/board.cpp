@@ -190,7 +190,7 @@ int Board::make_walking_move(BoardMoves move, std::shared_ptr<Pawn> pawn)
                 pos += inc_pos;
             }
             else {
-                return -1;
+                return -2;
             }
         }
     }
