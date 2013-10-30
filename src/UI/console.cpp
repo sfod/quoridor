@@ -56,10 +56,10 @@ void Console::run()
                 while ((rc = game_.make_move(move, pawn)) == -1) {
                 }
 
-                // player should continue turn
                 if (rc == 0) {
                     break;
                 }
+                // player should continue turn
                 else if (rc == -2) {
                     continue;
                 }
