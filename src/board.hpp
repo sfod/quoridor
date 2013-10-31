@@ -5,6 +5,7 @@
 
 #include <map>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,7 @@ struct pos_t {
     int col;
 
     bool operator<(const pos_t &pos) const {
-        return (row * 1000 + col) < (pos.row * 1000 + pos.col);
+        return std::tie(row, col) < std::tie(pos.row, pos.col);
     }
     bool operator==(const pos_t &pos) const {
         return (row == pos.row) && (col == pos.col);
