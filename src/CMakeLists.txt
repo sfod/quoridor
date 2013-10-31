@@ -2,6 +2,7 @@ set(MAIN_SOURCES
     main
 )
 set(CORE_SOURCES
+    move
     board
     game
     pawn

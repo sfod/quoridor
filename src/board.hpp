@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "move.hpp"
 #include "pawn.hpp"
 
 
@@ -35,30 +36,6 @@ struct pos_t {
         p += pos;
         return p;
     }
-};
-
-class Move {
-public:
-    Move() : action_(kEND) {}
-    explicit Move(int action) : action_(action) {}
-    ~Move() {}
-
-    void set_action(int action) { action_ = action; }
-    int action() const { return action_; }
-
-public:
-    enum BoardMoves {
-        kForward = 0,
-        kRight = 1,
-        kBackward = 2,
-        kLeft = 3,
-        kPutWall = 4,
-        kCancel = 5,
-        kEND,
-    };
-
-private:
-    int action_;
 };
 
 class Wall {
