@@ -7,17 +7,6 @@
 
 namespace Quoridor {
 
-
-Wall::Wall(int orientation, int line, int start_pos, int cnt)
-    : orientation_(orientation), line_(line), start_pos_(start_pos), cnt_(cnt)
-{
-}
-
-Wall::~Wall()
-{
-}
-
-
 Board::Board(int row_num, int col_num) : row_num_(), col_num_(),
         occ_fields_(), pawn_pos_(), sides_(), pawn_sides_(), walls_()
 {

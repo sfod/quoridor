@@ -6,6 +6,7 @@ set(TEST_TARGET board_unittest)
 set(TEST_TARGET_ADDITIONAL_LIBS gtest)
 add_executable(${TEST_TARGET}
     $<TARGET_OBJECTS:move_cxx_obj>
+    $<TARGET_OBJECTS:wall_cxx_obj>
     $<TARGET_OBJECTS:board_cxx_obj>
     board_unittest.cpp)
 target_link_libraries(${TEST_TARGET} ${TEST_TARGET_ADDITIONAL_LIBS})

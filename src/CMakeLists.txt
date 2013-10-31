@@ -3,6 +3,7 @@ set(MAIN_SOURCES
 )
 set(CORE_SOURCES
     move
+    wall
     board
     game
     pawn
