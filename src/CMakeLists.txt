@@ -2,8 +2,9 @@ set(MAIN_SOURCES
     main
 )
 set(CORE_SOURCES
-    move
     wall
+    wall_move
+    walk_move
     board
     game
     pawn

@@ -7,7 +7,7 @@ public:
     Player();
     ~Player();
 
-    int get_move(Move *move);
+    virtual IMove *get_move();
 };
 
 }  /* namespace Quoridor */

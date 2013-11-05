@@ -1,4 +1,5 @@
 #include "fake_player.hpp"
+#include "walk_move.hpp"
 
 namespace Quoridor {
 
@@ -10,10 +11,9 @@ FakePlayer::~FakePlayer()
 {
 }
 
-int FakePlayer::get_move(Move *move)
+IMove *FakePlayer::get_move()
 {
-    move->set_action(0);
-    return 0;
+    return new WalkMove(WalkMove::Direction::kForward);
 }
 
 }  /* namespace Quoridor */

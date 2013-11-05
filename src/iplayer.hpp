@@ -1,14 +1,14 @@
 #ifndef QUORIDOR_IPLAYER_HPP_
 #define QUORIDOR_IPLAYER_HPP_
 
-#include "game.hpp"
+#include "imove.hpp"
 
 namespace Quoridor {
 
 class IPlayer {
 public:
     virtual ~IPlayer() {}
-    virtual int get_move(Move *move) = 0;
+    virtual IMove *get_move() = 0;
 };
 
 }  /* namespace Quoridor */

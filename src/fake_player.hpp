@@ -7,7 +7,7 @@ public:
     FakePlayer();
     ~FakePlayer();
 
-    int get_move(Move *move);
+    IMove *get_move();
 };
 
 }  /* namespace Quoridor */

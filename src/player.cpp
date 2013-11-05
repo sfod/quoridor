@@ -1,5 +1,6 @@
 #include "player.hpp"
 #include <iostream>
+#include "walk_move.hpp"
 
 namespace Quoridor {
 
@@ -11,14 +12,14 @@ Player::~Player()
 {
 }
 
-int Player::get_move(Move *move)
+IMove *Player::get_move()
 {
     int i;
     std::cin >> i;
 
-    move->set_action(i);
+    IMove *move = new WalkMove(i);
 
-    return 0;
+    return move;
 }
 
 }  /* namespace Quoridor */

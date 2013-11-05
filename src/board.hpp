@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "move.hpp"
 #include "pawn.hpp"
 #include "wall.hpp"
 
@@ -55,13 +54,12 @@ public:
     void rm_occupied(const pos_t &pos);
     pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
 
-    int make_move(const Move &move, std::shared_ptr<Pawn> pawn);
+    int make_walking_move(int dir, std::shared_ptr<Pawn> pawn);
     bool is_at_opposite_side(std::shared_ptr<Pawn> pawn) const;
     int add_wall(const Wall &wall);
 
 private:
-    Move recalc_move(const Move &move, std::shared_ptr<Pawn> pawn);
-    int make_walking_move(const Move &move, std::shared_ptr<Pawn> pawn);
+    int recalc_dir(int dir, std::shared_ptr<Pawn> pawn);
     bool wall_intersects(const Wall &wall) const;
     bool is_outside_board(const pos_t &pos) const;
     bool is_possible_move(const pos_t &pos, const pos_t &inc_pos) const;

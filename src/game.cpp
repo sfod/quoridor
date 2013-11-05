@@ -1,5 +1,7 @@
 #include "game.hpp"
 #include "exception.hpp"
+#include "walk_move.hpp"
+#include "wall_move.hpp"
 
 namespace Quoridor {
 
@@ -23,9 +25,17 @@ pos_t Game::pawn_pos(std::shared_ptr<Pawn> pawn) const
     return board_->pawn_pos(pawn);
 }
 
-int Game::make_move(const Move &move, std::shared_ptr<Pawn> pawn)
+int Game::make_move(IMove *move, std::shared_ptr<Pawn> pawn)
 {
-    return board_->make_move(move, pawn);
+    if (WalkMove *walk_move = dynamic_cast<WalkMove *>(move)) {
+        return board_->make_walking_move(walk_move->dir(), pawn);
+    }
+    else if (WallMove *wall_move = dynamic_cast<WallMove *>(move)) {
+        return board_->add_wall(wall_move->wall());
+    }
+    else {
+        return -1;
+    }
 }
 
 bool Game::is_win(std::shared_ptr<Pawn> pawn) const

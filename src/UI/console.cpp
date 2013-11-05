@@ -18,7 +18,7 @@ Console::Console(int player_num)
     };
 
     if ((player_num != 2) && (player_num != 4)) {
-        throw Exception();
+        throw Exception("invalid number of players");
     }
 
 
@@ -35,7 +35,7 @@ Console::~Console()
 void Console::run()
 {
     bool is_run = true;
-    Move move;
+    IMove *move;
     pos_t start_pos;
     pos_t end_pos;
     int rc;
@@ -49,12 +49,10 @@ void Console::run()
             start_pos = game_.pawn_pos(pawn);
 
             while (true) {
-                while (player->get_move(&move) < 0) {
-                }
+                move = player->get_move();
 
                 std::cout << "make move ";
-                while ((rc = game_.make_move(move, pawn)) == -1) {
-                }
+                rc = game_.make_move(move, pawn);
 
                 if (rc == 0) {
                     break;
@@ -63,9 +61,13 @@ void Console::run()
                 else if (rc == -2) {
                     continue;
                 }
+                // invalid move, player should make another move
+                else if (rc == -1) {
+                    continue;
+                }
                 // not possible
                 else {
-                    throw Exception();
+                    throw Exception("unknown return code from make_move");
                 }
             }
 

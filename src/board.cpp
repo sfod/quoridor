@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "exception.hpp"
+#include "walk_move.hpp"
 
 
 namespace Quoridor {
@@ -24,10 +25,10 @@ Board::~Board()
 void Board::set_size(int row_num, int col_num)
 {
     if (row_num <= 0) {
-        throw Exception();
+        throw Exception("row number must be more than 0");
     }
     if (col_num <= 0) {
-        throw Exception();
+        throw Exception("column number must be more than 0");
     }
     row_num_ = row_num;
     col_num_ = col_num;
@@ -67,7 +68,7 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
         pos.col = 8;
         break;
     default:
-        throw Exception();
+        throw Exception("invalid pawn side");
     }
 
     occ_fields_[pos] = pawn;
@@ -79,7 +80,7 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
 void Board::add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn)
 {
     if (occ_fields_.count(pos) > 0) {
-        throw Exception();
+        throw Exception("cell is already occupied");
     }
     occ_fields_[pos] = pawn;
     pawn_pos_[pawn] = pos;
@@ -95,19 +96,6 @@ pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
     return pawn_pos_.at(pawn);
 }
 
-int Board::make_move(const Move &move, std::shared_ptr<Pawn> pawn)
-{
-    if (move.action() < Move::kPutWall) {
-        return make_walking_move(move, pawn);
-    }
-    else if (move.action() == Move::kPutWall) {
-        return -2;
-    }
-    else {
-        return -1;
-    }
-}
-
 bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
 {
     switch (pawn_sides_.at(pawn)) {
@@ -120,42 +108,42 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
     case 3:
         return pawn_pos_.at(pawn).col == 0;
     default:
-        throw Exception();
+        throw Exception("invalid board side");
     }
 }
 
-Move Board::recalc_move(const Move &move, std::shared_ptr<Pawn> pawn)
+int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
 {
-    int m = (move.action() + pawn_sides_[pawn]) % 4;
-    return Move(m);
+    int m = (dir + pawn_sides_[pawn]) % 4;
+    return m;
 }
 
-int Board::make_walking_move(const Move &move, std::shared_ptr<Pawn> pawn)
+int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 {
-    Move r_move = recalc_move(move, pawn);
+    dir = recalc_dir(dir, pawn);
     pos_t pos = pawn_pos_[pawn];
     pos_t inc_pos;
     pos_t lim_pos = pos;
 
-    switch (r_move.action()) {
-    case Move::kForward:
+    switch (dir) {
+        case WalkMove::Direction::kForward:
         lim_pos.row = row_num() - 1;
         inc_pos.row = 1;
         break;
-    case Move::kRight:
+    case WalkMove::Direction::kRight:
         lim_pos.col = col_num() - 1;
         inc_pos.col = 1;
         break;
-    case Move::kBackward:
+    case WalkMove::Direction::kBackward:
         lim_pos.row = 0;
         inc_pos.row = -1;
         break;
-    case Move::kLeft:
+    case WalkMove::Direction::kLeft:
         lim_pos.col = 0;
         inc_pos.col = -1;
         break;
-    case Move::kPutWall:
-    case Move::kEND:
+    case WalkMove::Direction::kStart:
+    case WalkMove::Direction::kEnd:
     default:
         return -1;
     }
@@ -258,7 +246,7 @@ bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
         st = pos.row;
     }
     else {
-        throw Exception();
+        throw Exception("invalid incrementation move");
     }
 
     if (walls_.count(orientation) == 0) {
