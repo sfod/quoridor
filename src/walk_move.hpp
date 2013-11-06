@@ -16,8 +16,7 @@ public:
 
 public:
     enum Direction {
-        kStart = 0,
-        kForward = 1,
+        kForward = 0,
         kRight,
         kBackward,
         kLeft,

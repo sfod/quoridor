@@ -150,7 +150,6 @@ int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
         lim_pos.col = 0;
         inc_pos.col = -1;
         break;
-    case WalkMove::Direction::kStart:
     case WalkMove::Direction::kEnd:
     default:
         return -1;

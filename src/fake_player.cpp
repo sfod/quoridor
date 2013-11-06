@@ -25,7 +25,7 @@ IMove *FakePlayer::get_move()
             return new WalkMove(WalkMove::Direction::kForward);
         }
         else {
-            return new WalkMove(rand() % 4 + 1);
+            return new WalkMove(rand() % 4);
         }
     }
     else {

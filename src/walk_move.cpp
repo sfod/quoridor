@@ -10,7 +10,7 @@ WalkMove::WalkMove() : dir_(kEnd)
 
 WalkMove::WalkMove(int dir)
 {
-    if ((dir <= Direction::kStart) || (dir >= Direction::kEnd)) {
+    if ((dir < Direction::kForward) || (dir >= Direction::kEnd)) {
         throw Exception("invalid direction: "
                 + boost::lexical_cast<std::string>(dir));
     }
