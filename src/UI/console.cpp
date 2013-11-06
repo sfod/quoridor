@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <iostream>
 
+#include <boost/lexical_cast.hpp>
+
 #include "player.hpp"
 #include "exception.hpp"
 
@@ -18,7 +20,8 @@ Console::Console(int player_num)
     };
 
     if ((player_num != 2) && (player_num != 4)) {
-        throw Exception("invalid number of players");
+        throw Exception("invalid number of players: "
+                + boost::lexical_cast<std::string>(player_num));
     }
 
 
@@ -67,7 +70,8 @@ void Console::run()
                 }
                 // not possible
                 else {
-                    throw Exception("unknown return code from make_move");
+                    throw Exception("unknown return code from make_move :"
+                            + boost::lexical_cast<std::string>(rc));
                 }
             }
 

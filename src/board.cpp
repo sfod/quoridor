@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include <boost/lexical_cast.hpp>
+
 #include "exception.hpp"
 #include "walk_move.hpp"
 
@@ -25,10 +27,12 @@ Board::~Board()
 void Board::set_size(int row_num, int col_num)
 {
     if (row_num <= 0) {
-        throw Exception("row number must be more than 0");
+        throw Exception("illegal row number: "
+                + boost::lexical_cast<std::string>(row_num));
     }
     if (col_num <= 0) {
-        throw Exception("column number must be more than 0");
+        throw Exception("illegal column number: "
+                + boost::lexical_cast<std::string>(col_num));
     }
     row_num_ = row_num;
     col_num_ = col_num;
@@ -68,7 +72,8 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
         pos.col = 8;
         break;
     default:
-        throw Exception("invalid pawn side");
+        throw Exception("invalid pawn side: "
+                + boost::lexical_cast<std::string>(pawn_sides_[pawn]));
     }
 
     occ_fields_[pos] = pawn;
@@ -80,7 +85,9 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
 void Board::add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn)
 {
     if (occ_fields_.count(pos) > 0) {
-        throw Exception("cell is already occupied");
+        throw Exception("cell (" + boost::lexical_cast<std::string>(pos.row)
+                + ":" + boost::lexical_cast<std::string>(pos.col)
+                + ") is already occupied");
     }
     occ_fields_[pos] = pawn;
     pawn_pos_[pawn] = pos;
@@ -108,7 +115,8 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
     case 3:
         return pawn_pos_.at(pawn).col == 0;
     default:
-        throw Exception("invalid board side");
+        throw Exception("invalid board side: "
+                + boost::lexical_cast<std::string>(pawn_sides_.at(pawn)));
     }
 }
 
@@ -259,7 +267,7 @@ bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
         crossed_line = std::min(pos.col, pos.col + inc_pos.col);
     }
     else {
-        throw Exception("invalid incrementation move");
+        throw Exception("zero incrementation move");
     }
 
     if (walls_.count(orientation) == 0) {
