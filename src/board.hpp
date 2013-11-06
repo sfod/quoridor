@@ -71,7 +71,7 @@ private:
     std::map<std::shared_ptr<Pawn>, pos_t> pawn_pos_;
     mutable std::vector<std::pair<int, int>> sides_;
     std::map<std::shared_ptr<Pawn>, int> pawn_sides_;
-    std::map<int, std::map<int, Wall>> walls_;
+    std::map<int, std::map<int, std::map<int, Wall>>> walls_;
 };
 
 }  /* namespace Quoridor */

@@ -188,7 +188,7 @@ int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 int Board::add_wall(const Wall &wall)
 {
     int line_lim = wall.orientation() ? col_num() : row_num();
-    int start_pos_lim = wall.orientation() ? row_num() : col_num();
+    int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
     if ((wall.line() >= line_lim)
             || (wall.start_pos() + wall.cnt() >= start_pos_lim)) {
         return -1;
@@ -198,25 +198,35 @@ int Board::add_wall(const Wall &wall)
         return -2;
     }
 
-    walls_[wall.orientation()].insert(std::map<int, Wall>::value_type(wall.line(), Wall(wall)));
+    walls_[wall.orientation()][wall.line()].insert(std::map<int, Wall>::value_type(wall.start_pos(), Wall(wall)));
 
     return 0;
 }
 
 bool Board::wall_intersects(const Wall &wall) const
 {
+    std::map<int, Wall> line_walls;
+    std::map<int, Wall>::iterator it;
+
     // check intersections
     if (walls_.count(1 - wall.orientation()) > 0) {
-        for (int i = 1; i < wall.cnt(); ++i) {
-            if (walls_.at(1 - wall.orientation()).count(wall.start_pos() - i) != 0) {
-                return true;
+        for (int i = 0; i < wall.cnt() - 1; ++i) {
+            // there are some walls on the intersected line
+            if (walls_.at(1 - wall.orientation()).count(wall.start_pos()) != 0) {
+                line_walls = walls_.at(1 - wall.orientation()).at(wall.start_pos() + i);
+                it = line_walls.lower_bound(wall.line());  // the nearest wall lain below the line of new wall
+                if ((it != line_walls.end()) && (it->second.start_pos() + it->second.cnt() >= wall.line())) {
+                    return true;
+                }
             }
         }
     }
     // check overlaps
     if (walls_.count(wall.orientation()) > 0) {
-        for (int i = 1 - wall.cnt(); i < wall.cnt(); ++i) {
-            if (walls_.at(wall.orientation()).count(wall.start_pos() + i) != 0) {
+        if (walls_.at(wall.orientation()).count(wall.line()) != 0) {
+            line_walls = walls_.at(wall.orientation()).at(wall.line());
+            it = line_walls.lower_bound(wall.start_pos());
+            if ((it != line_walls.end()) && (it->second.start_pos() + it->second.cnt() >= wall.start_pos())) {
                 return true;
             }
         }
@@ -236,14 +246,17 @@ bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
 {
     int orientation;
     int st;
+    int crossed_line;
 
     if (inc_pos.row != 0) {
-        orientation = 1;
+        orientation = 0;
         st = pos.col;
+        crossed_line = std::min(pos.row, pos.row + inc_pos.row);
     }
     else if (inc_pos.col != 0) {
-        orientation = 0;
+        orientation = 1;
         st = pos.row;
+        crossed_line = std::min(pos.col, pos.col + inc_pos.col);
     }
     else {
         throw Exception("invalid incrementation move");
@@ -253,11 +266,11 @@ bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
         return true;
     }
 
-    for (int i = 0; i <= st; ++i) {
-        if (walls_.at(orientation).count(i)) {
-            if (i + walls_.at(orientation).at(i).cnt() >= st) {
-                return false;
-            }
+    if (walls_.at(orientation).count(crossed_line) != 0) {
+        std::map<int, Wall> line_walls = walls_.at(orientation).at(crossed_line);
+        std::map<int, Wall>::iterator it = line_walls.lower_bound(st);
+        if ((it != line_walls.end()) && (it->second.start_pos() + it->second.cnt() >= st)) {
+            return false;
         }
     }
 
