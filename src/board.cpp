@@ -197,7 +197,7 @@ int Board::add_wall(const Wall &wall)
     int line_lim = wall.orientation() ? col_num() : row_num() - 1;
     int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
     if ((wall.line() >= line_lim)
-            || (wall.start_pos() + wall.cnt() >= start_pos_lim)) {
+            || (wall.end_pos() >= start_pos_lim)) {
         return -1;
     }
 
@@ -223,13 +223,13 @@ bool Board::wall_intersects(const Wall &wall) const
                 // all walls on the line are settled before new wall
                 if (it == line_walls.end()) {
                     auto rit = line_walls.rbegin();
-                    if (rit->second.start_pos() + rit->second.cnt() >= wall.line()) {
+                    if (rit->second.end_pos() >= wall.line()) {
                         return true;
                     }
                 }
                 else if (it != line_walls.begin()) {
                     --it;
-                    if (it->second.start_pos() + it->second.cnt() >= wall.line()) {
+                    if (it->second.end_pos() >= wall.line()) {
                         return true;
                     }
                 }
@@ -246,19 +246,19 @@ bool Board::wall_intersects(const Wall &wall) const
             // all walls on the line are settled before new wall
             if (it == line_walls.end()) {
                 auto rit = line_walls.rbegin();
-                if (rit->second.start_pos() + rit->second.cnt() >= wall.start_pos()) {
+                if (rit->second.end_pos() >= wall.start_pos()) {
                     return true;
                 }
             }
             else {
                 // check if new wall overlaps over next wall on the line
-                if (wall.start_pos() + wall.cnt() >= it->second.start_pos()) {
+                if (wall.end_pos() >= it->second.start_pos()) {
                     return true;
                 }
 
                 if (it != line_walls.begin()) {
                     --it;
-                    if (it->second.start_pos() + it->second.cnt() >= wall.start_pos()) {
+                    if (it->second.end_pos() >= wall.start_pos()) {
                         return true;
                     }
                 }
@@ -308,13 +308,13 @@ bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
         // all walls on the line are settled before specified position
         if (it == line_walls.end()) {
             auto rit = line_walls.rbegin();
-            if (rit->second.start_pos() + rit->second.cnt() >= st) {
+            if (rit->second.end_pos() >= st) {
                 return false;
             }
         }
         else if (it != line_walls.begin()) {
             --it;
-            if (it->second.start_pos() + it->second.cnt() >= st) {
+            if (it->second.end_pos() >= st) {
                 return false;
             }
         }
