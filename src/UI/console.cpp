@@ -32,24 +32,7 @@ Console::Console(int player_num)
         game_.add_pawn(std::shared_ptr<Pawn>(new Pawn(colors[i])));
     }
 
-    repr_.resize(19);
-    for (int i = 0; i < 19; ++i) {
-        repr_[i].resize(19);
-        for (int j = 0; j < 19; ++j) {
-            if (i % 2 == 1) {
-                repr_[i][j] = (j % 2 == 0 ? '|' : ' ');
-            }
-            else {
-                repr_[i][j] = (j % 2 == 0 ? ' ' : '_');
-            }
-        }
-    }
-
-    for (int i = 0; i < player_num; ++i) {
-        auto pawn = game_.pawn_list().at(i);
-        pos_t pos = game_.pawn_pos(pawn);
-        repr_[pos.row * 2 + 1][pos.col * 2 + 1] = pawn->color()[0];
-    }
+    init_board_repr();
 }
 
 Console::~Console()
@@ -97,37 +80,17 @@ void Console::run()
                 }
             }
 
-
             if (WalkMove *walk_move = dynamic_cast<WalkMove *>(move)) {
-                std::cout << pawn->color() << std::endl;
-                std::cout << "walk "
-                    << walk_move->ToString((WalkMove::Direction)walk_move->dir());
                 end_pos = game_.pawn_pos(pawn);
-                std::cout << " (" << start_pos.row << ","
-                    << start_pos.col << ") => (" << end_pos.row << ","
-                    << end_pos.col << ")" << std::endl;
-                repr_[start_pos.row * 2 + 1][start_pos.col * 2 + 1] = ' ';
-                repr_[end_pos.row * 2 + 1][end_pos.col * 2 + 1] = pawn->color()[0];
+                print_walk_move(pawn,
+                        walk_move->ToString((WalkMove::Direction) walk_move->dir()),
+                        start_pos, end_pos);
+                redraw_pawn(pawn->color()[0], start_pos, end_pos);
             }
             else if (WallMove *wall_move = dynamic_cast<WallMove *>(move)) {
                 const Wall &wall = wall_move->wall();
-                std::cout << pawn->color() << std::endl;
-                std::cout << "add wall: ("
-                    << wall.orientation() << ", "
-                    << wall.line() << ", "
-                    << wall.start_pos() << ", "
-                    << wall.cnt()
-                    << ")" << std::endl;
-                if (wall.orientation() == 0) {
-                    for (int i = 0; i < wall.cnt(); ++i) {
-                        repr_[wall.line() * 2 + 2][(wall.start_pos() + i) * 2 + 1] = '=';
-                    }
-                }
-                else {
-                    for (int i = 0; i < wall.cnt(); ++i) {
-                        repr_[(wall.start_pos() + i) * 2 + 1][wall.line() * 2 + 2] = '$';
-                    }
-                }
+                print_wall_move(pawn, wall);
+                draw_wall(wall);
             }
 
             display();
@@ -158,6 +121,68 @@ void Console::display() const
         std::cout << std::endl;
     }
     std::cout << std::endl;
+}
+
+void Console::init_board_repr()
+{
+    repr_.resize(19);
+    for (int i = 0; i < 19; ++i) {
+        repr_[i].resize(19);
+        for (int j = 0; j < 19; ++j) {
+            if (i % 2 == 1) {
+                repr_[i][j] = (j % 2 == 0 ? '|' : ' ');
+            }
+            else {
+                repr_[i][j] = (j % 2 == 0 ? ' ' : '_');
+            }
+        }
+    }
+
+    for (size_t i = 0; i < players_.size(); ++i) {
+        auto pawn = game_.pawn_list().at(i);
+        pos_t pos = game_.pawn_pos(pawn);
+        repr_[pos.row * 2 + 1][pos.col * 2 + 1] = pawn->color()[0];
+    }
+}
+
+void Console::redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos)
+{
+    repr_[old_pos.row * 2 + 1][old_pos.col * 2 + 1] = ' ';
+    repr_[new_pos.row * 2 + 1][new_pos.col * 2 + 1] = p;
+}
+
+void Console::draw_wall(const Wall &wall)
+{
+    if (wall.orientation() == 0) {
+        for (int i = 0; i < wall.cnt(); ++i) {
+            repr_[wall.line() * 2 + 2][(wall.start_pos() + i) * 2 + 1] = '=';
+        }
+    }
+    else {
+        for (int i = 0; i < wall.cnt(); ++i) {
+            repr_[(wall.start_pos() + i) * 2 + 1][wall.line() * 2 + 2] = '$';
+        }
+    }
+}
+
+void Console::print_walk_move(std::shared_ptr<Pawn> pawn,
+        const std::string &dir,
+        const pos_t &old_pos, const pos_t &new_pos)
+{
+    std::cout << pawn->color() << std::endl;
+    std::cout << "walk " << dir << " (" << new_pos.row << "," << new_pos.col
+        << ") => (" << old_pos.row << "," << old_pos.col << ")" << std::endl;
+}
+
+void Console::print_wall_move(std::shared_ptr<Pawn> pawn, const Wall &wall)
+{
+    std::cout << pawn->color() << std::endl;
+    std::cout << "add wall: ("
+        << wall.orientation() << ", "
+        << wall.line() << ", "
+        << wall.start_pos() << ", "
+        << wall.cnt()
+        << ")" << std::endl;
 }
 
 }  /* namespace UI */
