@@ -194,7 +194,7 @@ int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 
 int Board::add_wall(const Wall &wall)
 {
-    int line_lim = wall.orientation() ? col_num() : row_num();
+    int line_lim = wall.orientation() ? col_num() : row_num() - 1;
     int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
     if ((wall.line() >= line_lim)
             || (wall.start_pos() + wall.cnt() >= start_pos_lim)) {
@@ -212,32 +212,60 @@ int Board::add_wall(const Wall &wall)
 
 bool Board::wall_intersects(const Wall &wall) const
 {
-    std::map<int, Wall> line_walls;
-    std::map<int, Wall>::iterator it;
-
     // check intersections
     if (walls_.count(1 - wall.orientation()) > 0) {
         for (int i = 0; i < wall.cnt() - 1; ++i) {
-            // there are some walls on the intersected line
+            // there are walls on the intersected line
             if (walls_.at(1 - wall.orientation()).count(wall.start_pos()) != 0) {
-                line_walls = walls_.at(1 - wall.orientation()).at(wall.start_pos() + i);
-                it = line_walls.lower_bound(wall.line());  // the nearest wall lain below the line of new wall
-                if ((it != line_walls.end()) && (it->second.start_pos() + it->second.cnt() >= wall.line())) {
-                    return true;
+                auto line_walls = walls_.at(1 - wall.orientation()).at(wall.start_pos() + i);
+                auto it = line_walls.upper_bound(wall.line());
+
+                // all walls on the line are settled before new wall
+                if (it == line_walls.end()) {
+                    auto rit = line_walls.rbegin();
+                    if (rit->second.start_pos() + rit->second.cnt() >= wall.line()) {
+                        return true;
+                    }
+                }
+                else if (it != line_walls.begin()) {
+                    --it;
+                    if (it->second.start_pos() + it->second.cnt() >= wall.line()) {
+                        return true;
+                    }
                 }
             }
         }
     }
+
     // check overlaps
     if (walls_.count(wall.orientation()) > 0) {
         if (walls_.at(wall.orientation()).count(wall.line()) != 0) {
-            line_walls = walls_.at(wall.orientation()).at(wall.line());
-            it = line_walls.lower_bound(wall.start_pos());
-            if ((it != line_walls.end()) && (it->second.start_pos() + it->second.cnt() >= wall.start_pos())) {
-                return true;
+            auto line_walls = walls_.at(wall.orientation()).at(wall.line());
+            auto it = line_walls.upper_bound(wall.start_pos());
+
+            // all walls on the line are settled before new wall
+            if (it == line_walls.end()) {
+                auto rit = line_walls.rbegin();
+                if (rit->second.start_pos() + rit->second.cnt() >= wall.start_pos()) {
+                    return true;
+                }
+            }
+            else {
+                // check if new wall overlaps over next wall on the line
+                if (wall.start_pos() + wall.cnt() >= it->second.start_pos()) {
+                    return true;
+                }
+
+                if (it != line_walls.begin()) {
+                    --it;
+                    if (it->second.start_pos() + it->second.cnt() >= wall.start_pos()) {
+                        return true;
+                    }
+                }
             }
         }
     }
+
     return false;
 }
 
@@ -274,10 +302,21 @@ bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
     }
 
     if (walls_.at(orientation).count(crossed_line) != 0) {
-        std::map<int, Wall> line_walls = walls_.at(orientation).at(crossed_line);
-        std::map<int, Wall>::iterator it = line_walls.lower_bound(st);
-        if ((it != line_walls.end()) && (it->second.start_pos() + it->second.cnt() >= st)) {
-            return false;
+        auto line_walls = walls_.at(orientation).at(crossed_line);
+        auto it = line_walls.upper_bound(st);
+
+        // all walls on the line are settled before specified position
+        if (it == line_walls.end()) {
+            auto rit = line_walls.rbegin();
+            if (rit->second.start_pos() + rit->second.cnt() >= st) {
+                return false;
+            }
+        }
+        else if (it != line_walls.begin()) {
+            --it;
+            if (it->second.start_pos() + it->second.cnt() >= st) {
+                return false;
+            }
         }
     }
 
