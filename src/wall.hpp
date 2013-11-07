@@ -11,6 +11,7 @@ public:
     int orientation() const { return orientation_; }
     int line() const { return line_; }
     int start_pos() const { return start_pos_; }
+    int end_pos() const { return start_pos_ + cnt_ - 1; }
     int cnt() const { return cnt_; }
 
 private:
