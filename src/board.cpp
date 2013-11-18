@@ -11,7 +11,8 @@
 namespace Quoridor {
 
 Board::Board(int row_num, int col_num) : row_num_(), col_num_(),
-        occ_fields_(), pawn_pos_(), sides_(), pawn_sides_(), walls_()
+        sides_(), pawn_sides_(), walls_(),
+        nodes_(row_num * col_num), bg_(row_num, col_num)
 {
     set_size(row_num, col_num);
     sides_.push_back(std::pair<int, int>(0, 0));
@@ -52,68 +53,73 @@ int Board::next_side() const
 int Board::add_pawn(std::shared_ptr<Pawn> pawn)
 {
     pawn_sides_[pawn] = next_side();
-    pos_t pos;
+    int n;
 
     switch (pawn_sides_[pawn]) {
     case 0:
-        pos.row = 0;
-        pos.col = 4;
+        n = col_num_ / 2;
         break;
     case 1:
-        pos.row = 4;
-        pos.col = 0;
+        n = row_num_ / 2;
         break;
     case 2:
-        pos.row = 8;
-        pos.col = 4;
+        n = (row_num_ - 1) * col_num_ + col_num_ / 2;
         break;
     case 3:
-        pos.row = 4;
-        pos.col = 8;
+        n = (row_num_ / 2) * col_num_ + col_num_ - 1;
         break;
     default:
         throw Exception("invalid pawn side: "
                 + boost::lexical_cast<std::string>(pawn_sides_[pawn]));
     }
 
-    occ_fields_[pos] = pawn;
-    pawn_pos_[pawn] = pos;
+    occ_nodes_[n] = pawn;
+    pawn_node_[pawn] = n;
 
     return 0;
 }
 
 void Board::add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn)
 {
-    if (occ_fields_.count(pos) > 0) {
+    int n = pos.row * col_num_ + pos.col;
+
+    if (occ_nodes_.count(n) > 0) {
         throw Exception("cell (" + boost::lexical_cast<std::string>(pos.row)
                 + ":" + boost::lexical_cast<std::string>(pos.col)
                 + ") is already occupied");
     }
-    occ_fields_[pos] = pawn;
-    pawn_pos_[pawn] = pos;
+
+    occ_nodes_[n] = pawn;
+    pawn_node_[pawn] = n;
 }
 
 void Board::rm_occupied(const pos_t &pos)
 {
-    occ_fields_.erase(pos);
+    int n = pos.row * col_num_ + pos.col;
+    occ_nodes_.erase(n);
 }
 
 pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
 {
-    return pawn_pos_.at(pawn);
+    int node = pawn_node_.at(pawn);
+    pos_t pos;
+    pos.row = row(node);
+    pos.col = col(node);
+    return pos;
 }
 
 bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
 {
+    int n = pawn_node_.at(pawn);
     switch (pawn_sides_.at(pawn)) {
     case 0:
-        return pawn_pos_.at(pawn).row == row_num() - 1;
+        return row(n) == row_num_ - 1;
     case 1:
-        return pawn_pos_.at(pawn).col == col_num() - 1;
+        return col(n) == col_num_ - 1;
     case 2:
-        return pawn_pos_.at(pawn).row == 0;
+        return row(n) == 0;
     case 3:
-        return pawn_pos_.at(pawn).col == 0;
+        return col(n) == 0;
     default:
         throw Exception("invalid board side: "
                 + boost::lexical_cast<std::string>(pawn_sides_.at(pawn)));
@@ -122,53 +128,43 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
 
 int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
 {
-    int m = (dir + pawn_sides_[pawn]) % 4;
-    return m;
+    return (dir + pawn_sides_[pawn]) % 4;
 }
 
 int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 {
     dir = recalc_dir(dir, pawn);
-    pos_t pos = pawn_pos_[pawn];
-    pos_t inc_pos;
-    pos_t lim_pos = pos;
+    int cur_node = pawn_node_[pawn];
+    int goal_node = cur_node;
+    int r_goal_node = cur_node;
 
     switch (dir) {
         case WalkMove::Direction::kForward:
-        lim_pos.row = row_num() - 1;
-        inc_pos.row = 1;
+        goal_node += col_num_;
+        r_goal_node = goal_node + col_num_;
         break;
     case WalkMove::Direction::kRight:
-        lim_pos.col = col_num() - 1;
-        inc_pos.col = 1;
+        ++goal_node;
+        r_goal_node = goal_node + 1;
         break;
     case WalkMove::Direction::kBackward:
-        lim_pos.row = 0;
-        inc_pos.row = -1;
+        goal_node -= col_num_;
+        r_goal_node = goal_node - col_num_;
         break;
     case WalkMove::Direction::kLeft:
-        lim_pos.col = 0;
-        inc_pos.col = -1;
+        --goal_node;
+        r_goal_node = goal_node - 1;
         break;
     case WalkMove::Direction::kEnd:
     default:
         return -1;
     }
 
-    // error, pawn is already at the opposite side
-    if (pos == lim_pos) {
-        return -1;
-    }
-
-    if (is_possible_move(pos, inc_pos)) {
-        pos_t possible_pos = pos + inc_pos;
-        if (occ_fields_.count(possible_pos) == 0) {
-            pos += inc_pos;
-        }
-        else {
-            if (is_possible_move(possible_pos, inc_pos)) {
-                pos += inc_pos;
-                pos += inc_pos;
+    if (is_possible_move(cur_node, goal_node)) {
+        // the goal node is occupied by another pawn
+        if (occ_nodes_.count(goal_node) > 0) {
+            if (is_possible_move(goal_node, r_goal_node)) {
+                goal_node = r_goal_node;
             }
             else {
                 return -2;
@@ -179,15 +175,10 @@ int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
         return -1;
     }
 
-    // pawn cannot make specified move
-    if (is_outside_board(pos)) {
-        return -1;
-    }
-
     // update pawn's position
-    occ_fields_.erase(pawn_pos_[pawn]);
-    pawn_pos_[pawn] = pos;
-    occ_fields_[pos] = pawn;
+    occ_nodes_.erase(pawn_node_[pawn]);
+    pawn_node_[pawn] = goal_node;
+    occ_nodes_[goal_node] = pawn;
 
     return 0;
 }
@@ -206,6 +197,21 @@ int Board::add_wall(const Wall &wall)
     }
 
     walls_[wall.orientation()][wall.line()].insert(std::map<int, Wall>::value_type(wall.start_pos(), Wall(wall)));
+
+    int node1;
+    int node2;
+    for (int i = 0; i < wall.cnt(); ++i) {
+        if (wall.orientation() == 0) {
+            node1 = wall.line() * row_num_ + wall.start_pos() + i;
+            node2 = (wall.line() + 1) * row_num_ + wall.start_pos() + i;
+        }
+        else {
+            node1 = (wall.start_pos() + i) * row_num_ + wall.line();
+            node2 = (wall.start_pos() + i) * row_num_ + wall.line() + 1;
+        }
+        std::cout << "removing edge " << node1 << ":" << node2 << std::endl;
+        bg_.remove_edges(node1, node2);
+    }
 
     return 0;
 }
@@ -269,58 +275,9 @@ bool Board::wall_intersects(const Wall &wall) const
     return false;
 }
 
-bool Board::is_outside_board(const pos_t &pos) const
+bool Board::is_possible_move(int cur_node, int goal_node) const
 {
-    if ((pos.row >= row_num()) || (pos.row < 0)
-            || (pos.col >= col_num()) || (pos.col < 0))
-        return true;
-    return false;
-}
-
-bool Board::is_possible_move(const pos_t &pos, const pos_t &inc_pos) const
-{
-    int orientation;
-    int st;
-    int crossed_line;
-
-    if (inc_pos.row != 0) {
-        orientation = 0;
-        st = pos.col;
-        crossed_line = std::min(pos.row, pos.row + inc_pos.row);
-    }
-    else if (inc_pos.col != 0) {
-        orientation = 1;
-        st = pos.row;
-        crossed_line = std::min(pos.col, pos.col + inc_pos.col);
-    }
-    else {
-        throw Exception("zero incrementation move");
-    }
-
-    if (walls_.count(orientation) == 0) {
-        return true;
-    }
-
-    if (walls_.at(orientation).count(crossed_line) != 0) {
-        auto line_walls = walls_.at(orientation).at(crossed_line);
-        auto it = line_walls.upper_bound(st);
-
-        // all walls on the line are settled before specified position
-        if (it == line_walls.end()) {
-            auto rit = line_walls.rbegin();
-            if (rit->second.end_pos() >= st) {
-                return false;
-            }
-        }
-        else if (it != line_walls.begin()) {
-            --it;
-            if (it->second.end_pos() >= st) {
-                return false;
-            }
-        }
-    }
-
-    return true;
+    return bg_.is_neighbours(cur_node, goal_node);
 }
 
 }  /* namespace Quoridor */

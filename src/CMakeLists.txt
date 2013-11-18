@@ -6,6 +6,7 @@ set(CORE_SOURCES
     wall_move
     walk_move
     board
+    board_graph
     game
     pawn
     player_factory

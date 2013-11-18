@@ -9,9 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "board_graph.hpp"
 #include "pawn.hpp"
 #include "wall.hpp"
-
 
 namespace Quoridor {
 
@@ -39,6 +39,7 @@ struct pos_t {
     }
 };
 
+
 class Board {
 public:
     Board(int row_num, int col_num);
@@ -59,19 +60,26 @@ public:
     int add_wall(const Wall &wall);
 
 private:
+    int row(int n) const { return n / col_num_; }
+    int col(int n) const { return n % col_num_; }
+
+private:
     int recalc_dir(int dir, std::shared_ptr<Pawn> pawn);
     bool wall_intersects(const Wall &wall) const;
     bool is_outside_board(const pos_t &pos) const;
-    bool is_possible_move(const pos_t &pos, const pos_t &inc_pos) const;
+    bool is_possible_move(int cur_node, int goal_node) const;
 
 private:
     int row_num_;
     int col_num_;
-    std::map<pos_t, std::shared_ptr<Pawn>> occ_fields_;
-    std::map<std::shared_ptr<Pawn>, pos_t> pawn_pos_;
     mutable std::vector<std::pair<int, int>> sides_;
     std::map<std::shared_ptr<Pawn>, int> pawn_sides_;
     std::map<int, std::map<int, std::map<int, Wall>>> walls_;
+
+    std::vector<int> nodes_;
+    std::map<int, std::shared_ptr<Pawn>> occ_nodes_;
+    std::map<std::shared_ptr<Pawn>, int> pawn_node_;
+    BoardGraph bg_;
 };
 
 }  /* namespace Quoridor */
