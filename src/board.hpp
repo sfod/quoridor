@@ -65,9 +65,8 @@ private:
 
 private:
     int recalc_dir(int dir, std::shared_ptr<Pawn> pawn);
-    bool wall_intersects(const Wall &wall) const;
-    bool is_outside_board(const pos_t &pos) const;
     bool is_possible_move(int cur_node, int goal_node) const;
+    bool wall_intersects(const Wall &wall) const;
 
 private:
     int row_num_;

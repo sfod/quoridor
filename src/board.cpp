@@ -126,11 +126,6 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
     }
 }
 
-int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
-{
-    return (dir + pawn_sides_[pawn]) % 4;
-}
-
 int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 {
     dir = recalc_dir(dir, pawn);
@@ -216,6 +211,16 @@ int Board::add_wall(const Wall &wall)
     return 0;
 }
 
+int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
+{
+    return (dir + pawn_sides_[pawn]) % 4;
+}
+
+bool Board::is_possible_move(int cur_node, int goal_node) const
+{
+    return bg_.is_neighbours(cur_node, goal_node);
+}
+
 bool Board::wall_intersects(const Wall &wall) const
 {
     // check intersections
@@ -273,11 +278,6 @@ bool Board::wall_intersects(const Wall &wall) const
     }
 
     return false;
-}
-
-bool Board::is_possible_move(int cur_node, int goal_node) const
-{
-    return bg_.is_neighbours(cur_node, goal_node);
 }
 
 }  /* namespace Quoridor */
