@@ -255,7 +255,7 @@ int Board::try_add_wall(const Wall &wall)
 
     for (auto pawn_node : pawn_nodes_) {
         std::vector<int> nodes;
-        int side = pawn_sides_[pawn_node.first];
+        int side = (pawn_sides_[pawn_node.first] + 2) % 4;
         path_blocked = true;
 
         side_nodes(side, &nodes);
