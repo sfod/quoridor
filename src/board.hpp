@@ -58,6 +58,7 @@ public:
     int make_walking_move(int dir, std::shared_ptr<Pawn> pawn);
     bool is_at_opposite_side(std::shared_ptr<Pawn> pawn) const;
     int add_wall(const Wall &wall);
+    int try_add_wall(const Wall &wall);
 
 private:
     int row(int n) const { return n / col_num_; }
@@ -67,6 +68,7 @@ private:
     int recalc_dir(int dir, std::shared_ptr<Pawn> pawn);
     bool is_possible_move(int cur_node, int goal_node) const;
     bool wall_intersects(const Wall &wall) const;
+    void side_nodes(int side, std::vector<int> *nodes) const;
 
 private:
     int row_num_;

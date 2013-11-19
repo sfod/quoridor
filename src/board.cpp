@@ -211,6 +211,64 @@ int Board::add_wall(const Wall &wall)
     return 0;
 }
 
+int Board::try_add_wall(const Wall &wall)
+{
+    int line_lim = (wall.orientation() ? col_num() : row_num()) - 1;
+    int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
+    if ((wall.line() >= line_lim)
+            || (wall.end_pos() >= start_pos_lim)) {
+        return -1;
+    }
+
+    if (wall_intersects(wall)) {
+        return -1;
+    }
+
+    bg_.reset_filters();
+
+    int node1;
+    int node2;
+    for (int i = 0; i < wall.cnt(); ++i) {
+        if (wall.orientation() == 0) {
+            node1 = wall.line() * row_num_ + wall.start_pos() + i;
+            node2 = (wall.line() + 1) * row_num_ + wall.start_pos() + i;
+        }
+        else {
+            node1 = (wall.start_pos() + i) * row_num_ + wall.line();
+            node2 = (wall.start_pos() + i) * row_num_ + wall.line() + 1;
+        }
+
+        bg_.filter_edges(node1, node2);
+    }
+
+    bool path_blocked = true;
+
+    for (auto pawn_node : pawn_nodes_) {
+        std::vector<int> nodes;
+        int side = pawn_sides_[pawn_node.first];
+        path_blocked = true;
+
+        side_nodes(side, &nodes);
+        for (auto node : nodes) {
+            if (bg_.is_path_exists(pawn_node.second, node)) {
+                path_blocked = false;
+                break;
+            }
+        }
+
+        /* wall blocks all pathes to the opposite side for one of pawns */
+        if (path_blocked) {
+            break;
+        }
+    }
+
+    if (path_blocked) {
+        return -1;
+    }
+
+    return 0;
+}
+
 int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
 {
     return (dir + pawn_sides_[pawn]) % 4;
@@ -278,6 +336,34 @@ bool Board::wall_intersects(const Wall &wall) const
     }
 
     return false;
+}
+
+void Board::side_nodes(int side, std::vector<int> *nodes) const
+{
+    switch (side) {
+    case 0:
+        for (int i = 0; i < col_num_; ++i) {
+            nodes->push_back(i);
+        }
+        break;
+    case 1:
+        for (int i = 0; i < row_num_; ++i) {
+            nodes->push_back(i * col_num_);
+        }
+        break;
+    case 2:
+        for (int i = 0; i < col_num_; ++i) {
+            nodes->push_back((row_num_ - 1 ) * col_num_ + i);
+        }
+        break;
+    case 3:
+        for (int i = 0; i < row_num_; ++i) {
+            nodes->push_back(i * col_num_ + col_num_ - 1);
+        }
+        break;
+    default:
+        break;
+    }
 }
 
 }  /* namespace Quoridor */
