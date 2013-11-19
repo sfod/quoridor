@@ -74,7 +74,7 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
     }
 
     occ_nodes_[n] = pawn;
-    pawn_node_[pawn] = n;
+    pawn_nodes_[pawn] = n;
 
     return 0;
 }
@@ -90,7 +90,7 @@ void Board::add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn)
     }
 
     occ_nodes_[n] = pawn;
-    pawn_node_[pawn] = n;
+    pawn_nodes_[pawn] = n;
 }
 
 void Board::rm_occupied(const pos_t &pos)
@@ -101,7 +101,7 @@ void Board::rm_occupied(const pos_t &pos)
 
 pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
 {
-    int node = pawn_node_.at(pawn);
+    int node = pawn_nodes_.at(pawn);
     pos_t pos;
     pos.row = row(node);
     pos.col = col(node);
@@ -110,7 +110,7 @@ pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
 
 bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
 {
-    int n = pawn_node_.at(pawn);
+    int n = pawn_nodes_.at(pawn);
     switch (pawn_sides_.at(pawn)) {
     case 0:
         return row(n) == row_num_ - 1;
@@ -134,7 +134,7 @@ int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
 int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 {
     dir = recalc_dir(dir, pawn);
-    int cur_node = pawn_node_[pawn];
+    int cur_node = pawn_nodes_[pawn];
     int goal_node = cur_node;
     int r_goal_node = cur_node;
 
@@ -176,8 +176,8 @@ int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
     }
 
     // update pawn's position
-    occ_nodes_.erase(pawn_node_[pawn]);
-    pawn_node_[pawn] = goal_node;
+    occ_nodes_.erase(pawn_nodes_[pawn]);
+    pawn_nodes_[pawn] = goal_node;
     occ_nodes_[goal_node] = pawn;
 
     return 0;

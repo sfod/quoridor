@@ -78,7 +78,7 @@ private:
 
     std::vector<int> nodes_;
     std::map<int, std::shared_ptr<Pawn>> occ_nodes_;
-    std::map<std::shared_ptr<Pawn>, int> pawn_node_;
+    std::map<std::shared_ptr<Pawn>, int> pawn_nodes_;
     BoardGraph bg_;
 };
 
