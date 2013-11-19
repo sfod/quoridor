@@ -34,6 +34,15 @@ void Board::set_size(int row_num, int col_num)
         throw Exception("illegal column number: "
                 + boost::lexical_cast<std::string>(col_num));
     }
+    if (row_num % 2 == 0) {
+        throw Exception("row number must be odd: "
+                + boost::lexical_cast<std::string>(row_num));
+    }
+    if (col_num % 2 == 0) {
+        throw Exception("column number must be odd: "
+                + boost::lexical_cast<std::string>(col_num));
+    }
+
     row_num_ = row_num;
     col_num_ = col_num;
 
