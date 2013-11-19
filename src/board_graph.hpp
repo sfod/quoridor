@@ -51,8 +51,10 @@ private:
 
 class BoardGraph {
 public:
-    BoardGraph(int row_num, int col_num);
+    BoardGraph();
     ~BoardGraph();
+
+    int set_size(int row_num, int col_num);
 
     void remove_edges(int node1, int node2);
     bool find_path(int node1, int node2, std::list<int> *path) const;

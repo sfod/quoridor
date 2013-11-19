@@ -26,10 +26,22 @@ bool FilterEdges::operator()(const EdgeDesc &e) const
     return edges_.find(e) != edges_.end();
 }
 
-
-BoardGraph::BoardGraph(int row_num, int col_num)
-    : g_(row_num * col_num), nodes_(), edges_(), fe_()
+BoardGraph::BoardGraph() : g_(), nodes_(), edges_(), fe_()
 {
+}
+
+BoardGraph::~BoardGraph()
+{
+}
+
+int BoardGraph::set_size(int row_num, int col_num)
+{
+    if ((row_num <= 0) || (col_num <= 0)) {
+        return -1;
+    }
+
+    g_ = graph_t(row_num * col_num);
+
     for (int i = 0; i < row_num * col_num; ++i) {
         nodes_.push_back(i);
     }
@@ -63,10 +75,8 @@ BoardGraph::BoardGraph(int row_num, int col_num)
         boost::tie(e, b) = boost::add_edge(it.first, it.second, g_);
         weightmap[e] = 1;
     }
-}
 
-BoardGraph::~BoardGraph()
-{
+    return 0;
 }
 
 void BoardGraph::remove_edges(int node1, int node2)
