@@ -207,8 +207,8 @@ int Board::add_wall(const Wall &wall)
     int node2;
     for (int i = 0; i < wall.cnt(); ++i) {
         if (wall.orientation() == 0) {
-            node1 = wall.line() * row_num_ + wall.start_pos() + i;
-            node2 = (wall.line() + 1) * row_num_ + wall.start_pos() + i;
+            node1 = wall.line() * col_num_ + wall.start_pos() + i;
+            node2 = (wall.line() + 1) * col_num_ + wall.start_pos() + i;
         }
         else {
             node1 = (wall.start_pos() + i) * row_num_ + wall.line();
@@ -240,8 +240,8 @@ int Board::try_add_wall(const Wall &wall)
     int node2;
     for (int i = 0; i < wall.cnt(); ++i) {
         if (wall.orientation() == 0) {
-            node1 = wall.line() * row_num_ + wall.start_pos() + i;
-            node2 = (wall.line() + 1) * row_num_ + wall.start_pos() + i;
+            node1 = wall.line() * col_num_ + wall.start_pos() + i;
+            node2 = (wall.line() + 1) * col_num_ + wall.start_pos() + i;
         }
         else {
             node1 = (wall.start_pos() + i) * row_num_ + wall.line();
