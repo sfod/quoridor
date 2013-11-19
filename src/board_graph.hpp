@@ -14,7 +14,8 @@ typedef boost::adjacency_list< boost::listS, boost::vecS,
         boost::property<boost::edge_weight_t, int> > graph_t;
 typedef boost::property_map<graph_t, boost::edge_weight_t>::type WeightMap;
 typedef graph_t::vertex_descriptor vertex;
-typedef graph_t::edge_descriptor edge_descriptor; typedef std::pair<int, int> edge;
+typedef graph_t::edge_descriptor edge_descriptor;
+typedef std::pair<int, int> edge;
 
 
 class FilterEdges {
@@ -22,12 +23,13 @@ public:
     FilterEdges();
     ~FilterEdges();
 
-    void add_edge(const edge &e);
+    void add_edge(const edge_descriptor &ed);
     void clear();
-    bool operator()(const edge &e);
+    template <typename EdgeDesc>
+    bool operator()(const EdgeDesc &e) const;
 
 private:
-    std::set<edge> edges_;
+    std::set<edge_descriptor> edges_;
 };
 
 struct found_goal {}; // exception for termination

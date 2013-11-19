@@ -10,7 +10,7 @@ FilterEdges::~FilterEdges()
 {
 }
 
-void FilterEdges::add_edge(const edge &e)
+void FilterEdges::add_edge(const edge_descriptor &e)
 {
     edges_.insert(e);
 }
@@ -20,7 +20,8 @@ void FilterEdges::clear()
     edges_.clear();
 }
 
-bool FilterEdges::operator()(const edge &e)
+template <typename EdgeDesc>
+bool FilterEdges::operator()(const EdgeDesc &e) const
 {
     return edges_.find(e) != edges_.end();
 }
@@ -129,8 +130,18 @@ bool BoardGraph::is_neighbours(int node1, int node2) const
 
 void BoardGraph::filter_edges(int node1, int node2)
 {
-    fe_.add_edge(edge(node1, node2));
-    fe_.add_edge(edge(node2, node1));
+    edge_descriptor ed;
+    bool b;
+
+    boost::tie(ed, b) = boost::edge(node1, node2, g_);
+    if (b) {
+        fe_.add_edge(ed);
+    }
+
+    boost::tie(ed, b) = boost::edge(node2, node1, g_);
+    if (b) {
+        fe_.add_edge(ed);
+    }
 }
 
 void BoardGraph::reset_filters()
@@ -142,14 +153,14 @@ bool BoardGraph::is_path_exists(int start_node, int end_node) const
 {
     boost::filtered_graph<graph_t, FilterEdges> fg(g_, fe_);
 
-    std::vector<graph_t::vertex_descriptor> p(boost::num_vertices(fg));
+    std::vector<boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor> p(boost::num_vertices(fg));
     std::vector<int> d(boost::num_vertices(fg));
 
-    vertex start = boost::vertex(start_node, g_);
-    vertex end = boost::vertex(end_node, g_);
+    boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor start = boost::vertex(start_node, g_);
+    boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor end = boost::vertex(end_node, g_);
 
     try {
-        astar_search(fg, start, boost::astar_heuristic<graph_t, int>(),
+        astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
                 boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(astar_goal_visitor<vertex>(end)));
     }
     catch (found_goal fg) {
