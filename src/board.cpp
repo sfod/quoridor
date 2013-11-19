@@ -10,11 +10,10 @@
 
 namespace Quoridor {
 
-Board::Board(int row_num, int col_num) : row_num_(), col_num_(),
-        sides_(), pawn_sides_(), walls_(),
-        nodes_(row_num * col_num), bg_(row_num, col_num)
+Board::Board(int row_num, int col_num) : sides_(), pawn_sides_(), walls_()
 {
     set_size(row_num, col_num);
+
     sides_.push_back(std::pair<int, int>(0, 0));
     sides_.push_back(std::pair<int, int>(2, 0));
     sides_.push_back(std::pair<int, int>(1, 0));
@@ -37,6 +36,8 @@ void Board::set_size(int row_num, int col_num)
     }
     row_num_ = row_num;
     col_num_ = col_num;
+
+    bg_.set_size(row_num_, col_num_);
 }
 
 int Board::next_side() const
