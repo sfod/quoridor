@@ -89,7 +89,7 @@ void BoardGraph::remove_edges(int node1, int node2)
 
 bool BoardGraph::find_path(int start_node, int end_node, std::list<int> *path) const
 {
-    std::vector<graph_t::vertex_descriptor> p(boost::num_vertices(g_));
+    std::vector<vertex> p(boost::num_vertices(g_));
     std::vector<int> d(boost::num_vertices(g_));
 
     vertex start = boost::vertex(start_node, g_);
