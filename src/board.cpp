@@ -185,7 +185,7 @@ int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 
 int Board::add_wall(const Wall &wall)
 {
-    int line_lim = wall.orientation() ? col_num() : row_num() - 1;
+    int line_lim = (wall.orientation() ? col_num() : row_num()) - 1;
     int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
     if ((wall.line() >= line_lim)
             || (wall.end_pos() >= start_pos_lim)) {
