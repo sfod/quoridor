@@ -189,7 +189,7 @@ int Board::add_wall(const Wall &wall)
     }
 
     if (wall_intersects(wall)) {
-        return -2;
+        return -1;
     }
 
     walls_[wall.orientation()][wall.line()].insert(std::map<int, Wall>::value_type(wall.start_pos(), Wall(wall)));

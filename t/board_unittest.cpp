@@ -44,7 +44,7 @@ TEST_F(BoardTest, add_wall)
     EXPECT_EQ(-1, board_.add_wall(Quoridor::Wall(0, 10, 0, 2)));
 
     // add intersecting walls
-    EXPECT_EQ(-2, board_.add_wall(Quoridor::Wall(0, 0, 0, 1)));
+    EXPECT_EQ(-1, board_.add_wall(Quoridor::Wall(0, 0, 0, 1)));
 }
 
 int main(int argc, char **argv)
