@@ -251,7 +251,7 @@ int Board::try_add_wall(const Wall &wall)
         bg_.filter_edges(node1, node2);
     }
 
-    bool path_blocked = true;
+    bool path_blocked = false;
 
     for (auto pawn_node : pawn_nodes_) {
         std::vector<int> nodes;
