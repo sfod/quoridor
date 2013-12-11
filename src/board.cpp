@@ -190,14 +190,7 @@ int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
 
 int Board::add_wall(const Wall &wall)
 {
-    int line_lim = (wall.orientation() ? col_num() : row_num()) - 1;
-    int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
-    if ((wall.line() >= line_lim)
-            || (wall.end_pos() > start_pos_lim)) {
-        return -1;
-    }
-
-    if (wall_intersects(wall)) {
+    if (try_add_wall(wall) < 0) {
         return -1;
     }
 
@@ -214,7 +207,6 @@ int Board::add_wall(const Wall &wall)
             node1 = (wall.start_pos() + i) * row_num_ + wall.line();
             node2 = (wall.start_pos() + i) * row_num_ + wall.line() + 1;
         }
-        std::cout << "removing edge " << node1 << ":" << node2 << std::endl;
         bg_.remove_edges(node1, node2);
     }
 
