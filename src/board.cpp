@@ -70,7 +70,7 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
         n = col_num_ / 2;
         break;
     case 1:
-        n = row_num_ / 2;
+        n = (row_num_ / 2) * col_num_;
         break;
     case 2:
         n = (row_num_ - 1) * col_num_ + col_num_ / 2;
