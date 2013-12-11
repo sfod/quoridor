@@ -23,7 +23,7 @@ void FilterEdges::clear()
 template <typename EdgeDesc>
 bool FilterEdges::operator()(const EdgeDesc &e) const
 {
-    return edges_.find(e) != edges_.end();
+    return edges_.find(e) == edges_.end();
 }
 
 BoardGraph::BoardGraph() : g_(), nodes_(), edges_(), fe_()
