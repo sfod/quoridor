@@ -15,6 +15,7 @@ set(CORE_SOURCES
 )
 set(UI_SOURCES
     console
+    ncurses
 )
 
 set(SOURCES)
@@ -31,7 +32,7 @@ foreach (source ${UI_SOURCES})
     add_library(${source}_cxx_obj OBJECT UI/${source}.cpp)
 endforeach()
 
-set(ADDITIONAL_LIBRARIES boost_program_options)
+set(ADDITIONAL_LIBRARIES boost_program_options ncurses)
 
 include_directories(${${PROJECT}_SOURCE_DIR}/src)
 include_directories(${${PROJECT}_SOURCE_DIR}/)
