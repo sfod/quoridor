@@ -60,7 +60,7 @@ TEST_F(BoardTest, block_path)
     EXPECT_EQ(0, board_.add_wall(Quoridor::Wall(0, 2, 4, 2)));
     EXPECT_EQ(0, board_.add_wall(Quoridor::Wall(0, 2, 6, 2)));
     EXPECT_EQ(0, board_.add_wall(Quoridor::Wall(0, 2, 8, 1)));
-    EXPECT_EQ(-1, board_.try_add_wall(Quoridor::Wall(0, 2, 9, 2)));
+    EXPECT_EQ(-1, board_.add_wall(Quoridor::Wall(0, 2, 9, 2)));
 }
 
 int main(int argc, char **argv)
