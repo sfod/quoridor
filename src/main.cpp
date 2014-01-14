@@ -6,12 +6,14 @@
 #include <boost/program_options.hpp>
 
 #include "player_factory.hpp"
-#include "UI/console.hpp"
+#include "UI/runner.hpp"
+#include "exception.hpp"
 
 namespace po = boost::program_options;
 
 
 struct game_opts_t {
+    int ui;
     int player_num;
     std::vector<int> players;
 };
@@ -28,14 +30,17 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    Quoridor::PlayerFactory pf;
-    Quoridor::UI::Console console(game_opts.player_num);
+    Quoridor::UI::Runner runner;
+    Quoridor::UI::UIFactory uif;
 
-    for (size_t i = 0; i < game_opts.players.size(); ++i) {
-        console.set_player(i, pf.make_player(game_opts.players[i]));
+    runner.create_ui(uif);
+
+    try {
+        runner.run();
     }
-
-    console.run();
+    catch (Quoridor::Exception &e) {
+        std::cerr << "failed to run game: " << e.what() << std::endl;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -44,6 +49,9 @@ int init(int argc, char **argv, game_opts_t *game_opts)
 {
     po::options_description options("Options");
     options.add_options()
+        ("ui,i",
+            po::value<int>(&game_opts->ui)->default_value(0),
+            "user interface")
         ("player-num,n",
             po::value<int>(&game_opts->player_num)->default_value(2),
             "number of players")

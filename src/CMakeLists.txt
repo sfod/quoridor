@@ -14,8 +14,10 @@ set(CORE_SOURCES
     fake_player
 )
 set(UI_SOURCES
-    console
-    ncurses
+    runner
+    ui_factory
+    ui
+    ncurses_ui_impl
 )
 
 set(SOURCES)

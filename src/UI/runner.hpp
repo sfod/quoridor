@@ -1,0 +1,37 @@
+#ifndef QUORIDOR_RUNNER_HPP_
+#define QUORIDOR_RUNNER_HPP_
+
+#include <memory>
+
+#include "irunnable.hpp"
+#include "game.hpp"
+#include "iplayer.hpp"
+#include "UI/ui.hpp"
+#include "UI/ui_factory.hpp"
+
+namespace Quoridor {
+namespace UI {
+
+class Runner : public IRunnable {
+public:
+    Runner();
+    virtual ~Runner();
+
+    virtual void create_ui(UIFactory &uif);
+    virtual void run();
+
+private:
+    void redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos);
+    void draw_wall(const Wall &wall);
+
+private:
+    Game game_;
+    std::vector<std::shared_ptr<IPlayer>> players_;
+    std::shared_ptr<UIImpl> ui_;
+    std::vector<std::vector<char>> repr_;
+};
+
+}  /* namespace UI */
+}  /* namespace Quoridor */
+
+#endif  /* QUORIDOR_RUNNER_HPP_ */
