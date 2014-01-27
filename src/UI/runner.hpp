@@ -21,14 +21,14 @@ public:
     virtual void run();
 
 private:
-    void redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos);
-    void draw_wall(const Wall &wall);
+    void redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const;
+    void draw_wall(const Wall &wall) const;
 
 private:
     Game game_;
     std::vector<std::shared_ptr<IPlayer>> players_;
     std::shared_ptr<UIImpl> ui_;
-    std::vector<std::vector<char>> repr_;
+    mutable std::vector<std::vector<char>> repr_;
 };
 
 }  /* namespace UI */

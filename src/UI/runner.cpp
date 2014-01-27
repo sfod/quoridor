@@ -88,13 +88,13 @@ void Runner::run()
     }
 }
 
-void Runner::redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos)
+void Runner::redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const
 {
     repr_[old_pos.row * 2 + 1][old_pos.col * 2 + 1] = ' ';
     repr_[new_pos.row * 2 + 1][new_pos.col * 2 + 1] = p;
 }
 
-void Runner::draw_wall(const Wall &wall)
+void Runner::draw_wall(const Wall &wall) const
 {
     if (wall.orientation() == 0) {
         for (int i = 0; i < wall.cnt(); ++i) {
