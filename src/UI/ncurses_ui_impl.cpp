@@ -23,7 +23,15 @@ void NcursesUIImpl::draw_window()
 
 void NcursesUIImpl::update(const std::vector<std::vector<char>> &repr)
 {
-    addch(repr[0][0]);
+    move(0, 0);
+    for (auto cols : repr) {
+        for (auto col : cols) {
+            addch(col);
+        }
+        addch('\n');
+    }
+    addch('\n');
+    refresh();
 }
 
 }  /* namespace UI */
