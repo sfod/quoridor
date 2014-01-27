@@ -18,9 +18,9 @@ Runner::~Runner()
 {
 }
 
-void Runner::create_ui(UIFactory &uif)
+void Runner::create_ui(UIFactory &uif, const std::string &ui_type)
 {
-    ui_ = uif.make_ui_impl();
+    ui_ = uif.make_ui_impl(ui_type);
     ui_->draw_window();
 }
 

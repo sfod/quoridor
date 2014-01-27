@@ -12,7 +12,7 @@ public:
     UIFactory();
     ~UIFactory();
 
-    virtual std::shared_ptr<UIImpl> make_ui_impl() const;
+    virtual std::shared_ptr<UIImpl> make_ui_impl(const std::string &ui_type) const;
 };
 
 }  /* namespace UI */

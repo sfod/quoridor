@@ -13,7 +13,7 @@ namespace po = boost::program_options;
 
 
 struct game_opts_t {
-    int ui;
+    std::string ui_type;
     int player_num;
     std::vector<int> players;
 };
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     Quoridor::UI::UIFactory uif;
     Quoridor::PlayerFactory pf;
 
-    runner.create_ui(uif);
+    runner.create_ui(uif, game_opts.ui_type);
 
     for (int i = 0; i < game_opts.player_num; ++i) {
         runner.set_player(i, pf.make_player(game_opts.players[i]));
@@ -55,7 +55,7 @@ int init(int argc, char **argv, game_opts_t *game_opts)
     po::options_description options("Options");
     options.add_options()
         ("ui,i",
-            po::value<int>(&game_opts->ui)->default_value(0),
+            po::value<std::string>(&game_opts->ui_type)->default_value("ncurses"),
             "user interface")
         ("player-num,n",
             po::value<int>(&game_opts->player_num)->default_value(2),
