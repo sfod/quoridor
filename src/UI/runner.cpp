@@ -36,6 +36,8 @@ void Runner::run()
         throw Exception("players are not set");
     }
 
+    init_board_repr();
+
     // main loop
     while (is_run) {
         for (size_t i = 0; i < players_.size(); ++i) {
@@ -93,6 +95,28 @@ void Runner::set_player(int i, std::shared_ptr<IPlayer> player)
     static std::string colors[] = {"red", "green", "blue", "yellow"};
     players_.push_back(player);
     game_.add_pawn(std::shared_ptr<Pawn>(new Pawn(colors[i])));
+}
+
+void Runner::init_board_repr() const
+{
+    repr_.resize(19);
+    for (int i = 0; i < 19; ++i) {
+        repr_[i].resize(19);
+        for (int j = 0; j < 19; ++j) {
+            if (i % 2 == 1) {
+                repr_[i][j] = (j % 2 == 0 ? '|' : ' ');
+            }
+            else {
+                repr_[i][j] = (j % 2 == 0 ? ' ' : '_');
+            }
+        }
+    }
+
+    for (size_t i = 0; i < players_.size(); ++i) {
+        auto pawn = game_.pawn_list().at(i);
+        pos_t pos = game_.pawn_pos(pawn);
+        repr_[pos.row * 2 + 1][pos.col * 2 + 1] = pawn->color()[0];
+    }
 }
 
 void Runner::redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const
