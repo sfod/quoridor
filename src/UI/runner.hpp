@@ -18,6 +18,7 @@ public:
     virtual ~Runner();
 
     virtual void create_ui(UIFactory &uif);
+    virtual void set_player(int i, std::shared_ptr<IPlayer> player);
     virtual void run();
 
 private:

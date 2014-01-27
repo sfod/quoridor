@@ -32,8 +32,13 @@ int main(int argc, char **argv)
 
     Quoridor::UI::Runner runner;
     Quoridor::UI::UIFactory uif;
+    Quoridor::PlayerFactory pf;
 
     runner.create_ui(uif);
+
+    for (int i = 0; i < game_opts.player_num; ++i) {
+        runner.set_player(i, pf.make_player(game_opts.players[i]));
+    }
 
     try {
         runner.run();

@@ -88,6 +88,13 @@ void Runner::run()
     }
 }
 
+void Runner::set_player(int i, std::shared_ptr<IPlayer> player)
+{
+    static std::string colors[] = {"red", "green", "blue", "yellow"};
+    players_.push_back(player);
+    game_.add_pawn(std::shared_ptr<Pawn>(new Pawn(colors[i])));
+}
+
 void Runner::redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const
 {
     repr_[old_pos.row * 2 + 1][old_pos.col * 2 + 1] = ' ';
