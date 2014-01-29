@@ -10,7 +10,6 @@ namespace Quoridor {
 FakePlayer::FakePlayer()
 {
     time_t ts = time(NULL);
-    std::cout << "seed is " << ts << std::endl;
     srand(ts);
 }
 
