@@ -9,6 +9,11 @@
 #include "UI/runner.hpp"
 #include "exception.hpp"
 
+#include "main_menu_state.hpp"
+#include "game_state.hpp"
+#include "state_manager.hpp"
+
+
 namespace po = boost::program_options;
 
 
@@ -21,7 +26,6 @@ struct game_opts_t {
 
 int init(int argc, char **argv, game_opts_t *game_opts);
 
-
 int main(int argc, char **argv)
 {
     game_opts_t game_opts;
@@ -30,21 +34,14 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    Quoridor::UI::Runner runner;
-    Quoridor::UI::UIFactory uif;
-    Quoridor::PlayerFactory pf;
+    Quoridor::StateManager stm;
+    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState());
+    stm.change_state(std::shared_ptr<Quoridor::IState>(menu_state));
 
-    runner.create_ui(uif, game_opts.ui_type);
-
-    for (int i = 0; i < game_opts.player_num; ++i) {
-        runner.set_player(i, pf.make_player(game_opts.players[i]));
-    }
-
-    try {
-        runner.run();
-    }
-    catch (Quoridor::Exception &e) {
-        std::cerr << "failed to run game: " << e.what() << std::endl;
+    while (stm.is_running()) {
+        stm.handle_events();
+        stm.update();
+        stm.draw();
     }
 
     return EXIT_SUCCESS;

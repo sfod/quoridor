@@ -2,6 +2,9 @@ set(MAIN_SOURCES
     main
 )
 set(CORE_SOURCES
+    main_menu_state
+    game_state
+    state_manager
     wall
     wall_move
     walk_move
