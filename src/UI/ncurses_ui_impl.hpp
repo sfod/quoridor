@@ -1,6 +1,7 @@
 #ifndef QUORIDOR_NCURSES_UI_IMPL_HPP_
 #define QUORIDOR_NCURSES_UI_IMPL_HPP_
 
+#include <ncurses.h>
 #include "ui_impl.hpp"
 
 namespace Quoridor {
@@ -13,6 +14,9 @@ public:
 
     virtual void draw_window();
     virtual void update(const std::vector<std::vector<char>> &repr);
+
+private:
+    WINDOW *win_;
 };
 
 }  /* namespace UI */

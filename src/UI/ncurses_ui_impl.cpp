@@ -1,11 +1,14 @@
 #include "ncurses_ui_impl.hpp"
-#include <ncurses.h>
 
 namespace Quoridor {
 namespace UI {
 
-NcursesUIImpl::NcursesUIImpl()
+NcursesUIImpl::NcursesUIImpl() : win_()
 {
+    initscr();
+    raw();
+    keypad(stdscr, TRUE);
+    noecho();
 }
 
 NcursesUIImpl::~NcursesUIImpl()
@@ -15,23 +18,26 @@ NcursesUIImpl::~NcursesUIImpl()
 
 void NcursesUIImpl::draw_window()
 {
-    initscr();
-    raw();
-    keypad(stdscr, TRUE);
-    noecho();
+    int height = 21;
+    int width = 21;
+
+    win_ = newwin(height, width, 0, 0);
+    box(win_, 0, 0);
+    wrefresh(win_);
 }
 
 void NcursesUIImpl::update(const std::vector<std::vector<char>> &repr)
 {
-    move(0, 0);
+    int i = 1;
+    wmove(win_, i, 1);
     for (auto cols : repr) {
         for (auto col : cols) {
-            addch(col);
+            waddch(win_, col);
         }
-        addch('\n');
+        ++i;
+        wmove(win_, i, 1);
     }
-    addch('\n');
-    refresh();
+    wrefresh(win_);
 }
 
 }  /* namespace UI */
