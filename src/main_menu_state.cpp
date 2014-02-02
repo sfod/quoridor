@@ -10,8 +10,20 @@ MainMenuState::~MainMenuState()
 {
 }
 
-void MainMenuState::handle_events()
+void MainMenuState::handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui)
 {
+    UI::Event ev;
+    if (ui->poll_event(&ev)) {
+        switch (ev) {
+        case UI::kEnter:
+            break;
+        case UI::kEsc:
+            stm->stop();
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void MainMenuState::update()

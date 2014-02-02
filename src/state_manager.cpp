@@ -25,7 +25,7 @@ void StateManager::change_state(std::shared_ptr<IState> state)
 
 void StateManager::handle_events()
 {
-    states_.back()->handle_events();
+    states_.back()->handle_events(this, ui_);
 }
 
 void StateManager::update()

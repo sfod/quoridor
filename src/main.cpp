@@ -5,6 +5,7 @@
 
 #include <boost/program_options.hpp>
 
+#include "UI/ui_factory.hpp"
 #include "player_factory.hpp"
 #include "UI/runner.hpp"
 #include "exception.hpp"
@@ -35,6 +36,9 @@ int main(int argc, char **argv)
     }
 
     Quoridor::StateManager stm;
+    Quoridor::UI::UIFactory uif;
+
+    stm.create_ui(uif, game_opts.ui_type);
     std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState());
     stm.change_state(std::shared_ptr<Quoridor::IState>(menu_state));
 

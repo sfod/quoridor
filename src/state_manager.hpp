@@ -8,6 +8,8 @@
 
 namespace Quoridor {
 
+class IState;
+
 class StateManager {
 public:
     StateManager();
