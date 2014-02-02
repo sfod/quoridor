@@ -2,12 +2,17 @@
 
 namespace Quoridor {
 
-StateManager::StateManager() : states_(), is_running_(true)
+StateManager::StateManager() : states_(), ui_(), is_running_(true)
 {
 }
 
 StateManager::~StateManager()
 {
+}
+
+void StateManager::create_ui(UI::UIFactory &uif, const std::string &ui_type)
+{
+    ui_ = uif.make_ui_impl(ui_type);
 }
 
 void StateManager::change_state(std::shared_ptr<IState> state)

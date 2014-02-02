@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "istate.hpp"
+#include "UI/ui_factory.hpp"
 
 namespace Quoridor {
 
@@ -12,6 +13,7 @@ public:
     StateManager();
     ~StateManager();
 
+    void create_ui(UI::UIFactory &uif, const std::string &ui_type);
     void change_state(std::shared_ptr<IState> state);
 
     void handle_events();
@@ -23,6 +25,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<IState>> states_;
+    std::shared_ptr<UI::UIImpl> ui_;
     bool is_running_;
 };
 
