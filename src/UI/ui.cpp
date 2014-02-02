@@ -21,5 +21,10 @@ void UI::update(const std::vector<std::vector<char>> &repr)
     ui_impl_->update(repr);
 }
 
+bool UI::poll_event(Event *ev)
+{
+    return ui_impl_->poll_event(ev);
+}
+
 }  /* namespace UI */
 }  /* namespace Quoridor */

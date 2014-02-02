@@ -14,6 +14,7 @@ public:
 
     virtual void draw_window();
     virtual void update(const std::vector<std::vector<char>> &repr);
+    virtual bool poll_event(Event *ev);
 
 private:
     WINDOW *win_;

@@ -40,5 +40,37 @@ void NcursesUIImpl::update(const std::vector<std::vector<char>> &repr)
     wrefresh(win_);
 }
 
+bool NcursesUIImpl::poll_event(Event *ev)
+{
+    int ch;
+    ch = getch();
+    switch (ch) {
+    case KEY_ENTER:
+    case '\n':
+    case '\r':
+        *ev = kEnter;
+        break;
+    case KEY_UP:
+        *ev = kUp;
+        break;
+    case KEY_RIGHT:
+        *ev = kRight;
+        break;
+    case KEY_DOWN:
+        *ev = kDown;
+        break;
+    case KEY_LEFT:
+        *ev = kLeft;
+        break;
+    case 'q':
+        *ev = kEsc;
+        break;
+    default:
+        *ev = kNone;
+        break;
+    }
+    return true;
+}
+
 }  /* namespace UI */
 }  /* namespace Quoridor */
