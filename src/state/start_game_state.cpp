@@ -1,11 +1,15 @@
 #include "start_game_state.hpp"
+
 #include "game_state.hpp"
 #include "main_menu_state.hpp"
+#include "exception.hpp"
 
 namespace Quoridor {
 
-StartGameState::StartGameState() : players_()
+StartGameState::StartGameState() : pf_(), players_(), player_num_(2)
 {
+    players_.push_back(pf_.make_player("fake"));
+    players_.push_back(pf_.make_player("fake"));
 }
 
 StartGameState::~StartGameState()
@@ -48,6 +52,16 @@ void StartGameState::change_state()
 
 void StartGameState::set_player(int i, std::shared_ptr<IPlayer> player)
 {
+    if ((i < 0) || (i > 3)) {
+        throw Exception("Invalid player number");
+    }
+
+    if ((i > 1) && (player_num_ == 2)) {
+        player_num_ = 4;
+        players_.push_back(pf_.make_player("fake"));
+        players_.push_back(pf_.make_player("fake"));
+    }
+
     players_[i] = player;
 }
 

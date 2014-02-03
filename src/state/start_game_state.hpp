@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "player_factory.hpp"
 #include "game.hpp"
 #include "iplayer.hpp"
 #include "istate.hpp"
@@ -22,7 +23,9 @@ public:
     virtual void set_player(int i, std::shared_ptr<IPlayer> player);
 
 private:
+    PlayerFactory pf_;
     std::vector<std::shared_ptr<IPlayer>> players_;
+    size_t player_num_;
 };
 
 }  /* namespace Quoridor */
