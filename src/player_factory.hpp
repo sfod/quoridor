@@ -11,7 +11,7 @@ public:
     PlayerFactory();
     ~PlayerFactory();
 
-    std::shared_ptr<IPlayer> make_player(int type);
+    std::shared_ptr<IPlayer> make_player(const std::string &type);
 };
 
 }  /* namespace Quoridor */
