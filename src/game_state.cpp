@@ -42,4 +42,8 @@ void GameState::change_state()
 {
 }
 
+void GameState::init_board_repr() const
+{
+}
+
 }  /* namespace Quoridor */
