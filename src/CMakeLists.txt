@@ -3,6 +3,7 @@ set(MAIN_SOURCES
 )
 set(CORE_SOURCES
     main_menu_state
+    start_game_state
     game_state
     state_manager
     wall
