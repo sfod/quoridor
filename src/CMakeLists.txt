@@ -2,10 +2,6 @@ set(MAIN_SOURCES
     main
 )
 set(CORE_SOURCES
-    main_menu_state
-    start_game_state
-    game_state
-    state_manager
     wall
     wall_move
     walk_move
@@ -16,6 +12,12 @@ set(CORE_SOURCES
     player_factory
     player
     fake_player
+)
+set(STATE_SOURCES
+    main_menu_state
+    start_game_state
+    game_state
+    state_manager
 )
 set(UI_SOURCES
     runner
@@ -32,6 +34,10 @@ endforeach()
 foreach (source ${CORE_SOURCES})
     LIST(APPEND SOURCES ${source}.cpp)
     add_library(${source}_cxx_obj OBJECT ${source}.cpp)
+endforeach()
+foreach (source ${STATE_SOURCES})
+    LIST(APPEND SOURCES state/${source}.cpp)
+    add_library(${source}_cxx_obj OBJECT state/${source}.cpp)
 endforeach()
 foreach (source ${UI_SOURCES})
     LIST(APPEND SOURCES UI/${source}.cpp)

@@ -10,9 +10,9 @@
 #include "UI/runner.hpp"
 #include "exception.hpp"
 
-#include "main_menu_state.hpp"
-#include "game_state.hpp"
-#include "state_manager.hpp"
+#include "state/main_menu_state.hpp"
+#include "state/game_state.hpp"
+#include "state/state_manager.hpp"
 
 
 namespace po = boost::program_options;
