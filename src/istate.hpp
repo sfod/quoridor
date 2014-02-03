@@ -16,7 +16,7 @@ public:
 
     virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui) = 0;
     virtual void update() = 0;
-    virtual void draw() = 0;
+    virtual void draw(std::shared_ptr<UI::UIImpl> ui) = 0;
     virtual void change_state() = 0;
 };
 

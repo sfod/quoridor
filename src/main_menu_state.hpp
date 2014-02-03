@@ -12,7 +12,7 @@ public:
 
     virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui);
     virtual void update();
-    virtual void draw();
+    virtual void draw(std::shared_ptr<UI::UIImpl> ui);
     virtual void change_state();
 };
 

@@ -35,7 +35,7 @@ void StateManager::update()
 
 void StateManager::draw()
 {
-    states_.back()->draw();
+    states_.back()->draw(ui_);
 }
 
 }  /* namespace Quoridor */

@@ -34,7 +34,7 @@ void MainMenuState::update()
 {
 }
 
-void MainMenuState::draw()
+void MainMenuState::draw(std::shared_ptr<UI::UIImpl> /* ui */)
 {
 }
 

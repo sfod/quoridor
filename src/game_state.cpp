@@ -33,8 +33,9 @@ void GameState::update()
 {
 }
 
-void GameState::draw()
+void GameState::draw(std::shared_ptr<UI::UIImpl> ui)
 {
+    ui->update(repr_);
 }
 
 void GameState::change_state()
