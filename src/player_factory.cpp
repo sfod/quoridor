@@ -1,3 +1,4 @@
+#include "exception.hpp"
 #include "player_factory.hpp"
 #include "player.hpp"
 #include "fake_player.hpp"
@@ -12,14 +13,16 @@ PlayerFactory::~PlayerFactory()
 {
 }
 
-std::shared_ptr<IPlayer> PlayerFactory::make_player(int type)
+std::shared_ptr<IPlayer> PlayerFactory::make_player(const std::string &type)
 {
-    switch (type) {
-    case 1:
+    if (type == "fake") {
         return std::shared_ptr<IPlayer>(new FakePlayer());
-    case 0:
-    default:
+    }
+    else if (type == "human") {
         return std::shared_ptr<IPlayer>(new Player());
+    }
+    else {
+	throw Exception("Invalid Player type");
     }
 }
 
