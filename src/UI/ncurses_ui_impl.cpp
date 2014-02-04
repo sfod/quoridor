@@ -83,7 +83,9 @@ void NcursesUIImpl::up_menu()
     if (menu_) {
         menu_->up();
     }
-    throw Exception("menu is not initialized");
+    else {
+        throw Exception("menu is not initialized");
+    }
 }
 
 void NcursesUIImpl::down_menu()
@@ -91,7 +93,9 @@ void NcursesUIImpl::down_menu()
     if (menu_) {
         menu_->down();
     }
-    throw Exception("menu is not initialized");
+    else {
+        throw Exception("menu is not initialized");
+    }
 }
 
 std::string NcursesUIImpl::menu_item()
@@ -99,7 +103,9 @@ std::string NcursesUIImpl::menu_item()
     if (menu_) {
         return menu_->item();
     }
-    throw Exception("menu is not initialized");
+    else {
+        throw Exception("menu is not initialized");
+    }
 }
 
 }  /* namespace UI */
