@@ -1,6 +1,7 @@
 #ifndef QUORIDOR_UI_IMPL_HPP_
 #define QUORIDOR_UI_IMPL_HPP_
 
+#include <string>
 #include <vector>
 
 namespace Quoridor {
@@ -12,6 +13,11 @@ public:
 
     virtual void draw_window() = 0;
     virtual void update(const std::vector<std::vector<char>> &repr) = 0;
+
+    virtual void add_menu(const std::vector<std::string> &items) = 0;
+    virtual void up_menu() = 0;
+    virtual void down_menu() = 0;
+    virtual std::string menu_item() = 0;
 };
 
 }  /* namespace UI */
