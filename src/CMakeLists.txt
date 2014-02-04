@@ -25,6 +25,9 @@ set(UI_SOURCES
     ui
     ncurses_ui_impl
 )
+set(UI_NCURSES_SOURCES
+    ncurses_menu
+)
 
 set(SOURCES)
 foreach (source ${MAIN_SOURCES})
@@ -43,8 +46,12 @@ foreach (source ${UI_SOURCES})
     LIST(APPEND SOURCES UI/${source}.cpp)
     add_library(${source}_cxx_obj OBJECT UI/${source}.cpp)
 endforeach()
+foreach (source ${UI_NCURSES_SOURCES})
+    LIST(APPEND SOURCES UI/ncurses/${source}.cpp)
+    add_library(${source}_cxx_obj OBJECT UI/ncurses/${source}.cpp)
+endforeach()
 
-set(ADDITIONAL_LIBRARIES boost_program_options ncurses)
+set(ADDITIONAL_LIBRARIES boost_program_options menu ncurses)
 
 include_directories(${${PROJECT}_SOURCE_DIR}/src)
 include_directories(${${PROJECT}_SOURCE_DIR}/)
