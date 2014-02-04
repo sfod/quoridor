@@ -19,8 +19,8 @@ void GameState::handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui)
         case UI::kEnter:
             break;
         case UI::kEsc: {
-            std::shared_ptr<Quoridor::IState> menu_state(new StartGameState());
-            stm->change_state(std::shared_ptr<IState>(menu_state));
+            std::shared_ptr<IState> start_game_state(new StartGameState(ui));
+            stm->change_state(std::shared_ptr<IState>(start_game_state));
             }
             break;
         default:
