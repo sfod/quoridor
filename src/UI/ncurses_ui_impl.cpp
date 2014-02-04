@@ -1,9 +1,10 @@
 #include "ncurses_ui_impl.hpp"
+#include "exception.hpp"
 
 namespace Quoridor {
 namespace UI {
 
-NcursesUIImpl::NcursesUIImpl() : win_()
+NcursesUIImpl::NcursesUIImpl() : win_(), menu_()
 {
     initscr();
     raw();
@@ -38,6 +39,35 @@ void NcursesUIImpl::update(const std::vector<std::vector<char>> &repr)
         wmove(win_, i, 1);
     }
     wrefresh(win_);
+}
+
+void NcursesUIImpl::add_menu(const std::vector<std::string> &items)
+{
+    menu_ = std::shared_ptr<NcursesMenu>(new NcursesMenu(win_, items));
+}
+
+void NcursesUIImpl::up_menu()
+{
+    if (menu_) {
+        menu_->up();
+    }
+    throw Exception("menu is not initialized");
+}
+
+void NcursesUIImpl::down_menu()
+{
+    if (menu_) {
+        menu_->down();
+    }
+    throw Exception("menu is not initialized");
+}
+
+std::string NcursesUIImpl::menu_item()
+{
+    if (menu_) {
+        return menu_->item();
+    }
+    throw Exception("menu is not initialized");
 }
 
 }  /* namespace UI */
