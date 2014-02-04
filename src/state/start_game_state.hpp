@@ -12,7 +12,7 @@ namespace Quoridor {
 
 class StartGameState : public IState {
 public:
-    StartGameState();
+    explicit StartGameState(std::shared_ptr<UI::UIImpl> ui);
     virtual ~StartGameState();
 
     virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui);
