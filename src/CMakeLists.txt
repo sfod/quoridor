@@ -20,13 +20,12 @@ set(STATE_SOURCES
     state_manager
 )
 set(UI_SOURCES
-    runner
     ui_factory
-    ui
-    ncurses_ui_impl
 )
 set(UI_NCURSES_SOURCES
     ncurses_menu
+    ncurses_window
+    ncurses_ui
 )
 
 set(SOURCES)

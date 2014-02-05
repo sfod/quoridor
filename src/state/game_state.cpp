@@ -11,7 +11,7 @@ GameState::~GameState()
 {
 }
 
-void GameState::handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui)
+void GameState::handle_events(StateManager *stm, std::shared_ptr<UI::UI> ui)
 {
     UI::Event ev;
     if (ui->poll_event(&ev)) {
@@ -33,9 +33,8 @@ void GameState::update()
 {
 }
 
-void GameState::draw(std::shared_ptr<UI::UIImpl> ui)
+void GameState::draw(std::shared_ptr<UI::UI> /* ui */)
 {
-    ui->update(repr_);
 }
 
 void GameState::change_state()

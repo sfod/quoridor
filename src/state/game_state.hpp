@@ -14,9 +14,9 @@ public:
     GameState();
     virtual ~GameState();
 
-    virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui);
+    virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UI> ui);
     virtual void update();
-    virtual void draw(std::shared_ptr<UI::UIImpl> ui);
+    virtual void draw(std::shared_ptr<UI::UI> ui);
     virtual void change_state();
 
 private:

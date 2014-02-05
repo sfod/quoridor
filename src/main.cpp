@@ -7,7 +7,6 @@
 
 #include "UI/ui_factory.hpp"
 #include "player_factory.hpp"
-#include "UI/runner.hpp"
 #include "exception.hpp"
 
 #include "state/main_menu_state.hpp"
@@ -39,7 +38,7 @@ int main(int argc, char **argv)
     Quoridor::UI::UIFactory uif;
 
     stm.create_ui(uif, game_opts.ui_type);
-    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState());
+    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState(stm.ui()));
     stm.change_state(std::shared_ptr<Quoridor::IState>(menu_state));
 
     while (stm.is_running()) {

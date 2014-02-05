@@ -12,7 +12,7 @@
 namespace Quoridor {
 namespace UI {
 
-class NcursesWindow : Window {
+class NcursesWindow : public Window {
 public:
     NcursesWindow();
     ~NcursesWindow();

@@ -16,6 +16,7 @@ public:
     ~StateManager();
 
     void create_ui(UI::UIFactory &uif, const std::string &ui_type);
+    std::shared_ptr<UI::UI> ui() const;
     void change_state(std::shared_ptr<IState> state);
 
     void handle_events();
@@ -27,7 +28,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<IState>> states_;
-    std::shared_ptr<UI::UIImpl> ui_;
+    std::shared_ptr<UI::UI> ui_;
     bool is_running_;
 };
 

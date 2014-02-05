@@ -7,13 +7,17 @@ namespace Quoridor {
 
 class MainMenuState : public IState {
 public:
-    MainMenuState();
+    explicit MainMenuState(std::shared_ptr<UI::UI> ui);
     virtual ~MainMenuState();
 
-    virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UIImpl> ui);
+    virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UI> ui);
     virtual void update();
-    virtual void draw(std::shared_ptr<UI::UIImpl> ui);
+    virtual void draw(std::shared_ptr<UI::UI> ui);
     virtual void change_state();
+
+private:
+    std::shared_ptr<UI::Window> win_;
+    std::shared_ptr<UI::Menu> menu_;
 };
 
 }  /* namespace Quoridor */

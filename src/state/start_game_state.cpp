@@ -6,14 +6,15 @@
 
 namespace Quoridor {
 
-StartGameState::StartGameState(std::shared_ptr<UI::UIImpl> ui)
-    : pf_(), players_(), player_num_(2)
+StartGameState::StartGameState(std::shared_ptr<UI::UI> ui)
+    : win_(ui->create_window()),
+    menu_(),
+    pf_(), players_(), player_num_(2)
 {
+    std::vector<std::string> items = {"start", "quit"};
+    menu_ = ui->create_menu(items);
     players_.push_back(pf_.make_player("fake"));
     players_.push_back(pf_.make_player("fake"));
-
-    std::vector<std::string> menu = {"start", "quit"};
-    ui->add_menu(menu);
 }
 
 StartGameState::~StartGameState()
@@ -21,31 +22,31 @@ StartGameState::~StartGameState()
 }
 
 void StartGameState::handle_events(StateManager *stm,
-        std::shared_ptr<UI::UIImpl> ui)
+        std::shared_ptr<UI::UI> ui)
 {
     UI::Event ev;
     if (ui->poll_event(&ev)) {
         switch (ev) {
         case UI::kUp:
-            ui->up_menu();
+            menu_->up();
             break;
         case UI::kDown:
-            ui->down_menu();
+            menu_->down();
             break;
         case UI::kEnter: {
-            std::string menu_item = ui->menu_item();
+            std::string menu_item = menu_->item();
             if (menu_item == "start") {
                 std::shared_ptr<Quoridor::IState> game_state(new GameState());
                 stm->change_state(std::shared_ptr<IState>(game_state));
             }
             else if (menu_item == "quit") {
-                std::shared_ptr<Quoridor::IState> menu_state(new MainMenuState());
+                std::shared_ptr<Quoridor::IState> menu_state(new MainMenuState(ui));
                 stm->change_state(std::shared_ptr<IState>(menu_state));
             }
             break;
         }
         case UI::kEsc: {
-            std::shared_ptr<Quoridor::IState> menu_state(new MainMenuState());
+            std::shared_ptr<Quoridor::IState> menu_state(new MainMenuState(ui));
             stm->change_state(std::shared_ptr<IState>(menu_state));
             break;
         }
@@ -59,7 +60,7 @@ void StartGameState::update()
 {
 }
 
-void StartGameState::draw(std::shared_ptr<UI::UIImpl> /* ui */)
+void StartGameState::draw(std::shared_ptr<UI::UI> /* ui */)
 {
 }
 
@@ -81,6 +82,5 @@ void StartGameState::set_player(int i, std::shared_ptr<IPlayer> player)
 
     players_[i] = player;
 }
-
 
 }  /* namespace Quoridor */

@@ -12,7 +12,12 @@ StateManager::~StateManager()
 
 void StateManager::create_ui(UI::UIFactory &uif, const std::string &ui_type)
 {
-    ui_ = uif.make_ui_impl(ui_type);
+    ui_ = uif.make_ui(ui_type);
+}
+
+std::shared_ptr<UI::UI> StateManager::ui() const
+{
+    return ui_;
 }
 
 void StateManager::change_state(std::shared_ptr<IState> state)

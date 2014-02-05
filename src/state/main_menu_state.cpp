@@ -3,7 +3,8 @@
 
 namespace Quoridor {
 
-MainMenuState::MainMenuState()
+MainMenuState::MainMenuState(std::shared_ptr<UI::UI> ui)
+    : win_(ui->create_window())
 {
 }
 
@@ -12,7 +13,7 @@ MainMenuState::~MainMenuState()
 }
 
 void MainMenuState::handle_events(StateManager *stm,
-        std::shared_ptr<UI::UIImpl> ui)
+        std::shared_ptr<UI::UI> ui)
 {
     UI::Event ev;
     if (ui->poll_event(&ev)) {
@@ -35,7 +36,7 @@ void MainMenuState::update()
 {
 }
 
-void MainMenuState::draw(std::shared_ptr<UI::UIImpl> /* ui */)
+void MainMenuState::draw(std::shared_ptr<UI::UI> /* ui */)
 {
 }
 

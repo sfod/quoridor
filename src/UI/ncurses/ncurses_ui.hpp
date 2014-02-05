@@ -13,6 +13,7 @@ public:
 
     virtual std::shared_ptr<Window> create_window();
     virtual std::shared_ptr<Menu> create_menu(const std::vector<std::string> &items);
+    virtual bool poll_event(Event *ev);
 };
 
 }  /* namespace UI */
