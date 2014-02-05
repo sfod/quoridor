@@ -2,7 +2,7 @@
 #define QUORIDOR_UI_FACTORY_HPP_
 
 #include <memory>
-#include "ui_impl.hpp"
+#include "ui.hpp"
 
 namespace Quoridor {
 namespace UI {
@@ -12,7 +12,7 @@ public:
     UIFactory();
     ~UIFactory();
 
-    virtual std::shared_ptr<UIImpl> make_ui_impl(const std::string &ui_type) const;
+    virtual std::shared_ptr<UI> make_ui(const std::string &ui_type) const;
 };
 
 }  /* namespace UI */

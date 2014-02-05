@@ -3,7 +3,7 @@
 namespace Quoridor {
 namespace UI {
 
-NcursesMenu::NcursesMenu(WINDOW *win, const std::vector<std::string> &items)
+NcursesMenu::NcursesMenu(const std::vector<std::string> &items)
         : menu_(), items_(), item_num_(0)
 {
     item_num_ = items.size();
@@ -16,7 +16,6 @@ NcursesMenu::NcursesMenu(WINDOW *win, const std::vector<std::string> &items)
     items_[i] = NULL;
 
     menu_ = new_menu(items_);
-    set_menu_win(menu_, win);
     set_menu_mark(menu_, " * ");
     post_menu(menu_);
 }

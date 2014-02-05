@@ -1,22 +1,20 @@
 #ifndef QUORIDOR_UI_HPP_
 #define QUORIDOR_UI_HPP_
 
-#include "ui_impl.hpp"
+#include <memory>
+#include "UI/menu.hpp"
+#include "UI/window.hpp"
 
 namespace Quoridor {
 namespace UI {
 
 class UI {
 public:
-    UI();
-    virtual ~UI();
+    UI() {}
+    virtual ~UI() {}
 
-    virtual void draw_window();
-    virtual void update(const std::vector<std::vector<char>> &repr);
-    virtual bool poll_event(Event *ev);
-
-private:
-    UIImpl *ui_impl_;
+    virtual std::shared_ptr<Window> create_window() = 0;
+    virtual std::shared_ptr<Menu> create_menu(const std::vector<std::string> &items) = 0;
 };
 
 }  /* namespace UI */
