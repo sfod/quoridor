@@ -1,5 +1,5 @@
-#ifndef QUORIDOR_NCURSES_MENU_HPP_
-#define QUORIDOR_NCURSES_MENU_HPP_
+#ifndef QUORIDOR_NCURSES_UI_MENU_HPP_
+#define QUORIDOR_NCURSES_UI_MENU_HPP_
 
 #include <string>
 #include <vector>
@@ -26,4 +26,4 @@ private:
 }  /* namespace UI */
 }  /* namespace Quoridor */
 
-#endif  /* QUORIDOR_NCURSES_MENU_HPP_ */
+#endif  /* QUORIDOR_NCURSES_UI_MENU_HPP_ */
