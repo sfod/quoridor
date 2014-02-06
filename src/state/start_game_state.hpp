@@ -3,11 +3,7 @@
 
 #include <vector>
 
-#include "player_factory.hpp"
-#include "game.hpp"
-#include "iplayer.hpp"
 #include "istate.hpp"
-
 #include "UI/window.hpp"
 #include "UI/menu.hpp"
 
@@ -23,13 +19,10 @@ public:
     virtual void draw();
     virtual void change_state();
 
-    virtual void set_player(int i, std::shared_ptr<IPlayer> player);
-
 private:
     std::shared_ptr<UI::Window> win_;
     std::shared_ptr<UI::Menu> menu_;
-    PlayerFactory pf_;
-    std::vector<std::shared_ptr<IPlayer>> players_;
+    std::vector<std::string> player_types_;
     size_t player_num_;
 };
 

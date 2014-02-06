@@ -9,14 +9,14 @@ namespace Quoridor {
 static std::vector<std::string> items = {"start", "quit"};
 
 StartGameState::StartGameState(std::shared_ptr<UI::UI> ui)
-    : pf_(), players_(), player_num_(2)
+    : player_types_(), player_num_(2)
 {
     win_ = ui->create_window();
     menu_ = ui->create_menu(items);
     win_->add_menu(menu_);
 
-    players_.push_back(pf_.make_player("fake"));
-    players_.push_back(pf_.make_player("fake"));
+    player_types_.push_back("fake");
+    player_types_.push_back("fake");
 }
 
 StartGameState::~StartGameState()
@@ -70,21 +70,6 @@ void StartGameState::draw()
 
 void StartGameState::change_state()
 {
-}
-
-void StartGameState::set_player(int i, std::shared_ptr<IPlayer> player)
-{
-    if ((i < 0) || (i > 3)) {
-        throw Exception("Invalid player number");
-    }
-
-    if ((i > 1) && (player_num_ == 2)) {
-        player_num_ = 4;
-        players_.push_back(pf_.make_player("fake"));
-        players_.push_back(pf_.make_player("fake"));
-    }
-
-    players_[i] = player;
 }
 
 }  /* namespace Quoridor */
