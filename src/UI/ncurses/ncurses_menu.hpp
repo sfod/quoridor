@@ -1,21 +1,26 @@
-#ifndef QUORIDOR_NCURSES_MENU_HPP_
-#define QUORIDOR_NCURSES_MENU_HPP_
+#ifndef QUORIDOR_NCURSES_UI_MENU_HPP_
+#define QUORIDOR_NCURSES_UI_MENU_HPP_
 
 #include <string>
 #include <vector>
+
 #include <menu.h>
+
+#include "UI/menu.hpp"
 
 namespace Quoridor {
 namespace UI {
 
-class NcursesMenu {
+class NcursesMenu : public Menu {
 public:
-    NcursesMenu(WINDOW *win, const std::vector<std::string> &items);
+    explicit NcursesMenu(const std::vector<std::string> &items);
     ~NcursesMenu();
 
-    void up();
-    void down();
-    std::string item();
+    virtual void up();
+    virtual void down();
+    virtual std::string item();
+
+    MENU *menu() const { return menu_; }
 
 private:
     MENU *menu_;
@@ -26,4 +31,4 @@ private:
 }  /* namespace UI */
 }  /* namespace Quoridor */
 
-#endif  /* QUORIDOR_NCURSES_MENU_HPP_ */
+#endif  /* QUORIDOR_NCURSES_UI_MENU_HPP_ */
