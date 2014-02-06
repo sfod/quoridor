@@ -6,7 +6,6 @@ namespace Quoridor {
 static std::vector<std::string> items = {"game", "quit"};
 
 MainMenuState::MainMenuState(std::shared_ptr<UI::UI> ui)
-    : win_()
 {
     win_ = ui->create_window();
     menu_ = ui->create_menu(items);
