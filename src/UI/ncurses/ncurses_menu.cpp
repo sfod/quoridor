@@ -11,7 +11,7 @@ NcursesMenu::NcursesMenu(const std::vector<std::string> &items)
 
     size_t i;
     for (i = 0; i < item_num_; ++i) {
-        items_[i] = new_item(items[i].c_str(), items[i].c_str());
+        items_[i] = new_item(items[i].c_str(), NULL);
     }
     items_[i] = NULL;
 
