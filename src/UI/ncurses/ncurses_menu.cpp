@@ -22,11 +22,11 @@ NcursesMenu::NcursesMenu(const std::vector<std::string> &items)
 NcursesMenu::~NcursesMenu()
 {
     unpost_menu(menu_);
+    free_menu(menu_);
     for (size_t i = 0; i < item_num_; ++i) {
         free_item(items_[i]);
     }
     delete[] items_;
-    free_menu(menu_);
 }
 
 void NcursesMenu::up()
