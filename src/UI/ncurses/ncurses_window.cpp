@@ -1,4 +1,7 @@
 #include "ncurses_window.hpp"
+#include "ncurses_menu.hpp"
+
+#include <menu.h>
 
 namespace Quoridor {
 namespace UI {
@@ -33,7 +36,15 @@ void NcursesWindow::draw_board(const std::vector<std::vector<char>> &repr)
         ++i;
         wmove(win_, i, 1);
     }
-    wrefresh(win_);
+}
+
+void NcursesWindow::add_menu(std::shared_ptr<Menu> menu)
+{
+    Menu *m = menu.get();
+    NcursesMenu *nm = dynamic_cast<NcursesMenu*>(m);
+    set_menu_win(nm->menu(), win_);
+    set_menu_sub(nm->menu(), derwin(win_, 10, 10, 1, 1));
+    post_menu(nm->menu());
 }
 
 }  /* namespace UI */

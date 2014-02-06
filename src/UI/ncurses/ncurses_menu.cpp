@@ -17,7 +17,6 @@ NcursesMenu::NcursesMenu(const std::vector<std::string> &items)
 
     menu_ = new_menu(items_);
     set_menu_mark(menu_, " * ");
-    post_menu(menu_);
 }
 
 NcursesMenu::~NcursesMenu()

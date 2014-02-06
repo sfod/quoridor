@@ -20,6 +20,8 @@ public:
     virtual void down();
     virtual std::string item();
 
+    MENU *menu() const { return menu_; }
+
 private:
     MENU *menu_;
     ITEM **items_;
