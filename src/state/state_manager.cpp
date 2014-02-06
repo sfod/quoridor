@@ -30,7 +30,7 @@ void StateManager::change_state(std::shared_ptr<IState> state)
 
 void StateManager::handle_events()
 {
-    states_.back()->handle_events(this, ui_);
+    states_.back()->handle_events(this);
 }
 
 void StateManager::update()
@@ -40,7 +40,7 @@ void StateManager::update()
 
 void StateManager::draw()
 {
-    states_.back()->draw(ui_);
+    states_.back()->draw();
 }
 
 }  /* namespace Quoridor */

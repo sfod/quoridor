@@ -10,9 +10,9 @@ public:
     explicit MainMenuState(std::shared_ptr<UI::UI> ui);
     virtual ~MainMenuState();
 
-    virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UI> ui);
+    virtual void handle_events(StateManager *stm);
     virtual void update();
-    virtual void draw(std::shared_ptr<UI::UI> ui);
+    virtual void draw();
     virtual void change_state();
 
 private:

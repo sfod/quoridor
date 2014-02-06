@@ -12,10 +12,11 @@ MainMenuState::~MainMenuState()
 {
 }
 
-void MainMenuState::handle_events(StateManager *stm,
-        std::shared_ptr<UI::UI> ui)
+void MainMenuState::handle_events(StateManager *stm)
 {
+    std::shared_ptr<UI::UI> ui = stm->ui();
     UI::Event ev;
+
     if (ui->poll_event(&ev)) {
         switch (ev) {
         case UI::kEnter: {
@@ -36,7 +37,7 @@ void MainMenuState::update()
 {
 }
 
-void MainMenuState::draw(std::shared_ptr<UI::UI> /* ui */)
+void MainMenuState::draw()
 {
 }
 

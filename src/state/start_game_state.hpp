@@ -18,9 +18,9 @@ public:
     explicit StartGameState(std::shared_ptr<UI::UI> ui);
     virtual ~StartGameState();
 
-    virtual void handle_events(StateManager *stm, std::shared_ptr<UI::UI> ui);
+    virtual void handle_events(StateManager *stm);
     virtual void update();
-    virtual void draw(std::shared_ptr<UI::UI> ui);
+    virtual void draw();
     virtual void change_state();
 
     virtual void set_player(int i, std::shared_ptr<IPlayer> player);
