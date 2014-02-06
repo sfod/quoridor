@@ -19,8 +19,6 @@ namespace po = boost::program_options;
 
 struct game_opts_t {
     std::string ui_type;
-    int player_num;
-    std::vector<int> players;
 };
 
 
@@ -58,11 +56,6 @@ int init(int argc, char **argv, game_opts_t *game_opts)
         ("ui,i",
             po::value<std::string>(&game_opts->ui_type)->default_value("ncurses"),
             "user interface")
-        ("player-num,n",
-            po::value<int>(&game_opts->player_num)->default_value(2),
-            "number of players")
-        ("players,p", po::value<std::vector<int>>(&game_opts->players),
-            "type of players")
         ("help,h", "show help message")
     ;
     po::variables_map vm;
