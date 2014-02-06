@@ -3,15 +3,18 @@
 
 #include <vector>
 
-#include "game.hpp"
-#include "iplayer.hpp"
 #include "istate.hpp"
+#include "game.hpp"
+#include "player_factory.hpp"
+#include "iplayer.hpp"
+#include "UI/window.hpp"
 
 namespace Quoridor {
 
 class GameState : public IState {
 public:
-    GameState();
+    GameState(std::shared_ptr<UI::UI> ui,
+            const std::vector<std::string> &player_types);
     virtual ~GameState();
 
     virtual void handle_events(StateManager *stm);
@@ -23,8 +26,10 @@ private:
     void init_board_repr() const;
 
 private:
+    std::shared_ptr<UI::Window> win_;
     std::shared_ptr<Game> game_;
-    std::vector<IPlayer> players_;
+    PlayerFactory pf_;
+    std::vector<std::shared_ptr<IPlayer>> players_;
     mutable std::vector<std::vector<char>> repr_;
 };
 

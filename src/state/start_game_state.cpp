@@ -6,7 +6,7 @@
 
 namespace Quoridor {
 
-static std::vector<std::string> items = {"start", "quit"};
+static std::vector<std::string> items = {"start game", "quit"};
 
 StartGameState::StartGameState(std::shared_ptr<UI::UI> ui)
     : player_types_(), player_num_(2)
@@ -38,8 +38,8 @@ void StartGameState::handle_events(StateManager *stm)
             break;
         case UI::kEnter: {
             std::string menu_item = menu_->item();
-            if (menu_item == "start") {
-                std::shared_ptr<IState> game_state(new GameState());
+            if (menu_item == "start game") {
+                std::shared_ptr<IState> game_state(new GameState(ui, player_types_));
                 stm->change_state(std::shared_ptr<IState>(game_state));
             }
             else if (menu_item == "quit") {

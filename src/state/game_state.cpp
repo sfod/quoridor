@@ -3,8 +3,15 @@
 
 namespace Quoridor {
 
-GameState::GameState()
+GameState::GameState(std::shared_ptr<UI::UI> ui,
+        const std::vector<std::string> &player_types)
+    : game_(), pf_(), players_(), repr_()
 {
+    win_ = ui->create_window();
+
+    for (auto player_type : player_types) {
+        players_.push_back(pf_.make_player(player_type));
+    }
 }
 
 GameState::~GameState()
