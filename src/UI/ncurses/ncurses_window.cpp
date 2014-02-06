@@ -43,7 +43,7 @@ void NcursesWindow::add_menu(std::shared_ptr<Menu> menu)
     Menu *m = menu.get();
     NcursesMenu *nm = dynamic_cast<NcursesMenu*>(m);
     set_menu_win(nm->menu(), win_);
-    set_menu_sub(nm->menu(), derwin(win_, 10, 10, 1, 1));
+    set_menu_sub(nm->menu(), derwin(win_, 19, 19, 1, 1));
     post_menu(nm->menu());
 }
 
