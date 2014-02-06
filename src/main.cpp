@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState(stm.ui()));
     stm.change_state(std::shared_ptr<Quoridor::IState>(menu_state));
 
+    stm.draw();
     while (stm.is_running()) {
         stm.handle_events();
         stm.update();
