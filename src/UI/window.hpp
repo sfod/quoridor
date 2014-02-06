@@ -11,6 +11,7 @@ public:
     Window() {}
     virtual ~Window() {}
 
+    virtual void draw() = 0;
     virtual void draw_board(const std::vector<std::vector<char>> &repr) = 0;
 };
 

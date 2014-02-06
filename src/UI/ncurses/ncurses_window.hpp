@@ -17,6 +17,7 @@ public:
     NcursesWindow();
     ~NcursesWindow();
 
+    virtual void draw();
     virtual void draw_board(const std::vector<std::vector<char>> &repr);
 
 private:

@@ -9,12 +9,17 @@ NcursesWindow::NcursesWindow()
     int width = 21;
     win_ = newwin(height, width, 0, 0);
     box(win_, 0, 0);
-    wrefresh(win_);
+    refresh();
 }
 
 NcursesWindow::~NcursesWindow()
 {
     delwin(win_);
+}
+
+void NcursesWindow::draw()
+{
+    wrefresh(win_);
 }
 
 void NcursesWindow::draw_board(const std::vector<std::vector<char>> &repr)
