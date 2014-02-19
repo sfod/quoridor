@@ -24,6 +24,8 @@ public:
 
 private:
     void init_board_repr() const;
+    void draw_wall(const Wall &wall) const;
+    void redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const;
 
 private:
     std::shared_ptr<UI::Window> win_;
