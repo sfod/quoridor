@@ -32,7 +32,9 @@ private:
     std::shared_ptr<Game> game_;
     PlayerFactory pf_;
     std::vector<std::shared_ptr<IPlayer>> players_;
+    int cur_player_idx_;
     mutable std::vector<std::vector<char>> repr_;
+    bool is_running_;
 };
 
 }  /* namespace Quoridor */
