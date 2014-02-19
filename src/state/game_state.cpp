@@ -40,6 +40,7 @@ void GameState::handle_events(StateManager *stm)
 
 void GameState::update()
 {
+    win_->draw_board(repr_);
 }
 
 void GameState::draw()
