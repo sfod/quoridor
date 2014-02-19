@@ -17,6 +17,7 @@ public:
     virtual void draw() = 0;
     virtual void draw_board(const std::vector<std::vector<char>> &repr) = 0;
     virtual void add_menu(std::shared_ptr<Menu> menu) = 0;
+    virtual void print_message(const std::string &msg) = 0;
 };
 
 }  /* namespace UI */

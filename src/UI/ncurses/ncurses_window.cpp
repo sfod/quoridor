@@ -47,5 +47,10 @@ void NcursesWindow::add_menu(std::shared_ptr<Menu> menu)
     post_menu(nm->menu());
 }
 
+void NcursesWindow::print_message(const std::string &msg)
+{
+    mvwprintw(win_, 1, 1, "%s", msg.c_str());
+}
+
 }  /* namespace UI */
 }  /* namespace Quoridor */

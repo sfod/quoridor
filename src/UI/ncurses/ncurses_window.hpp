@@ -20,6 +20,7 @@ public:
     virtual void draw();
     virtual void draw_board(const std::vector<std::vector<char>> &repr);
     virtual void add_menu(std::shared_ptr<Menu> menu);
+    virtual void print_message(const std::string &msg);
 
 private:
     WINDOW *win_;
