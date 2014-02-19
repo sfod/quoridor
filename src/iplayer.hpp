@@ -9,6 +9,7 @@ class IPlayer {
 public:
     virtual ~IPlayer() {}
     virtual IMove *get_move() = 0;
+    virtual bool is_interactive() const = 0;
 };
 
 }  /* namespace Quoridor */

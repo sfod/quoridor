@@ -8,6 +8,7 @@ public:
     virtual ~FakePlayer();
 
     IMove *get_move();
+    virtual bool is_interactive() const { return false; };
 };
 
 }  /* namespace Quoridor */
