@@ -13,14 +13,13 @@ namespace Quoridor {
 
 class Game {
 public:
-    explicit Game(std::shared_ptr<Quoridor::Board> board);
+    Game();
     virtual ~Game();
 
     void add_pawn(std::shared_ptr<Pawn> pawn);
     pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
 
     int make_move(IMove *move, std::shared_ptr<Pawn> pawn);
-
     bool is_win(std::shared_ptr<Pawn> pawn) const;
 
     std::vector<std::shared_ptr<Pawn>> pawn_list() const { return pawn_list_; }

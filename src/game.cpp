@@ -5,8 +5,7 @@
 
 namespace Quoridor {
 
-Game::Game(std::shared_ptr<Quoridor::Board> board)
-    : board_(board), pawn_list_()
+Game::Game() : board_(new Board(9, 9)), pawn_list_()
 {
 }
 
