@@ -45,6 +45,7 @@ void GameState::update()
 
 void GameState::draw()
 {
+    win_->draw();
 }
 
 void GameState::change_state()
