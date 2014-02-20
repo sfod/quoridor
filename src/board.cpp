@@ -10,7 +10,8 @@
 
 namespace Quoridor {
 
-Board::Board(int row_num, int col_num) : sides_(), pawn_sides_(), walls_()
+Board::Board(int row_num, int col_num)
+    : sides_(), pawn_sides_(), walls_(), occ_nodes_(), pawn_nodes_(), bg_()
 {
     set_size(row_num, col_num);
 
