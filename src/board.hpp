@@ -51,8 +51,7 @@ public:
     int next_side() const;
 
     int add_pawn(std::shared_ptr<Pawn> pawn);
-    void add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn);
-    void rm_occupied(const pos_t &pos);
+    bool is_occupied(int node) const;
     pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
 
     int make_walking_move(int dir, std::shared_ptr<Pawn> pawn);

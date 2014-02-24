@@ -90,24 +90,9 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
     return 0;
 }
 
-void Board::add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn)
+bool Board::is_occupied(int node) const
 {
-    int n = pos.row * col_num_ + pos.col;
-
-    if (occ_nodes_.count(n) > 0) {
-        throw Exception("cell (" + boost::lexical_cast<std::string>(pos.row)
-                + ":" + boost::lexical_cast<std::string>(pos.col)
-                + ") is already occupied");
-    }
-
-    occ_nodes_[n] = pawn;
-    pawn_nodes_[pawn] = n;
-}
-
-void Board::rm_occupied(const pos_t &pos)
-{
-    int n = pos.row * col_num_ + pos.col;
-    occ_nodes_.erase(n);
+    return occ_nodes_.find(node) != occ_nodes_.end();
 }
 
 pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
