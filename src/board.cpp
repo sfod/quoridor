@@ -122,54 +122,20 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
     }
 }
 
-int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
+int Board::make_walking_move(std::shared_ptr<Pawn> pawn, int goal_node)
 {
-    dir = recalc_dir(dir, pawn);
     int cur_node = pawn_nodes_[pawn];
-    int goal_node = cur_node;
-    int r_goal_node = cur_node;
 
-    switch (dir) {
-        case WalkMove::Direction::kForward:
-        goal_node += col_num_;
-        r_goal_node = goal_node + col_num_;
-        break;
-    case WalkMove::Direction::kRight:
-        ++goal_node;
-        r_goal_node = goal_node + 1;
-        break;
-    case WalkMove::Direction::kBackward:
-        goal_node -= col_num_;
-        r_goal_node = goal_node - col_num_;
-        break;
-    case WalkMove::Direction::kLeft:
-        --goal_node;
-        r_goal_node = goal_node - 1;
-        break;
-    case WalkMove::Direction::kEnd:
-    default:
-        return -1;
-    }
-
-    if (is_possible_move(cur_node, goal_node)) {
-        // the goal node is occupied by another pawn
-        if (occ_nodes_.count(goal_node) > 0) {
-            if (is_possible_move(goal_node, r_goal_node)) {
-                goal_node = r_goal_node;
-            }
-            else {
-                return -2;
-            }
-        }
-    }
-    else {
+    if (!is_possible_move(cur_node, goal_node)) {
         return -1;
     }
 
     // update pawn's position
     occ_nodes_.erase(pawn_nodes_[pawn]);
+    bg_.unblock_neighbours(pawn_nodes_[pawn]);
     pawn_nodes_[pawn] = goal_node;
     occ_nodes_[goal_node] = pawn;
+    bg_.block_neighbours(goal_node);
 
     return 0;
 }

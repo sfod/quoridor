@@ -54,7 +54,7 @@ public:
     bool is_occupied(int node) const;
     pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
 
-    int make_walking_move(int dir, std::shared_ptr<Pawn> pawn);
+    int make_walking_move(std::shared_ptr<Pawn> pawn, int goal_node);
     bool is_at_opposite_side(std::shared_ptr<Pawn> pawn) const;
     int add_wall(const Wall &wall);
     int try_add_wall(const Wall &wall);
