@@ -159,9 +159,9 @@ bool BoardGraph::find_path(int start_node, int end_node, std::list<int> *path) c
     }
     catch (found_goal fg) {
         for (vertex v = end_node;; v = p[v]) {
-            path->push_front(v);
             if (p[v] == v)
                 break;
+            path->push_front(v);
         }
         return true;
     }
