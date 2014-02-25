@@ -68,6 +68,7 @@ private:
     graph_t g_;
     std::vector<int> nodes_;
     std::set<edge> edges_;
+    std::map<int, std::set<int>> neighbours_;
     FilterEdges fe_;
 };
 

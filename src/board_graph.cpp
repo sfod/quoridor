@@ -26,7 +26,7 @@ bool FilterEdges::operator()(const EdgeDesc &e) const
     return edges_.find(e) == edges_.end();
 }
 
-BoardGraph::BoardGraph() : g_(), nodes_(), edges_(), fe_()
+BoardGraph::BoardGraph() : g_(), nodes_(), edges_(), neighbours_(), fe_()
 {
 }
 
@@ -44,6 +44,7 @@ int BoardGraph::set_size(int row_num, int col_num)
 
     for (int i = 0; i < row_num * col_num; ++i) {
         nodes_.push_back(i);
+        neighbours_[i] = std::set<int>();
     }
 
     int nidx;
@@ -52,18 +53,22 @@ int BoardGraph::set_size(int row_num, int col_num)
             if (j != 0) {
                 nidx = i * col_num + j - 1;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
             if (j != col_num - 1) {
                 nidx = i * col_num + j + 1;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
             if (i != 0) {
                 nidx = (i - 1) * col_num + j;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
             if (i != row_num - 1) {
                 nidx = (i + 1) * col_num + j;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
         }
     }
