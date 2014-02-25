@@ -46,7 +46,7 @@ void GameState::handle_events(StateManager *stm)
     IMove *move = NULL;
 
     if (!is_running_) {
-            boost::this_thread::sleep(boost::posix_time::seconds(3));
+            boost::this_thread::sleep(boost::posix_time::seconds(1));
             std::shared_ptr<IState> start_game_state(new StartGameState(ui));
             stm->change_state(std::shared_ptr<IState>(start_game_state));
             return;
@@ -101,7 +101,7 @@ void GameState::handle_events(StateManager *stm)
         }
     }
 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(250));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 }
 
 void GameState::update()
