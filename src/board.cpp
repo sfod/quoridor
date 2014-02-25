@@ -223,11 +223,6 @@ int Board::try_add_wall(const Wall &wall)
     return 0;
 }
 
-int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
-{
-    return (dir + pawn_sides_[pawn]) % 4;
-}
-
 bool Board::is_possible_move(int cur_node, int goal_node) const
 {
     return bg_.is_neighbours(cur_node, goal_node);

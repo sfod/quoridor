@@ -64,7 +64,6 @@ private:
     int col(int n) const { return n % col_num_; }
 
 private:
-    int recalc_dir(int dir, std::shared_ptr<Pawn> pawn);
     bool is_possible_move(int cur_node, int goal_node) const;
     bool wall_intersects(const Wall &wall) const;
     void side_nodes(int side, std::vector<int> *nodes) const;
