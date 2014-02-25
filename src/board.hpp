@@ -59,6 +59,11 @@ public:
     int add_wall(const Wall &wall);
     int try_add_wall(const Wall &wall);
 
+    void pawn_final_nodes(std::shared_ptr<Pawn> pawn,
+            std::vector<int> *nodes) const;
+    bool get_path(std::shared_ptr<Pawn> pawn, int end_node,
+            std::list<int> *nodes) const;
+
 private:
     int row(int n) const { return n / col_num_; }
     int col(int n) const { return n % col_num_; }

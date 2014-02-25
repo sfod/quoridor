@@ -225,6 +225,19 @@ int Board::try_add_wall(const Wall &wall)
     return 0;
 }
 
+void Board::pawn_final_nodes(std::shared_ptr<Pawn> pawn,
+        std::vector<int> *nodes) const
+{
+    int side = (pawn_sides_.at(pawn) + 2) % 4;
+    side_nodes(side, nodes);
+}
+
+bool Board::get_path(std::shared_ptr<Pawn> pawn, int end_node,
+        std::list<int> *nodes) const
+{
+    return bg_.find_path(pawn_nodes_.at(pawn), end_node, nodes);
+}
+
 bool Board::is_possible_move(int cur_node, int goal_node) const
 {
     return bg_.is_neighbours(cur_node, goal_node);
