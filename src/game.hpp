@@ -23,9 +23,10 @@ public:
     bool is_win(std::shared_ptr<Pawn> pawn) const;
 
     std::vector<std::shared_ptr<Pawn>> pawn_list() const { return pawn_list_; }
+    std::shared_ptr<Board> board() const { return board_; }
 
 private:
-    std::shared_ptr<Quoridor::Board> board_;
+    std::shared_ptr<Board> board_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
 };
 
