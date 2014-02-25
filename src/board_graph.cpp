@@ -101,6 +101,48 @@ void BoardGraph::remove_edges(int node1, int node2)
 
     edges_.erase(edge(node1, node2));
     edges_.erase(edge(node2, node1));
+
+    neighbours_[node1].erase(node2);
+    neighbours_[node2].erase(node1);
+}
+
+void BoardGraph::block_edge(int node1, int node2)
+{
+    edge_descriptor ed;
+    bool b;
+
+    boost::tie(ed, b) = boost::edge(node1, node2, g_);
+    if (b) {
+        g_.remove_edge(ed);
+    }
+
+    edges_.erase(edge(node1, node2));
+}
+
+void BoardGraph::unblock_edge(int node1, int node2)
+{
+    WeightMap weightmap = boost::get(boost::edge_weight, g_);
+    edge_descriptor e;
+    bool b;
+
+    boost::tie(e, b) = boost::add_edge(node1, node2, g_);
+    weightmap[e] = 1;
+
+    edges_.insert(edge(node1, node2));
+}
+
+void BoardGraph::block_neighbours(int node)
+{
+    for (auto neighbour_node : neighbours_[node]) {
+        block_edge(neighbour_node, node);
+    }
+}
+
+void BoardGraph::unblock_neighbours(int node)
+{
+    for (auto neighbour_node : neighbours_[node]) {
+        unblock_edge(neighbour_node, node);
+    }
 }
 
 bool BoardGraph::find_path(int start_node, int end_node, std::list<int> *path) const

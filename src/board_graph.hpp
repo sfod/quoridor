@@ -57,6 +57,11 @@ public:
     int set_size(int row_num, int col_num);
 
     void remove_edges(int node1, int node2);
+    void block_edge(int node1, int node2);
+    void unblock_edge(int node1, int node2);
+    void block_neighbours(int node);
+    void unblock_neighbours(int node);
+
     bool find_path(int node1, int node2, std::list<int> *path) const;
     bool is_neighbours(int node1, int node2) const;
 
