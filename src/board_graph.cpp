@@ -116,17 +116,6 @@ bool BoardGraph::find_path(int start_node, int end_node, std::list<int> *path) c
             if (p[v] == v)
                 break;
         }
-
-        std::cout << "shortes path is ";
-
-        std::list<int>::iterator spi = path->begin();
-        std::cout << (start_node / 9) << ":" << (start_node % 9);
-        for (++spi; spi != path->end(); ++spi)
-            std::cout << " -> " << (nodes_[*spi] / 9) << ":"
-                << (nodes_[*spi] % 9);
-        std::cout << std::endl << "Total travel time: " << d[end_node]
-            << std::endl;
-
         return true;
     }
 
