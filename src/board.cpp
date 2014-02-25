@@ -87,6 +87,8 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
     occ_nodes_[n] = pawn;
     pawn_nodes_[pawn] = n;
 
+    bg_.block_neighbours(n);
+
     return 0;
 }
 
