@@ -40,7 +40,7 @@ void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
     }
 }
 
-BoardGraph::BoardGraph() : g_(), nodes_(), edges_(), neighbours_(), fe_()
+BoardGraph::BoardGraph() : row_num_(0), col_num_(0), g_(), nodes_(), edges_(), fe_()
 {
 }
 
@@ -54,11 +54,13 @@ int BoardGraph::set_size(int row_num, int col_num)
         return -1;
     }
 
+    row_num_ = row_num;
+    col_num_ = col_num;
+
     g_ = graph_t(row_num * col_num);
 
     for (int i = 0; i < row_num * col_num; ++i) {
         nodes_.push_back(i);
-        neighbours_[i] = std::set<int>();
     }
 
     int nidx;
@@ -67,22 +69,18 @@ int BoardGraph::set_size(int row_num, int col_num)
             if (j != 0) {
                 nidx = i * col_num + j - 1;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
-                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
             if (j != col_num - 1) {
                 nidx = i * col_num + j + 1;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
-                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
             if (i != 0) {
                 nidx = (i - 1) * col_num + j;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
-                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
             if (i != row_num - 1) {
                 nidx = (i + 1) * col_num + j;
                 edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
-                neighbours_[nodes_[i * col_num + j]].insert(nodes_[nidx]);
             }
         }
     }
@@ -115,9 +113,6 @@ void BoardGraph::remove_edges(int node1, int node2)
 
     edges_.erase(edge(node1, node2));
     edges_.erase(edge(node2, node1));
-
-    neighbours_[node1].erase(node2);
-    neighbours_[node2].erase(node1);
 }
 
 void BoardGraph::block_edge(int node1, int node2)
@@ -129,8 +124,6 @@ void BoardGraph::block_edge(int node1, int node2)
     if (b) {
         g_.remove_edge(ed);
     }
-
-    edges_.erase(edge(node1, node2));
 }
 
 void BoardGraph::unblock_edge(int node1, int node2)
@@ -141,21 +134,97 @@ void BoardGraph::unblock_edge(int node1, int node2)
 
     boost::tie(e, b) = boost::add_edge(node1, node2, g_);
     weightmap[e] = 1;
-
-    edges_.insert(edge(node1, node2));
 }
 
 void BoardGraph::block_neighbours(int node)
 {
-    for (auto neighbour_node : neighbours_[node]) {
-        block_edge(neighbour_node, node);
+    int nf = 0;
+    std::map<int, int> neighbours;
+
+    if (is_neighbours(node, node - 1)) {
+        block_edge(node - 1, node);
+        nf |= 1;
+        neighbours[0] = node - 1;
+    }
+    if (is_neighbours(node, node + 1)) {
+        block_edge(node + 1, node);
+        nf |= 4;
+        neighbours[2] = node + 1;
+    }
+    if (is_neighbours(node, node - col_num_)) {
+        block_edge(node - col_num_, node);
+        nf |= 2;
+        neighbours[1] = node - col_num_;
+    }
+    if (is_neighbours(node, node + col_num_)) {
+        block_edge(node + col_num_, node);
+        nf |= 8;
+        neighbours[3] = node + col_num_;
+    }
+
+    // link neighbours with each other
+    for (int i = 0; i < 4; ++i) {
+        if (nf & (1 << i)) {
+            // path to the opposite node is open
+            if (nf & (1 << ((i + 2) % 4))) {
+                unblock_edge(neighbours[i], neighbours[(i + 2) % 4]);
+            }
+            // path to the opposite node is blocked, open pathes to diagonal nodes
+            else {
+                if (nf & (1 << ((i + 1) % 4))) {
+                    unblock_edge(neighbours[i], neighbours[(i + 1) % 4]);
+                }
+                if (nf & (1 << ((i + 3) % 4))) {
+                    unblock_edge(neighbours[i], neighbours[(i + 3) % 4]);
+                }
+            }
+        }
     }
 }
 
 void BoardGraph::unblock_neighbours(int node)
 {
-    for (auto neighbour_node : neighbours_[node]) {
-        unblock_edge(neighbour_node, node);
+    int nf = 0;
+    std::map<int, int> neighbours;
+
+    if (is_neighbours(node, node - 1)) {
+        unblock_edge(node - 1, node);
+        nf |= 1;
+        neighbours[0] = node - 1;
+    }
+    if (is_neighbours(node, node + 1)) {
+        unblock_edge(node + 1, node);
+        nf |= 4;
+        neighbours[2] = node + 1;
+    }
+    if (is_neighbours(node, node - col_num_)) {
+        unblock_edge(node - col_num_, node);
+        nf |= 2;
+        neighbours[1] = node - col_num_;
+    }
+    if (is_neighbours(node, node + col_num_)) {
+        unblock_edge(node + col_num_, node);
+        nf |= 8;
+        neighbours[3] = node + col_num_;
+    }
+
+    // close links between node's neighbours
+    for (int i = 0; i < 4; ++i) {
+        if (nf & (1 << i)) {
+            // path to the opposite node is open
+            if (nf & (1 << ((i + 2) % 4))) {
+                block_edge(neighbours[i], neighbours[(i + 2) % 4]);
+            }
+            // path to the opposite node is blocked, open pathes to diagonal nodes
+            else {
+                if (nf & (1 << ((i + 1) % 4))) {
+                    block_edge(neighbours[i], neighbours[(i + 1) % 4]);
+                }
+                if (nf & (1 << ((i + 3) % 4))) {
+                    block_edge(neighbours[i], neighbours[(i + 3) % 4]);
+                }
+            }
+        }
     }
 }
 
