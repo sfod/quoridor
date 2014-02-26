@@ -174,6 +174,19 @@ bool BoardGraph::is_neighbours(int node1, int node2) const
     return (edges_.count(edge(node1, node2)) > 0);
 }
 
+bool BoardGraph::is_adjacent(int node1, int node2) const
+{
+    IndexMap index = get(boost::vertex_index, g_);
+    std::pair<adjacency_iterator, adjacency_iterator> neighbours =
+        boost::adjacent_vertices(boost::vertex(node1, g_), g_);
+    for (; neighbours.first != neighbours.second; ++ neighbours.first) {
+        if ((int) index[*neighbours.first] == node2) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void BoardGraph::filter_edges(int node1, int node2)
 {
     edge_descriptor ed;

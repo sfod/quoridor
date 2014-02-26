@@ -5,6 +5,7 @@
 
 #include <boost/graph/astar_search.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/adjacency_iterator.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
 namespace Quoridor {
@@ -17,6 +18,8 @@ typedef graph_t::vertex_descriptor vertex;
 typedef graph_t::edge_descriptor edge_descriptor;
 typedef std::pair<int, int> edge;
 
+typedef boost::property_map<graph_t, boost::vertex_index_t>::type IndexMap;
+typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator;
 
 class FilterEdges {
 public:
@@ -64,6 +67,7 @@ public:
 
     bool find_path(int node1, int node2, std::list<int> *path) const;
     bool is_neighbours(int node1, int node2) const;
+    bool is_adjacent(int node1, int node2) const;
 
     void filter_edges(int node1, int node2);
     void reset_filters();
