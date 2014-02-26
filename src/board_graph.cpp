@@ -36,7 +36,7 @@ template <class Graph>
 void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
 {
     if (u == m_goal) {
-        throw new found_goal();
+        throw found_goal();
     }
 }
 
