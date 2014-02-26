@@ -35,16 +35,7 @@ private:
     std::set<edge_descriptor> edges_;
 };
 
-struct found_goal {
-    found_goal() : i(0) {
-        ++i;
-    }
-    ~found_goal() {
-        --i;
-    }
-
-    int i;
-}; // exception for termination
+struct found_goal {}; // exception for termination
 
 // visitor that terminates when we find the goal
 template <class Vertex>
