@@ -240,7 +240,7 @@ bool Board::get_path(std::shared_ptr<Pawn> pawn, int end_node,
 
 bool Board::is_possible_move(int cur_node, int goal_node) const
 {
-    return bg_.is_neighbours(cur_node, goal_node);
+    return bg_.is_adjacent(cur_node, goal_node);
 }
 
 bool Board::wall_intersects(const Wall &wall) const
