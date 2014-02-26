@@ -26,6 +26,20 @@ bool FilterEdges::operator()(const EdgeDesc &e) const
     return edges_.find(e) == edges_.end();
 }
 
+template <class Vertex>
+astar_goal_visitor<Vertex>::astar_goal_visitor(Vertex goal) : m_goal(goal)
+{
+}
+
+template <class Vertex>
+template <class Graph>
+void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
+{
+    if (u == m_goal) {
+        throw new found_goal();
+    }
+}
+
 BoardGraph::BoardGraph() : g_(), nodes_(), edges_(), neighbours_(), fe_()
 {
 }

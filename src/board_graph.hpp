@@ -35,19 +35,24 @@ private:
     std::set<edge_descriptor> edges_;
 };
 
-struct found_goal {}; // exception for termination
+struct found_goal {
+    found_goal() : i(0) {
+        ++i;
+    }
+    ~found_goal() {
+        --i;
+    }
+
+    int i;
+}; // exception for termination
 
 // visitor that terminates when we find the goal
 template <class Vertex>
 class astar_goal_visitor : public boost::default_astar_visitor
 {
 public:
-    astar_goal_visitor(Vertex goal) : m_goal(goal) {}
-    template<class Graph>
-    void examine_vertex(Vertex u, Graph& /* g */) {
-        if (u == m_goal)
-            throw found_goal();
-    }
+    astar_goal_visitor(Vertex goal);
+    template<class Graph> void examine_vertex(Vertex u, Graph& /* g */);
 private:
     Vertex m_goal;
 };
