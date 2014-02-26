@@ -25,9 +25,9 @@ FakePlayer::~FakePlayer()
 
 IMove *FakePlayer::get_move()
 {
-    boost::random::uniform_int_distribution<> dist_10(1, 10);
+    boost::random::discrete_distribution<> dist{0.6, 0.6};
 
-    if (dist_10(gen_) > 7) {
+    if (dist(gen_) == 0) {
         size_t min_path_len = 81;
         std::list<int> path;
         for (auto end_node : fin_nodes_) {
@@ -52,9 +52,9 @@ IMove *FakePlayer::get_move()
         return new WalkMove(next_node);
     }
     else {
-        boost::random::uniform_int_distribution<> dist_2(0, 1);
+        boost::random::discrete_distribution<> dist_2{8, 2};
         boost::random::uniform_int_distribution<> dist_9(0, 8);
-        boost::random::uniform_int_distribution<> dist_8(0, 7);
+        boost::random::discrete_distribution<> dist_8{1, 1, 2, 3, 3, 2, 1, 1};
         return new WallMove(Wall(dist_2(gen_), dist_9(gen_), dist_8(gen_), 2));
     }
 }
