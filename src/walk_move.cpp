@@ -4,17 +4,12 @@
 
 namespace Quoridor {
 
-WalkMove::WalkMove() : dir_(kEnd)
+WalkMove::WalkMove() : node_()
 {
 }
 
-WalkMove::WalkMove(int dir)
+WalkMove::WalkMove(int node) : node_(node)
 {
-    if ((dir < Direction::kForward) || (dir >= Direction::kEnd)) {
-        throw Exception("invalid direction: "
-                + boost::lexical_cast<std::string>(dir));
-    }
-    dir_ = dir;
 }
 
 WalkMove::~WalkMove()

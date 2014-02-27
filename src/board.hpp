@@ -51,21 +51,24 @@ public:
     int next_side() const;
 
     int add_pawn(std::shared_ptr<Pawn> pawn);
-    void add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn);
-    void rm_occupied(const pos_t &pos);
+    bool is_occupied(int node) const;
     pos_t pawn_pos(std::shared_ptr<Pawn> pawn) const;
 
-    int make_walking_move(int dir, std::shared_ptr<Pawn> pawn);
+    int make_walking_move(std::shared_ptr<Pawn> pawn, int goal_node);
     bool is_at_opposite_side(std::shared_ptr<Pawn> pawn) const;
     int add_wall(const Wall &wall);
-    int try_add_wall(const Wall &wall);
+    int try_add_wall(const Wall &wall, std::vector<std::pair<int, int>> *edges);
+
+    void pawn_final_nodes(std::shared_ptr<Pawn> pawn,
+            std::vector<int> *nodes) const;
+    bool get_path(std::shared_ptr<Pawn> pawn, int end_node,
+            std::list<int> *nodes) const;
 
 private:
     int row(int n) const { return n / col_num_; }
     int col(int n) const { return n % col_num_; }
 
 private:
-    int recalc_dir(int dir, std::shared_ptr<Pawn> pawn);
     bool is_possible_move(int cur_node, int goal_node) const;
     bool wall_intersects(const Wall &wall) const;
     void side_nodes(int side, std::vector<int> *nodes) const;

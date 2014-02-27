@@ -27,7 +27,7 @@ pos_t Game::pawn_pos(std::shared_ptr<Pawn> pawn) const
 int Game::make_move(IMove *move, std::shared_ptr<Pawn> pawn)
 {
     if (WalkMove *walk_move = dynamic_cast<WalkMove *>(move)) {
-        return board_->make_walking_move(walk_move->dir(), pawn);
+        return board_->make_walking_move(pawn, walk_move->node());
     }
     else if (WallMove *wall_move = dynamic_cast<WallMove *>(move)) {
         return board_->add_wall(wall_move->wall());

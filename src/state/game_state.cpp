@@ -26,8 +26,9 @@ GameState::GameState(std::shared_ptr<UI::UI> ui,
 
     int i = 0;
     for (auto player_type : player_types) {
-        players_.push_back(pf_.make_player(player_type));
-        game_->add_pawn(std::shared_ptr<Pawn>(new Pawn(colors[i])));
+        std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
+        game_->add_pawn(pawn);
+        players_.push_back(pf_.make_player(player_type, game_->board(), pawn));
         ++i;
     }
 
@@ -45,7 +46,7 @@ void GameState::handle_events(StateManager *stm)
     IMove *move = NULL;
 
     if (!is_running_) {
-            boost::this_thread::sleep(boost::posix_time::seconds(3));
+            boost::this_thread::sleep(boost::posix_time::seconds(1));
             std::shared_ptr<IState> start_game_state(new StartGameState(ui));
             stm->change_state(std::shared_ptr<IState>(start_game_state));
             return;
@@ -56,18 +57,6 @@ void GameState::handle_events(StateManager *stm)
     }
     else if (ui->poll_event(&ev)) {
         switch (ev) {
-        case UI::kUp:
-            move = new WalkMove(WalkMove::Direction::kForward);
-            break;
-        case UI::kRight:
-            move = new WalkMove(WalkMove::Direction::kRight);
-            break;
-        case UI::kDown:
-            move = new WalkMove(WalkMove::Direction::kBackward);
-            break;
-        case UI::kLeft:
-            move = new WalkMove(WalkMove::Direction::kLeft);
-            break;
         case UI::kEsc: {
             std::shared_ptr<IState> start_game_state(new StartGameState(ui));
             stm->change_state(std::shared_ptr<IState>(start_game_state));
@@ -112,7 +101,7 @@ void GameState::handle_events(StateManager *stm)
         }
     }
 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(250));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 }
 
 void GameState::update()

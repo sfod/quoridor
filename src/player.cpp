@@ -4,7 +4,7 @@
 
 namespace Quoridor {
 
-Player::Player()
+Player::Player(std::shared_ptr<Board> /* board */, std::shared_ptr<Pawn> /* pawn */)
 {
 }
 

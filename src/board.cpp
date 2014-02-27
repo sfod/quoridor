@@ -87,27 +87,14 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
     occ_nodes_[n] = pawn;
     pawn_nodes_[pawn] = n;
 
+    bg_.block_neighbours(n);
+
     return 0;
 }
 
-void Board::add_occupied(const pos_t &pos, std::shared_ptr<Pawn> pawn)
+bool Board::is_occupied(int node) const
 {
-    int n = pos.row * col_num_ + pos.col;
-
-    if (occ_nodes_.count(n) > 0) {
-        throw Exception("cell (" + boost::lexical_cast<std::string>(pos.row)
-                + ":" + boost::lexical_cast<std::string>(pos.col)
-                + ") is already occupied");
-    }
-
-    occ_nodes_[n] = pawn;
-    pawn_nodes_[pawn] = n;
-}
-
-void Board::rm_occupied(const pos_t &pos)
-{
-    int n = pos.row * col_num_ + pos.col;
-    occ_nodes_.erase(n);
+    return occ_nodes_.find(node) != occ_nodes_.end();
 }
 
 pos_t Board::pawn_pos(std::shared_ptr<Pawn> pawn) const
@@ -137,84 +124,42 @@ bool Board::is_at_opposite_side(std::shared_ptr<Pawn> pawn) const
     }
 }
 
-int Board::make_walking_move(int dir, std::shared_ptr<Pawn> pawn)
+int Board::make_walking_move(std::shared_ptr<Pawn> pawn, int goal_node)
 {
-    dir = recalc_dir(dir, pawn);
     int cur_node = pawn_nodes_[pawn];
-    int goal_node = cur_node;
-    int r_goal_node = cur_node;
 
-    switch (dir) {
-        case WalkMove::Direction::kForward:
-        goal_node += col_num_;
-        r_goal_node = goal_node + col_num_;
-        break;
-    case WalkMove::Direction::kRight:
-        ++goal_node;
-        r_goal_node = goal_node + 1;
-        break;
-    case WalkMove::Direction::kBackward:
-        goal_node -= col_num_;
-        r_goal_node = goal_node - col_num_;
-        break;
-    case WalkMove::Direction::kLeft:
-        --goal_node;
-        r_goal_node = goal_node - 1;
-        break;
-    case WalkMove::Direction::kEnd:
-    default:
-        return -1;
-    }
-
-    if (is_possible_move(cur_node, goal_node)) {
-        // the goal node is occupied by another pawn
-        if (occ_nodes_.count(goal_node) > 0) {
-            if (is_possible_move(goal_node, r_goal_node)) {
-                goal_node = r_goal_node;
-            }
-            else {
-                return -2;
-            }
-        }
-    }
-    else {
+    if (!is_possible_move(cur_node, goal_node)) {
         return -1;
     }
 
     // update pawn's position
     occ_nodes_.erase(pawn_nodes_[pawn]);
+    bg_.unblock_neighbours(pawn_nodes_[pawn]);
     pawn_nodes_[pawn] = goal_node;
     occ_nodes_[goal_node] = pawn;
+    bg_.block_neighbours(goal_node);
 
     return 0;
 }
 
 int Board::add_wall(const Wall &wall)
 {
-    if (try_add_wall(wall) < 0) {
+    std::vector<std::pair<int, int>> edges;
+    if (try_add_wall(wall, &edges) < 0) {
         return -1;
     }
 
     walls_[wall.orientation()][wall.line()].insert(std::map<int, Wall>::value_type(wall.start_pos(), Wall(wall)));
 
-    int node1;
-    int node2;
-    for (int i = 0; i < wall.cnt(); ++i) {
-        if (wall.orientation() == 0) {
-            node1 = wall.line() * col_num_ + wall.start_pos() + i;
-            node2 = (wall.line() + 1) * col_num_ + wall.start_pos() + i;
-        }
-        else {
-            node1 = (wall.start_pos() + i) * row_num_ + wall.line();
-            node2 = (wall.start_pos() + i) * row_num_ + wall.line() + 1;
-        }
-        bg_.remove_edges(node1, node2);
+    for (auto edge : edges) {
+        bg_.remove_edges(edge.first, edge.second);
     }
+
 
     return 0;
 }
 
-int Board::try_add_wall(const Wall &wall)
+int Board::try_add_wall(const Wall &wall, std::vector<std::pair<int, int>> *edges)
 {
     int line_lim = (wall.orientation() ? col_num() : row_num()) - 1;
     int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
@@ -231,17 +176,75 @@ int Board::try_add_wall(const Wall &wall)
 
     int node1;
     int node2;
-    for (int i = 0; i < wall.cnt(); ++i) {
-        if (wall.orientation() == 0) {
+    int node_tmp;
+    if (wall.orientation() == 0) {
+        for (int i = 0; i < wall.cnt(); ++i) {
             node1 = wall.line() * col_num_ + wall.start_pos() + i;
             node2 = (wall.line() + 1) * col_num_ + wall.start_pos() + i;
+            bg_.filter_edges(node1, node2);
+            edges->push_back(std::make_pair(node1, node2));
+
+            node_tmp = (wall.line() + 2) * col_num_ + wall.start_pos() + i;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node1, node_tmp);
+                edges->push_back(std::make_pair(node1, node_tmp));
+            }
+
+            node_tmp = (wall.line() - 1) * col_num_ + wall.start_pos() + i;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node_tmp, node2);
+                edges->push_back(std::make_pair(node_tmp, node2));
+            }
+
+            for (int j = i - 1; j <= i + 1; j += 2) {
+                node_tmp = (wall.line() + 1) * col_num_ + wall.start_pos() + j;
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node1, node_tmp);
+                    edges->push_back(std::make_pair(node1, node_tmp));
+                }
+
+                node_tmp = wall.line() * col_num_ + wall.start_pos() + j;
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node_tmp, node2);
+                    edges->push_back(std::make_pair(node_tmp, node2));
+                }
+
+            }
         }
-        else {
+    }
+    else {
+        for (int i = 0; i < wall.cnt(); ++i) {
             node1 = (wall.start_pos() + i) * row_num_ + wall.line();
             node2 = (wall.start_pos() + i) * row_num_ + wall.line() + 1;
-        }
+            bg_.filter_edges(node1, node2);
+            edges->push_back(std::make_pair(node1, node2));
 
-        bg_.filter_edges(node1, node2);
+            node_tmp = (wall.start_pos() + i) * row_num_ + wall.line() + 2;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node1, node_tmp);
+                edges->push_back(std::make_pair(node1, node_tmp));
+            }
+
+            node_tmp = (wall.start_pos() + i) * row_num_ + wall.line() - 1;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node_tmp, node2);
+                edges->push_back(std::make_pair(node_tmp, node2));
+            }
+
+            for (int j = i - 1; j <= i + 1; j += 2) {
+                node_tmp = (wall.start_pos() + j) * row_num_ + wall.line() + 1;
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node1, node_tmp);
+                    edges->push_back(std::make_pair(node1, node_tmp));
+                }
+
+                node_tmp = (wall.start_pos() + j) * row_num_ + wall.line();
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node_tmp, node2);
+                    edges->push_back(std::make_pair(node_tmp, node2));
+                }
+            }
+        }
     }
 
     bool path_blocked = false;
@@ -259,7 +262,7 @@ int Board::try_add_wall(const Wall &wall)
             }
         }
 
-        /* wall blocks all pathes to the opposite side for one of pawns */
+        // wall blocks all pathes to the opposite side for one of pawns
         if (path_blocked) {
             break;
         }
@@ -272,14 +275,22 @@ int Board::try_add_wall(const Wall &wall)
     return 0;
 }
 
-int Board::recalc_dir(int dir, std::shared_ptr<Pawn> pawn)
+void Board::pawn_final_nodes(std::shared_ptr<Pawn> pawn,
+        std::vector<int> *nodes) const
 {
-    return (dir + pawn_sides_[pawn]) % 4;
+    int side = (pawn_sides_.at(pawn) + 2) % 4;
+    side_nodes(side, nodes);
+}
+
+bool Board::get_path(std::shared_ptr<Pawn> pawn, int end_node,
+        std::list<int> *nodes) const
+{
+    return bg_.find_path(pawn_nodes_.at(pawn), end_node, nodes);
 }
 
 bool Board::is_possible_move(int cur_node, int goal_node) const
 {
-    return bg_.is_neighbours(cur_node, goal_node);
+    return bg_.is_adjacent(cur_node, goal_node);
 }
 
 bool Board::wall_intersects(const Wall &wall) const
