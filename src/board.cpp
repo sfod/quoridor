@@ -212,7 +212,7 @@ int Board::try_add_wall(const Wall &wall)
             }
         }
 
-        /* wall blocks all pathes to the opposite side for one of pawns */
+        // wall blocks all pathes to the opposite side for one of pawns
         if (path_blocked) {
             break;
         }
