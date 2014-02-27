@@ -144,30 +144,22 @@ int Board::make_walking_move(std::shared_ptr<Pawn> pawn, int goal_node)
 
 int Board::add_wall(const Wall &wall)
 {
-    if (try_add_wall(wall) < 0) {
+    std::vector<std::pair<int, int>> edges;
+    if (try_add_wall(wall, &edges) < 0) {
         return -1;
     }
 
     walls_[wall.orientation()][wall.line()].insert(std::map<int, Wall>::value_type(wall.start_pos(), Wall(wall)));
 
-    int node1;
-    int node2;
-    for (int i = 0; i < wall.cnt(); ++i) {
-        if (wall.orientation() == 0) {
-            node1 = wall.line() * col_num_ + wall.start_pos() + i;
-            node2 = (wall.line() + 1) * col_num_ + wall.start_pos() + i;
-        }
-        else {
-            node1 = (wall.start_pos() + i) * row_num_ + wall.line();
-            node2 = (wall.start_pos() + i) * row_num_ + wall.line() + 1;
-        }
-        bg_.remove_edges(node1, node2);
+    for (auto edge : edges) {
+        bg_.remove_edges(edge.first, edge.second);
     }
+
 
     return 0;
 }
 
-int Board::try_add_wall(const Wall &wall)
+int Board::try_add_wall(const Wall &wall, std::vector<std::pair<int, int>> *edges)
 {
     int line_lim = (wall.orientation() ? col_num() : row_num()) - 1;
     int start_pos_lim = (wall.orientation() ? row_num() : col_num()) - 1;
@@ -184,17 +176,75 @@ int Board::try_add_wall(const Wall &wall)
 
     int node1;
     int node2;
-    for (int i = 0; i < wall.cnt(); ++i) {
-        if (wall.orientation() == 0) {
+    int node_tmp;
+    if (wall.orientation() == 0) {
+        for (int i = 0; i < wall.cnt(); ++i) {
             node1 = wall.line() * col_num_ + wall.start_pos() + i;
             node2 = (wall.line() + 1) * col_num_ + wall.start_pos() + i;
+            bg_.filter_edges(node1, node2);
+            edges->push_back(std::make_pair(node1, node2));
+
+            node_tmp = (wall.line() + 2) * col_num_ + wall.start_pos() + i;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node1, node_tmp);
+                edges->push_back(std::make_pair(node1, node_tmp));
+            }
+
+            node_tmp = (wall.line() - 1) * col_num_ + wall.start_pos() + i;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node_tmp, node2);
+                edges->push_back(std::make_pair(node_tmp, node2));
+            }
+
+            for (int j = i - 1; j <= i + 1; j += 2) {
+                node_tmp = (wall.line() + 1) * col_num_ + wall.start_pos() + j;
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node1, node_tmp);
+                    edges->push_back(std::make_pair(node1, node_tmp));
+                }
+
+                node_tmp = wall.line() * col_num_ + wall.start_pos() + j;
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node_tmp, node2);
+                    edges->push_back(std::make_pair(node_tmp, node2));
+                }
+
+            }
         }
-        else {
+    }
+    else {
+        for (int i = 0; i < wall.cnt(); ++i) {
             node1 = (wall.start_pos() + i) * row_num_ + wall.line();
             node2 = (wall.start_pos() + i) * row_num_ + wall.line() + 1;
-        }
+            bg_.filter_edges(node1, node2);
+            edges->push_back(std::make_pair(node1, node2));
 
-        bg_.filter_edges(node1, node2);
+            node_tmp = (wall.start_pos() + i) * row_num_ + wall.line() + 2;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node1, node_tmp);
+                edges->push_back(std::make_pair(node1, node_tmp));
+            }
+
+            node_tmp = (wall.start_pos() + i) * row_num_ + wall.line() - 1;
+            if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                bg_.filter_edges(node_tmp, node2);
+                edges->push_back(std::make_pair(node_tmp, node2));
+            }
+
+            for (int j = i - 1; j <= i + 1; j += 2) {
+                node_tmp = (wall.start_pos() + j) * row_num_ + wall.line() + 1;
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node1, node_tmp);
+                    edges->push_back(std::make_pair(node1, node_tmp));
+                }
+
+                node_tmp = (wall.start_pos() + j) * row_num_ + wall.line();
+                if ((node_tmp >= 0) && (node_tmp < row_num_ * col_num_)) {
+                    bg_.filter_edges(node_tmp, node2);
+                    edges->push_back(std::make_pair(node_tmp, node2));
+                }
+            }
+        }
     }
 
     bool path_blocked = false;

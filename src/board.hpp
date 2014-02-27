@@ -57,7 +57,7 @@ public:
     int make_walking_move(std::shared_ptr<Pawn> pawn, int goal_node);
     bool is_at_opposite_side(std::shared_ptr<Pawn> pawn) const;
     int add_wall(const Wall &wall);
-    int try_add_wall(const Wall &wall);
+    int try_add_wall(const Wall &wall, std::vector<std::pair<int, int>> *edges);
 
     void pawn_final_nodes(std::shared_ptr<Pawn> pawn,
             std::vector<int> *nodes) const;
