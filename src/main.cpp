@@ -33,7 +33,7 @@ struct game_opts_t {
 };
 
 
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger_mt)
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
 
 int init(int argc, char **argv, game_opts_t *game_opts);
 
@@ -45,9 +45,9 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    // logging::sources::severity_logger<logging::trivial::severity_level> lg;
-    boost::log::sources::logger_mt &lg = my_logger::get();
-    BOOST_LOG_SEV(lg, logging::trivial::info) << "Creating " << game_opts.ui_type << " UI";
+    boost::log::sources::logger &lg = my_logger::get();
+    BOOST_LOG_SEV(lg, logging::trivial::info) << "Creating "
+        << game_opts.ui_type << " UI";
 
     Quoridor::StateManager stm;
     Quoridor::UI::UIFactory uif;
