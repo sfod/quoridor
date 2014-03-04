@@ -68,13 +68,24 @@ int main(int argc, char **argv)
 
 int init(int argc, char **argv, game_opts_t *game_opts)
 {
+    std::string logfile;
+
     po::options_description options("Options");
     options.add_options()
-        ("ui,i",
-            po::value<std::string>(&game_opts->ui_type)->default_value("ncurses"),
-            "user interface")
-        ("help,h", "show help message")
-    ;
+    (
+        "ui,i",
+        po::value<std::string>(&game_opts->ui_type)->default_value("ncurses"),
+        "user interface"
+    )
+    (
+         "log,l",
+        po::value<std::string>(&logfile)->default_value("quoridor.log"),
+        "logging file"
+    )
+    (
+         "help,h",
+         "show help message"
+    );
     po::variables_map vm;
 
     try {
@@ -92,7 +103,10 @@ int init(int argc, char **argv, game_opts_t *game_opts)
         return -1;
     }
 
-    logging::add_file_log("quoridor.log");
+    logging::add_file_log(
+        boost::log::keywords::file_name = logfile,
+        boost::log::keywords::format = "[%TimeStamp%]: %Message%"
+    );
     logging::add_common_attributes();
 
     return 0;
