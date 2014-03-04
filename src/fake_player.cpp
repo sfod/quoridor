@@ -4,9 +4,19 @@
 
 #include <boost/random/discrete_distribution.hpp>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/exceptions.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+
 #include "exception.hpp"
 #include "walk_move.hpp"
 #include "wall_move.hpp"
+
+
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
 
 
 namespace Quoridor {
@@ -27,6 +37,8 @@ IMove *FakePlayer::get_move()
 {
     boost::random::discrete_distribution<> dist{0.6, 0.6};
 
+    boost::log::sources::logger &lg = my_logger::get();
+
     if (dist(gen_) == 0) {
         size_t min_path_len = 81;
         std::list<int> path;
@@ -46,6 +58,8 @@ IMove *FakePlayer::get_move()
 
         auto node_it = path.begin();
         int next_node = *node_it;
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "moving to "
+            << next_node;
         if (board_->is_occupied(next_node)) {
             // @todo
         }

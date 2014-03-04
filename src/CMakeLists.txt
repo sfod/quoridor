@@ -50,7 +50,7 @@ foreach (source ${UI_NCURSES_SOURCES})
     add_library(${source}_cxx_obj OBJECT UI/ncurses/${source}.cpp)
 endforeach()
 
-set(ADDITIONAL_LIBRARIES boost_program_options boost_thread menu ncurses)
+set(ADDITIONAL_LIBRARIES boost_program_options boost_log boost_log_setup boost_thread menu ncurses pthread)
 
 include_directories(${${PROJECT}_SOURCE_DIR}/src)
 include_directories(${${PROJECT}_SOURCE_DIR}/)
