@@ -288,6 +288,11 @@ bool Board::get_path(std::shared_ptr<Pawn> pawn, int end_node,
     return bg_.find_path(pawn_nodes_.at(pawn), end_node, nodes);
 }
 
+bool Board::is_win(std::shared_ptr<Pawn> pawn) const
+{
+    return is_at_opposite_side(pawn);
+}
+
 bool Board::is_possible_move(int cur_node, int goal_node) const
 {
     return bg_.is_adjacent(cur_node, goal_node);

@@ -64,6 +64,8 @@ public:
     bool get_path(std::shared_ptr<Pawn> pawn, int end_node,
             std::list<int> *nodes) const;
 
+    bool is_win(std::shared_ptr<Pawn> pawn) const;
+
 private:
     int row(int n) const { return n / col_num_; }
     int col(int n) const { return n % col_num_; }
