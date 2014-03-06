@@ -15,8 +15,8 @@ static std::vector<std::string> colors = {"red", "green", "blue", "yellow"};
 
 GameState::GameState(std::shared_ptr<UI::UI> ui,
         const std::vector<std::string> &player_types)
-    : game_(new Game()), pf_(), players_(), cur_player_idx_(0), repr_(),
-    is_running_(true)
+    : board_(new Board(9, 9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
+    repr_(), is_running_(true)
 {
     win_ = ui->create_window();
 
@@ -27,10 +27,13 @@ GameState::GameState(std::shared_ptr<UI::UI> ui,
     int i = 0;
     for (auto player_type : player_types) {
         std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
-        game_->add_pawn(pawn);
-        players_.push_back(pf_.make_player(player_type, game_->board(), pawn));
+        board_->add_pawn(pawn);
+        players_[pawn] = pf_.make_player(player_type, board_, pawn);
+        pawn_list_.push_back(pawn);
         ++i;
     }
+
+    cur_pawn_ = pawn_list_[0];
 
     init_board_repr();
 }
@@ -46,14 +49,16 @@ void GameState::handle_events(StateManager *stm)
     IMove *move = NULL;
 
     if (!is_running_) {
-            boost::this_thread::sleep(boost::posix_time::seconds(1));
-            std::shared_ptr<IState> start_game_state(new StartGameState(ui));
-            stm->change_state(std::shared_ptr<IState>(start_game_state));
-            return;
+        win_->print_message(boost::lexical_cast<std::string>(cur_pawn_->color()) + " win");
+        win_->draw();
+        boost::this_thread::sleep(boost::posix_time::seconds(2));
+        std::shared_ptr<IState> start_game_state(new StartGameState(ui));
+        stm->change_state(std::shared_ptr<IState>(start_game_state));
+        return;
     }
 
-    if (!players_[cur_player_idx_]->is_interactive()) {
-        move = players_[cur_player_idx_]->get_move();
+    if (!players_[cur_pawn_]->is_interactive()) {
+        move = players_[cur_pawn_]->get_move();
     }
     else if (ui->poll_event(&ev)) {
         switch (ev) {
@@ -68,37 +73,31 @@ void GameState::handle_events(StateManager *stm)
     }
 
     if (move != NULL) {
-        auto pawn = game_->pawn_list().at(cur_player_idx_);
-        pos_t prev_pos = game_->pawn_pos(pawn);
+        Pos cur_node = board_->pawn_node(cur_pawn_);
+        int rc;
 
-        int rc = game_->make_move(move, pawn);
-        if (rc == 0) {
-            if (dynamic_cast<WalkMove *>(move)) {
-                pos_t pos = game_->pawn_pos(pawn);
-                redraw_pawn(pawn->color()[0], prev_pos, pos);
+        if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
+            rc = board_->make_walking_move(cur_pawn_, walk_move->node());
+            if (rc == 0) {
+                Pos goal_node = board_->pawn_node(cur_pawn_);
+                redraw_pawn(cur_pawn_->color()[0], cur_node, goal_node);
             }
-            else if (WallMove *wall_move = dynamic_cast<WallMove *>(move)) {
-                const Wall &wall = wall_move->wall();
+        }
+        else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
+            const Wall &wall = wall_move->wall();
+            rc = board_->add_wall(wall);
+            if (rc == 0) {
                 draw_wall(wall);
             }
-            cur_player_idx_ = (cur_player_idx_ + 1) % players_.size();
-        }
-        // player should continue turn
-        else if (rc == -2) {
-        }
-        // invalid move, player should make another move
-        else if (rc == -1) {
-        }
-        // not possible
-        else {
-            throw Exception("unknown return code from make_move :"
-                    + boost::lexical_cast<std::string>(rc));
         }
 
-        if (game_->is_win(pawn)) {
-            win_->print_message(boost::lexical_cast<std::string>(pawn->color()) + " win");
+        if (board_->is_at_goal_node(cur_pawn_)) {
             is_running_ = false;
         }
+        else if (rc == 0) {
+            cur_pawn_ = next_pawn();
+        }
+
     }
 
     boost::this_thread::sleep(boost::posix_time::milliseconds(200));
@@ -133,17 +132,16 @@ void GameState::init_board_repr() const
         }
     }
 
-    for (size_t i = 0; i < players_.size(); ++i) {
-        auto pawn = game_->pawn_list().at(i);
-        pos_t pos = game_->pawn_pos(pawn);
-        repr_[pos.row * 2 + 1][pos.col * 2 + 1] = pawn->color()[0];
+    for (auto pawn : pawn_list_) {
+        Pos pos = board_->pawn_node(pawn);
+        repr_[pos.row() * 2 + 1][pos.col() * 2 + 1] = pawn->color()[0];
     }
 }
 
-void GameState::redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const
+void GameState::redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const
 {
-    repr_[old_pos.row * 2 + 1][old_pos.col * 2 + 1] = ' ';
-    repr_[new_pos.row * 2 + 1][new_pos.col * 2 + 1] = p;
+    repr_[old_pos.row() * 2 + 1][old_pos.col() * 2 + 1] = ' ';
+    repr_[new_pos.row() * 2 + 1][new_pos.col() * 2 + 1] = p;
 }
 
 void GameState::draw_wall(const Wall &wall) const
@@ -157,6 +155,22 @@ void GameState::draw_wall(const Wall &wall) const
         for (int i = 0; i < wall.cnt(); ++i) {
             repr_[(wall.start_pos() + i) * 2 + 1][wall.line() * 2 + 2] = '$';
         }
+    }
+}
+
+std::shared_ptr<Pawn> GameState::next_pawn() const
+{
+    auto it = pawn_list_.begin();
+    for (;it != pawn_list_.end(); ++it) {
+        if (*it == cur_pawn_) {
+            break;
+        }
+    }
+    if (++it == pawn_list_.end()) {
+        return pawn_list_[0];
+    }
+    else {
+        return *it;
     }
 }
 

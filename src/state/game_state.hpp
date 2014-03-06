@@ -4,7 +4,8 @@
 #include <vector>
 
 #include "istate.hpp"
-#include "game.hpp"
+
+#include "board.hpp"
 #include "player_factory.hpp"
 #include "iplayer.hpp"
 #include "UI/window.hpp"
@@ -25,14 +26,16 @@ public:
 private:
     void init_board_repr() const;
     void draw_wall(const Wall &wall) const;
-    void redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const;
+    void redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const;
+    std::shared_ptr<Pawn> next_pawn() const;
 
 private:
     std::shared_ptr<UI::Window> win_;
-    std::shared_ptr<Game> game_;
+    std::shared_ptr<Board> board_;
     PlayerFactory pf_;
-    std::vector<std::shared_ptr<IPlayer>> players_;
-    int cur_player_idx_;
+    std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
+    std::vector<std::shared_ptr<Pawn>> pawn_list_;
+    std::shared_ptr<Pawn> cur_pawn_;
     mutable std::vector<std::vector<char>> repr_;
     bool is_running_;
 };

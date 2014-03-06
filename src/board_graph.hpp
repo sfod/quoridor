@@ -8,6 +8,9 @@
 #include <boost/graph/adjacency_iterator.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
+#include "pos.hpp"
+
+
 namespace Quoridor {
 
 typedef boost::adjacency_list< boost::listS, boost::vecS,
@@ -55,19 +58,22 @@ public:
 
     int set_size(int row_num, int col_num);
 
-    void remove_edges(int node1, int node2);
-    void block_edge(int node1, int node2);
-    void unblock_edge(int node1, int node2);
-    void block_neighbours(int node);
-    void unblock_neighbours(int node);
+    void remove_edges(const Pos &node1, const Pos &node2);
+    void block_neighbours(const Pos &node);
+    void unblock_neighbours(const Pos &node);
 
-    bool find_path(int node1, int node2, std::list<int> *path) const;
-    bool is_neighbours(int node1, int node2) const;
-    bool is_adjacent(int node1, int node2) const;
+    bool find_path(const Pos &start_node, const Pos &end_node,
+            std::list<Pos> *path) const;
+    bool is_adjacent(const Pos &node1, const Pos &node2) const;
 
-    void filter_edges(int node1, int node2);
+    void filter_edges(const Pos &node1, const Pos &node2);
     void reset_filters();
-    bool is_path_exists(int node1, int node2) const;
+    bool is_path_exists(const Pos &node1, const Pos &node2) const;
+
+private:
+    bool is_neighbours(int inode1, int inode2) const;
+    void block_edge(int inode1, int inode2);
+    void unblock_edge(int inode1, int inode2);
 
 private:
     int row_num_;
