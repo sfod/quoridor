@@ -14,11 +14,7 @@ Player::~Player()
 
 IMove *Player::get_move()
 {
-    int i;
-    std::cin >> i;
-
-    IMove *move = new WalkMove(i);
-
+    IMove *move = new WalkMove();
     return move;
 }
 

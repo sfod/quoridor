@@ -20,7 +20,7 @@ public:
 private:
     std::shared_ptr<Board> board_;
     std::shared_ptr<Pawn> pawn_;
-    std::vector<int> fin_nodes_;
+    std::vector<Pos> goal_nodes_;
     boost::random::mt19937 gen_;
 };
 

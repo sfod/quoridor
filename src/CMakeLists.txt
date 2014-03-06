@@ -5,6 +5,7 @@ set(CORE_SOURCES
     wall
     wall_move
     walk_move
+    pos
     board
     board_graph
     pawn

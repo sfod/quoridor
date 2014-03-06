@@ -23,9 +23,9 @@ namespace Quoridor {
 
 FakePlayer::FakePlayer(std::shared_ptr<Board> board,
         std::shared_ptr<Pawn> pawn)
-    : board_(board), pawn_(pawn), fin_nodes_(), gen_()
+    : board_(board), pawn_(pawn), goal_nodes_(), gen_()
 {
-    board_->pawn_final_nodes(pawn_, &fin_nodes_);
+    board_->pawn_goal_nodes(pawn_, &goal_nodes_);
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));
 }
 
@@ -41,25 +41,25 @@ IMove *FakePlayer::get_move()
 
     if (dist(gen_) == 0) {
         size_t min_path_len = 81;
-        std::list<int> path;
-        for (auto end_node : fin_nodes_) {
-            std::list<int> nodes;
-            if (board_->get_path(pawn_, end_node, &nodes)) {
-                if (min_path_len > nodes.size()) {
-                    min_path_len = nodes.size();
-                    path = nodes;
+        std::list<Pos> min_path;
+        for (auto end_node : goal_nodes_) {
+            std::list<Pos> path;
+            if (board_->get_path(pawn_, end_node, &path)) {
+                if (min_path_len > path.size()) {
+                    min_path_len = path.size();
+                    min_path = path;
                 }
             }
         }
 
-        if (path.size() == 0) {
+        if (min_path.size() == 0) {
             throw Exception("all pathes are blocked");
         }
 
-        auto node_it = path.begin();
-        int next_node = *node_it;
+        auto node_it = min_path.begin();
+        Pos next_node = *node_it;
         BOOST_LOG_SEV(lg, boost::log::trivial::info) << "moving to "
-            << next_node;
+            << next_node.row() << ":" << next_node.col();
         if (board_->is_occupied(next_node)) {
             // @todo
         }

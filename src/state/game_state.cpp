@@ -73,13 +73,13 @@ void GameState::handle_events(StateManager *stm)
     }
 
     if (move != NULL) {
-        pos_t cur_node = board_->pawn_pos(cur_pawn_);
+        Pos cur_node = board_->pawn_node(cur_pawn_);
         int rc;
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
             rc = board_->make_walking_move(cur_pawn_, walk_move->node());
             if (rc == 0) {
-                pos_t goal_node = board_->pawn_pos(cur_pawn_);
+                Pos goal_node = board_->pawn_node(cur_pawn_);
                 redraw_pawn(cur_pawn_->color()[0], cur_node, goal_node);
             }
         }
@@ -91,7 +91,7 @@ void GameState::handle_events(StateManager *stm)
             }
         }
 
-        if (board_->is_win(cur_pawn_)) {
+        if (board_->is_at_goal_node(cur_pawn_)) {
             is_running_ = false;
         }
         else if (rc == 0) {
@@ -133,15 +133,15 @@ void GameState::init_board_repr() const
     }
 
     for (auto pawn : pawn_list_) {
-        pos_t pos = board_->pawn_pos(pawn);
-        repr_[pos.row * 2 + 1][pos.col * 2 + 1] = pawn->color()[0];
+        Pos pos = board_->pawn_node(pawn);
+        repr_[pos.row() * 2 + 1][pos.col() * 2 + 1] = pawn->color()[0];
     }
 }
 
-void GameState::redraw_pawn(char p, const pos_t &old_pos, const pos_t &new_pos) const
+void GameState::redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const
 {
-    repr_[old_pos.row * 2 + 1][old_pos.col * 2 + 1] = ' ';
-    repr_[new_pos.row * 2 + 1][new_pos.col * 2 + 1] = p;
+    repr_[old_pos.row() * 2 + 1][old_pos.col() * 2 + 1] = ' ';
+    repr_[new_pos.row() * 2 + 1][new_pos.col() * 2 + 1] = p;
 }
 
 void GameState::draw_wall(const Wall &wall) const
