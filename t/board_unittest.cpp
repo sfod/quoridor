@@ -4,7 +4,7 @@
 
 class BoardTest : public ::testing::Test {
 protected:
-    BoardTest() : board_(11, 9) {
+    BoardTest() : board_(9) {
     }
 
     Quoridor::Board board_;
@@ -12,30 +12,10 @@ protected:
 
 TEST_F(BoardTest, ctor)
 {
-    EXPECT_EQ(11, board_.row_num());
-    EXPECT_EQ(9, board_.col_num());
     // test invalid Board construction
-    EXPECT_THROW(Quoridor::Board(-1, 1), Quoridor::Exception);
-    EXPECT_THROW(Quoridor::Board(0, 1), Quoridor::Exception);
-    EXPECT_THROW(Quoridor::Board(1, -1), Quoridor::Exception);
-    EXPECT_THROW(Quoridor::Board(1, 0), Quoridor::Exception);
-    EXPECT_THROW(Quoridor::Board(8, 9), Quoridor::Exception);
-    EXPECT_THROW(Quoridor::Board(9, 8), Quoridor::Exception);
-}
-
-TEST_F(BoardTest, set_size)
-{
-    // test invalid Board sizes
-    EXPECT_THROW(board_.set_size(0, 0), Quoridor::Exception);
-    EXPECT_THROW(board_.set_size(0, 1), Quoridor::Exception);
-    EXPECT_THROW(board_.set_size(1, 0), Quoridor::Exception);
-    EXPECT_THROW(board_.set_size(-1, -1), Quoridor::Exception);
-    EXPECT_THROW(board_.set_size(-1, 1), Quoridor::Exception);
-    EXPECT_THROW(board_.set_size(1, -1), Quoridor::Exception);
-
-    board_.set_size(15, 11);
-    EXPECT_EQ(15, board_.row_num());
-    EXPECT_EQ(11, board_.col_num());
+    EXPECT_THROW(Quoridor::Board(-1), Quoridor::Exception);
+    EXPECT_THROW(Quoridor::Board(0), Quoridor::Exception);
+    EXPECT_THROW(Quoridor::Board(2), Quoridor::Exception);
 }
 
 TEST_F(BoardTest, add_wall)

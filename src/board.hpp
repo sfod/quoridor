@@ -17,12 +17,8 @@ namespace Quoridor {
 
 class Board {
 public:
-    Board(int row_num, int col_num);
+    explicit Board(int size);
     virtual ~Board();
-
-    void set_size(int row_num, int col_num);
-    int row_num() const { return row_num_; }
-    int col_num() const { return col_num_; }
 
     int add_pawn(std::shared_ptr<Pawn> pawn);
     bool is_occupied(const Pos &node) const;
@@ -42,15 +38,14 @@ public:
 
 private:
     int next_side() const;
-    int row(int n) const { return n / col_num_; }
-    int col(int n) const { return n % col_num_; }
+    int row(int n) const { return n / size_; }
+    int col(int n) const { return n % size_; }
     bool is_possible_move(const Pos &cur_node, const Pos &node) const;
     bool wall_intersects(const Wall &wall) const;
     void side_nodes(int side, std::vector<Pos> *nodes) const;
 
 private:
-    int row_num_;
-    int col_num_;
+    int size_;
     mutable std::vector<std::pair<int, int>> sides_;
     std::map<std::shared_ptr<Pawn>, int> pawn_sides_;
     std::map<int, std::map<int, std::map<int, Wall>>> walls_;

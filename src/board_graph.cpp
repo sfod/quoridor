@@ -1,4 +1,5 @@
 #include "board_graph.hpp"
+#include "exception.hpp"
 
 namespace Quoridor {
 
@@ -40,22 +41,12 @@ void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
     }
 }
 
-BoardGraph::BoardGraph() : row_num_(0), col_num_(0), g_(), nodes_(), edges_(), fe_()
-{
-}
-
-BoardGraph::~BoardGraph()
-{
-}
-
-int BoardGraph::set_size(int row_num, int col_num)
+BoardGraph::BoardGraph(int row_num, int col_num)
+    : row_num_(row_num), col_num_(col_num), g_(), nodes_(), edges_(), fe_()
 {
     if ((row_num <= 0) || (col_num <= 0)) {
-        return -1;
+        throw Exception("invalid size");
     }
-
-    row_num_ = row_num;
-    col_num_ = col_num;
 
     g_ = graph_t(row_num * col_num);
 
@@ -92,8 +83,10 @@ int BoardGraph::set_size(int row_num, int col_num)
         boost::tie(e, b) = boost::add_edge(it.first, it.second, g_);
         weightmap[e] = 1;
     }
+}
 
-    return 0;
+BoardGraph::~BoardGraph()
+{
 }
 
 void BoardGraph::remove_edges(const Pos &node1, const Pos &node2)

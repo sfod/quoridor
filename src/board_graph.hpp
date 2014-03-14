@@ -53,10 +53,8 @@ private:
 
 class BoardGraph {
 public:
-    BoardGraph();
+    BoardGraph(int row_num, int col_num);
     ~BoardGraph();
-
-    int set_size(int row_num, int col_num);
 
     void remove_edges(const Pos &node1, const Pos &node2);
     void block_neighbours(const Pos &node);

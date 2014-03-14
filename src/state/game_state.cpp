@@ -15,7 +15,7 @@ static std::vector<std::string> colors = {"red", "green", "blue", "yellow"};
 
 GameState::GameState(std::shared_ptr<UI::UI> ui,
         const std::vector<std::string> &player_types)
-    : board_(new Board(9, 9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
+    : board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     repr_(), is_running_(true)
 {
     win_ = ui->create_window();
