@@ -32,7 +32,7 @@ void StateManager::change_state(std::shared_ptr<IState> state)
     states_.push_back(state);
 
     CEGUI::System::getSingleton().getDefaultGUIContext().
-	    setRootWindow(state->window().get());
+            setRootWindow(state->window().get());
 }
 
 void StateManager::handle_events()
