@@ -14,10 +14,6 @@ public:
     IState() {}
     virtual ~IState() {}
 
-    virtual void handle_events(StateManager *stm) = 0;
-    virtual void update() = 0;
-    virtual void draw() = 0;
-    virtual void change_state() = 0;
     virtual std::shared_ptr<CEGUI::Window> window() const = 0;
 };
 
