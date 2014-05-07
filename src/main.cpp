@@ -39,15 +39,14 @@ int main(int argc, char **argv)
     boost::log::sources::logger &lg = my_logger::get();
     BOOST_LOG_SEV(lg, logging::trivial::info) << "initializing game";
 
-    Quoridor::StateManager stm;
+    std::shared_ptr<Quoridor::StateManager> stm(new Quoridor::StateManager);
+    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState(stm));
 
-    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState());
-    stm.change_state(std::shared_ptr<Quoridor::IState>(menu_state));
-
-    stm.draw();
-    while (stm.is_running()) {
-        stm.handle_events();
-        stm.draw();
+    stm->change_state(std::shared_ptr<Quoridor::IState>(menu_state));
+    stm->draw();
+    while (stm->is_running()) {
+        stm->handle_events();
+        stm->draw();
     }
 
     return EXIT_SUCCESS;
