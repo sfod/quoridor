@@ -66,11 +66,6 @@ void StateManager::handle_events()
     last_time_pulse_ = current_time_pulse;
 }
 
-void StateManager::update()
-{
-    states_.back()->update();
-}
-
 void StateManager::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
