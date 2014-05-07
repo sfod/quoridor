@@ -3,25 +3,26 @@
 
 #include <vector>
 
+#include <CEGUI/CEGUI.h>
+
 #include "istate.hpp"
-#include "UI/window.hpp"
-#include "UI/menu.hpp"
+
 
 namespace Quoridor {
 
 class StartGameState : public IState {
 public:
-    explicit StartGameState(std::shared_ptr<UI::UI> ui);
+    explicit StartGameState(std::shared_ptr<StateManager> stm);
     virtual ~StartGameState();
 
-    virtual void handle_events(StateManager *stm);
-    virtual void update();
-    virtual void draw();
-    virtual void change_state();
+    virtual std::shared_ptr<CEGUI::Window> window() const;
 
 private:
-    std::shared_ptr<UI::Window> win_;
-    std::shared_ptr<UI::Menu> menu_;
+    void subscribe_for_events_();
+
+private:
+    std::shared_ptr<StateManager> stm_;
+    std::shared_ptr<CEGUI::Window> win_;
     std::vector<std::string> player_types_;
     size_t player_num_;
 };
