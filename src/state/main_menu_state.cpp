@@ -1,34 +1,31 @@
 #include "main_menu_state.hpp"
+
 #include <iostream>
-// #include "start_game_state.hpp"
+#include "start_game_state.hpp"
+
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/exceptions.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+
 
 namespace Quoridor {
 
-static std::vector<std::string> items = {"game", "quit"};
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
 
-MainMenuState::MainMenuState()
+MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm)
+    : stm_(stm),
+    win_(CEGUI::WindowManager::getSingleton().loadLayoutFromFile("main_menu.layout"))
 {
-    win_ = std::shared_ptr<CEGUI::Window>(CEGUI::WindowManager::getSingleton().loadLayoutFromFile("main_menu.layout"));
     subscribe_for_events_();
 }
 
 MainMenuState::~MainMenuState()
-{
-}
-
-void MainMenuState::handle_events(StateManager * /* stm */)
-{
-}
-
-void MainMenuState::update()
-{
-}
-
-void MainMenuState::draw()
-{
-}
-
-void MainMenuState::change_state()
 {
 }
 
@@ -45,11 +42,31 @@ void MainMenuState::subscribe_for_events_()
                     &MainMenuState::handle_start_game_, this
             )
     );
+    win_->getChild("mainMenuWindow/quitGame")->subscribeEvent(
+            CEGUI::Window::EventMouseClick,
+            CEGUI::Event::Subscriber(
+                    &MainMenuState::handle_quit_game_, this
+            )
+    );
 }
 
 bool MainMenuState::handle_start_game_(const CEGUI::EventArgs &/* e */)
 {
-    std::cout << "starting game..." << std::endl;
+    boost::log::sources::logger &lg = my_logger::get();
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting new game";
+
+    stm_->change_state(std::shared_ptr<IState>(new StartGameState(stm_)));
+
+    return true;
+}
+
+bool MainMenuState::handle_quit_game_(const CEGUI::EventArgs &/* e */)
+{
+    boost::log::sources::logger &lg = my_logger::get();
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "quit game";
+
+    stm_->stop();
+
     return true;
 }
 
