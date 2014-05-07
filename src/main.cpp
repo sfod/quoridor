@@ -15,13 +15,11 @@
 #include <boost/log/sources/logger.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 
-#include "UI/ui_factory.hpp"
 #include "player_factory.hpp"
 #include "exception.hpp"
 
-#include "state/main_menu_state.hpp"
-#include "state/game_state.hpp"
 #include "state/state_manager.hpp"
+#include "state/main_menu_state.hpp"
 
 
 namespace po = boost::program_options;
@@ -50,10 +48,8 @@ int main(int argc, char **argv)
         << game_opts.ui_type << " UI";
 
     Quoridor::StateManager stm;
-    Quoridor::UI::UIFactory uif;
 
-    stm.create_ui(uif, game_opts.ui_type);
-    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState(stm.ui()));
+    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState());
     stm.change_state(std::shared_ptr<Quoridor::IState>(menu_state));
 
     stm.draw();
