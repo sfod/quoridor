@@ -2,8 +2,8 @@
 #define QUORIDOR_ISTATE_HPP_
 
 #include <memory>
+#include <CEGUI/CEGUI.h>
 #include "state_manager.hpp"
-#include "UI/ui.hpp"
 
 namespace Quoridor {
 
@@ -18,6 +18,7 @@ public:
     virtual void update() = 0;
     virtual void draw() = 0;
     virtual void change_state() = 0;
+    virtual std::shared_ptr<CEGUI::Window> window() const = 0;
 };
 
 }  /* namespace Quoridor */
