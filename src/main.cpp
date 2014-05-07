@@ -26,26 +26,18 @@ namespace po = boost::program_options;
 namespace logging = boost::log;
 
 
-struct game_opts_t {
-    std::string ui_type;
-};
-
-
 BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
 
-int init(int argc, char **argv, game_opts_t *game_opts);
+int init(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
-    game_opts_t game_opts;
-
-    if (init(argc, argv, &game_opts) < 0) {
+    if (init(argc, argv) < 0) {
         return EXIT_FAILURE;
     }
 
     boost::log::sources::logger &lg = my_logger::get();
-    BOOST_LOG_SEV(lg, logging::trivial::info) << "Creating "
-        << game_opts.ui_type << " UI";
+    BOOST_LOG_SEV(lg, logging::trivial::info) << "initializing game";
 
     Quoridor::StateManager stm;
 
@@ -55,24 +47,18 @@ int main(int argc, char **argv)
     stm.draw();
     while (stm.is_running()) {
         stm.handle_events();
-        stm.update();
         stm.draw();
     }
 
     return EXIT_SUCCESS;
 }
 
-int init(int argc, char **argv, game_opts_t *game_opts)
+int init(int argc, char **argv)
 {
     std::string logfile;
 
     po::options_description options("Options");
     options.add_options()
-    (
-        "ui,i",
-        po::value<std::string>(&game_opts->ui_type)->default_value("ncurses"),
-        "user interface"
-    )
     (
          "log,l",
         po::value<std::string>(&logfile)->default_value("quoridor.log"),
