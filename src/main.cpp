@@ -45,9 +45,7 @@ int main(int argc, char **argv)
     BOOST_LOG_SEV(lg, logging::trivial::info) << "initializing game";
 
     std::shared_ptr<Quoridor::StateManager> stm(new Quoridor::StateManager);
-    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState(stm));
-
-    stm->change_state(std::shared_ptr<Quoridor::IState>(menu_state));
+    stm->change_state(std::shared_ptr<Quoridor::IState>(new Quoridor::MainMenuState(stm)));
     stm->draw();
     while (stm->is_running()) {
         stm->handle_events();
