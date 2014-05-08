@@ -36,10 +36,10 @@ std::shared_ptr<CEGUI::Window> MainMenuState::window() const
 
 void MainMenuState::subscribe_for_events_()
 {
-    win_->getChild("mainMenuWindow/startGame")->subscribeEvent(
+    win_->getChild("mainMenuWindow/newGame")->subscribeEvent(
             CEGUI::Window::EventMouseClick,
             CEGUI::Event::Subscriber(
-                    &MainMenuState::handle_start_game_, this
+                    &MainMenuState::handle_new_game_, this
             )
     );
     win_->getChild("mainMenuWindow/quitGame")->subscribeEvent(
@@ -50,7 +50,7 @@ void MainMenuState::subscribe_for_events_()
     );
 }
 
-bool MainMenuState::handle_start_game_(const CEGUI::EventArgs &/* e */)
+bool MainMenuState::handle_new_game_(const CEGUI::EventArgs &/* e */)
 {
     boost::log::sources::logger &lg = my_logger::get();
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting new game";
