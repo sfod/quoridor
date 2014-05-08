@@ -1,19 +1,24 @@
 #include <cstdlib>
 
-#include <iostream>
+#include <fstream>
 #include <memory>
 
 #include <boost/program_options.hpp>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/exceptions.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/sources/global_logger_storage.hpp>
 #include <boost/log/sources/logger.hpp>
 #include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
 
 #include "UI/ui_factory.hpp"
 #include "player_factory.hpp"
@@ -103,11 +108,12 @@ int init(int argc, char **argv, game_opts_t *game_opts)
         return -1;
     }
 
-    logging::add_file_log(
-        boost::log::keywords::file_name = logfile,
-        boost::log::keywords::format = "[%TimeStamp%]: %Message%"
-    );
-    logging::add_common_attributes();
+    typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> text_sink;
+    boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
+    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>("quoridor.log"));
+    sink->locked_backend()->auto_flush(true);
+
+    boost::log::core::get()->add_sink(sink);
 
     return 0;
 }
