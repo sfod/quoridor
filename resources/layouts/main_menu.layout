@@ -5,14 +5,16 @@
         <Property name="Position" value="{ {0, 0}, {0, 0} }"/>
         <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }"/>
         <Property name="Text" value="Quoridor" />
-        <Window type="TaharezLook/Button" name="startGame">
-            <Property name="Text" value="Start Game"/>
-            <Property name="Position" value="{ {0.5, 0.0}, {0.1, 0.0} }"/>
+        <Window type="TaharezLook/Button" name="newGame">
+            <Property name="Text" value="New Game"/>
+            <Property name="Position" value="{ {0.4, 0.0}, {0.1, 0.0} }"/>
+            <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
             <Property name="TooltipText" value="Push me!"/>
         </Window>
         <Window type="TaharezLook/Button" name="quitGame">
             <Property name="Text" value="Quit Game"/>
-            <Property name="Position" value="{ {0.5, 0.0}, {0.2, 0.0} }"/>
+            <Property name="Position" value="{ {0.4, 0.0}, {0.2, 0.0} }"/>
+            <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
             <Property name="TooltipText" value="Push me!"/>
         </Window>
     </Window>

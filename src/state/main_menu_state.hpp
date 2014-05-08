@@ -17,7 +17,7 @@ public:
 
 private:
     void subscribe_for_events_();
-    bool handle_start_game_(const CEGUI::EventArgs &e);
+    bool handle_new_game_(const CEGUI::EventArgs &e);
     bool handle_quit_game_(const CEGUI::EventArgs &e);
 
 private:
