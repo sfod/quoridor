@@ -5,24 +5,10 @@
 
 #include <boost/program_options.hpp>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/exceptions.hpp>
-#include <boost/log/sinks/sync_frontend.hpp>
-#include <boost/log/sinks/text_ostream_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-
 #include "UI/ui_factory.hpp"
 #include "player_factory.hpp"
 #include "exception.hpp"
+#include "logger.hpp"
 
 #include "state/main_menu_state.hpp"
 #include "state/game_state.hpp"
