@@ -26,7 +26,9 @@ struct game_opts_t {
 
 BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
 
-int init(int argc, char **argv, game_opts_t *game_opts);
+
+static int init(int argc, char **argv, game_opts_t *game_opts);
+static void init_logging(const std::string &logfile);
 
 int main(int argc, char **argv)
 {
@@ -57,7 +59,7 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-int init(int argc, char **argv, game_opts_t *game_opts)
+static int init(int argc, char **argv, game_opts_t *game_opts)
 {
     std::string logfile;
 
@@ -94,12 +96,33 @@ int init(int argc, char **argv, game_opts_t *game_opts)
         return -1;
     }
 
-    typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> text_sink;
-    boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
-    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>("quoridor.log"));
-    sink->locked_backend()->auto_flush(true);
-
-    boost::log::core::get()->add_sink(sink);
+    init_logging(logfile);
 
     return 0;
+}
+
+static void init_logging(const std::string &logfile)
+{
+    boost::log::add_file_log(
+        boost::log::keywords::file_name = logfile,
+        boost::log::keywords::open_mode = std::ios_base::app,
+        boost::log::keywords::auto_flush = true,
+        boost::log::keywords::format = (
+            boost::log::expressions::stream
+                << boost::log::expressions::format_date_time<
+                    boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S")
+                << " [" << boost::log::trivial::severity << "] "
+                << boost::log::expressions::smessage
+        )
+    );
+    boost::log::add_console_log(
+        std::clog,
+        boost::log::keywords::format = (
+            boost::log::expressions::stream
+                << "[" << boost::log::trivial::severity << "] "
+                << boost::log::expressions::smessage
+        )
+    );
+
+    boost::log::add_common_attributes();
 }
