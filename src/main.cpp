@@ -24,7 +24,6 @@ struct game_opts_t {
 };
 
 
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
 
 
 static int init(int argc, char **argv, game_opts_t *game_opts);
@@ -38,7 +37,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    boost::log::sources::logger &lg = my_logger::get();
+    boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
     BOOST_LOG_SEV(lg, logging::trivial::info) << "Creating "
         << game_opts.ui_type << " UI";
 
