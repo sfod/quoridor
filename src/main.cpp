@@ -24,6 +24,9 @@ struct game_opts_t {
 };
 
 
+BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", boost::log::attributes::named_scope::value_type)
+BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
+
 
 
 static int init(int argc, char **argv, game_opts_t *game_opts);
@@ -100,20 +103,30 @@ static int init(int argc, char **argv, game_opts_t *game_opts)
     return 0;
 }
 
+void formatter(boost::log::record_view const &rec, boost::log::formatting_ostream &strm)
+{
+    strm << rec[timestamp]
+        << " [" << rec[boost::log::trivial::severity] << "] ";
+
+    boost::log::attributes::named_scope_list scope_list = rec[scope].get();
+    for (auto iter = scope_list.begin(); iter != scope_list.end(); ++iter) {
+        strm << "(" << iter->scope_name << ") ";
+    }
+
+    strm << rec[boost::log::expressions::smessage];
+}
+
 static void init_logging(const std::string &logfile)
 {
-    boost::log::add_file_log(
-        boost::log::keywords::file_name = logfile,
-        boost::log::keywords::open_mode = std::ios_base::app,
-        boost::log::keywords::auto_flush = true,
-        boost::log::keywords::format = (
-            boost::log::expressions::stream
-                << boost::log::expressions::format_date_time<
-                    boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S")
-                << " [" << boost::log::trivial::severity << "] "
-                << boost::log::expressions::smessage
-        )
-    );
+    typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> text_sink;
+    boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
+
+    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(logfile, std::ios_base::app));
+    sink->locked_backend()->auto_flush(true);
+    sink->set_formatter(&formatter);
+
+    boost::log::core::get()->add_sink(sink);
+
     boost::log::add_console_log(
         std::clog,
         boost::log::keywords::format = (
