@@ -118,10 +118,13 @@ static void init_logging(const std::string &logfile)
         std::clog,
         boost::log::keywords::format = (
             boost::log::expressions::stream
-                << "[" << boost::log::trivial::severity << "] "
+                << boost::log::expressions::format_named_scope("Scope", boost::log::keywords::format = "%n")
+                << ": [" << boost::log::trivial::severity << "] "
                 << boost::log::expressions::smessage
         )
     );
 
     boost::log::add_common_attributes();
+    boost::log::core::get()->add_global_attribute("Scope",
+            boost::log::attributes::named_scope());
 }
