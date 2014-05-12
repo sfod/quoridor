@@ -9,6 +9,8 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 
 namespace Quoridor {
 
+std::string MainMenuState::name_("Main Menu");
+
 MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm)
     : stm_(stm),
     win_(CEGUI::WindowManager::getSingleton().loadLayoutFromFile("main_menu.layout"))
@@ -23,6 +25,11 @@ MainMenuState::~MainMenuState()
 std::shared_ptr<CEGUI::Window> MainMenuState::window() const
 {
     return win_;
+}
+
+const std::string &MainMenuState::name() const
+{
+    return name_;
 }
 
 void MainMenuState::subscribe_for_events_()

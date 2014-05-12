@@ -14,6 +14,7 @@ public:
     virtual ~MainMenuState();
 
     virtual std::shared_ptr<CEGUI::Window> window() const;
+    virtual const std::string &name() const;
 
 private:
     void subscribe_for_events_();
@@ -21,6 +22,7 @@ private:
     bool handle_quit_game_(const CEGUI::EventArgs &e);
 
 private:
+    static std::string name_;
     std::shared_ptr<StateManager> stm_;
     std::shared_ptr<CEGUI::Window> win_;
 };
