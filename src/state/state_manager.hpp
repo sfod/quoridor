@@ -28,6 +28,7 @@ public:
 private:
     void init_sdl_();
     void init_resource_provider_();
+    void inject_time_pulse_();
 
 private:
     SDL_Window *win_;
