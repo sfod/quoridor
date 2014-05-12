@@ -2,20 +2,10 @@
 
 #include <iostream>
 #include "start_game_state.hpp"
-
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/exceptions.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/severity_logger.hpp>
+#include "logger.hpp"
 
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
-
 
 namespace Quoridor {
 
