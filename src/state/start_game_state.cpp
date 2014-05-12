@@ -25,6 +25,8 @@ StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
 
 StartGameState::~StartGameState()
 {
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "destroying state " << name_;
+    CEGUI::WindowManager::getSingleton().destroyWindow(win_.get());
 }
 
 std::shared_ptr<CEGUI::Window> StartGameState::window() const

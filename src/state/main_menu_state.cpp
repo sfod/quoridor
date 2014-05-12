@@ -20,6 +20,8 @@ MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm)
 
 MainMenuState::~MainMenuState()
 {
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "destroying state " << name_;
+    CEGUI::WindowManager::getSingleton().destroyWindow(win_.get());
 }
 
 std::shared_ptr<CEGUI::Window> MainMenuState::window() const
