@@ -43,24 +43,24 @@ void StateManager::handle_events()
 {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
-	switch (e.type) {
-	case SDL_MOUSEMOTION:
-	    CEGUI::System::getSingleton().getDefaultGUIContext().
-		    injectMousePosition(static_cast<float>(e.motion.x),
-			    static_cast<float>(e.motion.y));
-	    break;
-	case SDL_MOUSEBUTTONDOWN:
-	    CEGUI::System::getSingleton().getDefaultGUIContext().
-		    injectMouseButtonDown(CEGUI::MouseButton::LeftButton);
-	    break;
-	case SDL_MOUSEBUTTONUP:
-	    CEGUI::System::getSingleton().getDefaultGUIContext().
-		    injectMouseButtonUp(CEGUI::MouseButton::LeftButton);
-	    break;
-	case SDL_QUIT:
-	    stop();
-	    break;
-	}
+        switch (e.type) {
+        case SDL_MOUSEMOTION:
+            CEGUI::System::getSingleton().getDefaultGUIContext().
+                injectMousePosition(static_cast<float>(e.motion.x),
+                    static_cast<float>(e.motion.y));
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            CEGUI::System::getSingleton().getDefaultGUIContext().
+                injectMouseButtonDown(CEGUI::MouseButton::LeftButton);
+            break;
+        case SDL_MOUSEBUTTONUP:
+            CEGUI::System::getSingleton().getDefaultGUIContext().
+                injectMouseButtonUp(CEGUI::MouseButton::LeftButton);
+            break;
+        case SDL_QUIT:
+            stop();
+            break;
+        }
     }
 
     double current_time_pulse = 0.001 * SDL_GetTicks();
