@@ -4,19 +4,13 @@
 
 #include <boost/random/discrete_distribution.hpp>
 
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/exceptions.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-
-#include "exception.hpp"
 #include "walk_move.hpp"
 #include "wall_move.hpp"
+#include "exception.hpp"
+#include "logger.hpp"
 
 
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 
 namespace Quoridor {
@@ -36,8 +30,6 @@ FakePlayer::~FakePlayer()
 IMove *FakePlayer::get_move()
 {
     boost::random::discrete_distribution<> dist{0.6, 0.6};
-
-    boost::log::sources::logger &lg = my_logger::get();
 
     if (dist(gen_) == 0) {
         size_t min_path_len = 81;

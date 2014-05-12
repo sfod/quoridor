@@ -5,24 +5,10 @@
 
 #include <boost/program_options.hpp>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/exceptions.hpp>
-#include <boost/log/sinks/sync_frontend.hpp>
-#include <boost/log/sinks/text_ostream_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-
 #include "UI/ui_factory.hpp"
 #include "player_factory.hpp"
 #include "exception.hpp"
+#include "logger.hpp"
 
 #include "state/main_menu_state.hpp"
 #include "state/game_state.hpp"
@@ -38,9 +24,13 @@ struct game_opts_t {
 };
 
 
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
+BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", boost::log::attributes::named_scope::value_type)
+BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
 
-int init(int argc, char **argv, game_opts_t *game_opts);
+
+
+static int init(int argc, char **argv, game_opts_t *game_opts);
+static void init_logging(const std::string &logfile);
 
 int main(int argc, char **argv)
 {
@@ -50,7 +40,8 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    boost::log::sources::logger &lg = my_logger::get();
+    boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
+
     BOOST_LOG_SEV(lg, logging::trivial::info) << "Creating "
         << game_opts.ui_type << " UI";
 
@@ -71,7 +62,7 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-int init(int argc, char **argv, game_opts_t *game_opts)
+static int init(int argc, char **argv, game_opts_t *game_opts)
 {
     std::string logfile;
 
@@ -108,12 +99,45 @@ int init(int argc, char **argv, game_opts_t *game_opts)
         return -1;
     }
 
+    init_logging(logfile);
+
+    return 0;
+}
+
+void formatter(boost::log::record_view const &rec, boost::log::formatting_ostream &strm)
+{
+    strm << rec[timestamp]
+        << " [" << rec[boost::log::trivial::severity] << "] ";
+
+    boost::log::attributes::named_scope_list scope_list = rec[scope].get();
+    for (auto iter = scope_list.begin(); iter != scope_list.end(); ++iter) {
+        strm << "(" << iter->scope_name << ") ";
+    }
+
+    strm << rec[boost::log::expressions::smessage];
+}
+
+static void init_logging(const std::string &logfile)
+{
     typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> text_sink;
     boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
-    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>("quoridor.log"));
+
+    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(logfile));
     sink->locked_backend()->auto_flush(true);
+    sink->set_formatter(&formatter);
 
     boost::log::core::get()->add_sink(sink);
 
-    return 0;
+    boost::log::add_console_log(
+        std::clog,
+        boost::log::keywords::format = (
+            boost::log::expressions::stream
+                << "[" << boost::log::trivial::severity << "] "
+                << boost::log::expressions::smessage
+        )
+    );
+
+    boost::log::add_common_attributes();
+    boost::log::core::get()->add_global_attribute("Scope",
+            boost::log::attributes::named_scope());
 }
