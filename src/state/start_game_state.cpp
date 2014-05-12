@@ -41,6 +41,20 @@ const std::string &StartGameState::name() const
 
 void StartGameState::subscribe_for_events_()
 {
+    win_->getChild("startGameWindow/returnToMainMenu")->subscribeEvent(
+            CEGUI::Window::EventMouseClick,
+            CEGUI::Event::Subscriber(
+                    &StartGameState::handle_return_, this
+            )
+    );
 }
+
+bool StartGameState::handle_return_(const CEGUI::EventArgs &/* e */)
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "returning to main menu";
+    stm_->change_state(std::shared_ptr<IState>(new MainMenuState(stm_)));
+    return true;
+}
+
 
 }  /* namespace Quoridor */
