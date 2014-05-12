@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     }
 
     boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
+
     BOOST_LOG_SEV(lg, logging::trivial::info) << "Creating "
         << game_opts.ui_type << " UI";
 
@@ -121,7 +122,7 @@ static void init_logging(const std::string &logfile)
     typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> text_sink;
     boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
 
-    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(logfile, std::ios_base::app));
+    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(logfile));
     sink->locked_backend()->auto_flush(true);
     sink->set_formatter(&formatter);
 
