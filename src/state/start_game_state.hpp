@@ -16,11 +16,13 @@ public:
     virtual ~StartGameState();
 
     virtual std::shared_ptr<CEGUI::Window> window() const;
+    virtual const std::string &name() const;
 
 private:
     void subscribe_for_events_();
 
 private:
+    static std::string name_;
     std::shared_ptr<StateManager> stm_;
     std::shared_ptr<CEGUI::Window> win_;
     std::vector<std::string> player_types_;
