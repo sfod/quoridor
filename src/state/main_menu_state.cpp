@@ -14,9 +14,10 @@
 #include <boost/log/sources/severity_logger.hpp>
 
 
-namespace Quoridor {
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, boost::log::sources::logger)
+
+namespace Quoridor {
 
 MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm)
     : stm_(stm),
@@ -52,21 +53,15 @@ void MainMenuState::subscribe_for_events_()
 
 bool MainMenuState::handle_new_game_(const CEGUI::EventArgs &/* e */)
 {
-    boost::log::sources::logger &lg = my_logger::get();
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting new game";
-
     stm_->change_state(std::shared_ptr<IState>(new StartGameState(stm_)));
-
     return true;
 }
 
 bool MainMenuState::handle_quit_game_(const CEGUI::EventArgs &/* e */)
 {
-    boost::log::sources::logger &lg = my_logger::get();
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "quit game";
-
     stm_->stop();
-
     return true;
 }
 
