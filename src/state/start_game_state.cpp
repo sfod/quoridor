@@ -10,6 +10,8 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 
 namespace Quoridor {
 
+std::string StartGameState::name_("Start Game");
+
 StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
     : stm_(stm),
     win_(CEGUI::WindowManager::getSingleton().loadLayoutFromFile("start_game.layout")),
@@ -28,6 +30,11 @@ StartGameState::~StartGameState()
 std::shared_ptr<CEGUI::Window> StartGameState::window() const
 {
     return win_;
+}
+
+const std::string &StartGameState::name() const
+{
+    return name_;
 }
 
 void StartGameState::subscribe_for_events_()
