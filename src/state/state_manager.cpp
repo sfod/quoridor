@@ -3,6 +3,10 @@
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/RendererModules/OpenGL/GLRenderer.h>
 
+#include "logger.hpp"
+
+
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 namespace Quoridor {
 

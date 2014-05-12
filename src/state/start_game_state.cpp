@@ -2,7 +2,11 @@
 
 // #include "game_state.hpp"
 #include "main_menu_state.hpp"
+#include "logger.hpp"
 #include "exception.hpp"
+
+
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 namespace Quoridor {
 
