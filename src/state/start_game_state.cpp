@@ -14,9 +14,16 @@ std::string StartGameState::name_("Start Game");
 
 StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
     : stm_(stm),
-    win_(CEGUI::WindowManager::getSingleton().loadLayoutFromFile("start_game.layout")),
     player_types_(), player_num_(2)
 {
+    win_ = std::shared_ptr<CEGUI::Window>(
+            CEGUI::WindowManager::getSingleton().
+                    loadLayoutFromFile("start_game.layout"),
+            [=](CEGUI::Window *w) {
+                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
+                CEGUI::WindowManager::getSingleton().destroyWindow(w);
+            }
+    );
     subscribe_for_events_();
 
     player_types_.push_back("fake");
@@ -26,7 +33,6 @@ StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
 StartGameState::~StartGameState()
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "destroying state " << name_;
-    CEGUI::WindowManager::getSingleton().destroyWindow(win_.get());
 }
 
 std::shared_ptr<CEGUI::Window> StartGameState::window() const
