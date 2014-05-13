@@ -20,7 +20,6 @@ public:
     void change_state(std::shared_ptr<IState> state);
 
     void handle_events();
-    void update();
     void draw();
 
     bool is_running() const { return is_running_; }
@@ -34,7 +33,6 @@ private:
 private:
     std::shared_ptr<SDL_Window> sdl_win_;
     std::shared_ptr<IState> cur_state_;
-    std::shared_ptr<IState> new_state_;
     double last_time_pulse_;
     bool is_running_;
 };

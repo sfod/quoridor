@@ -11,7 +11,7 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 namespace Quoridor {
 
 StateManager::StateManager()
-    : sdl_win_(), cur_state_(), new_state_(),
+    : sdl_win_(), cur_state_(),
     last_time_pulse_(0.001 * SDL_GetTicks()), is_running_(true)
 {
     init_sdl_();
@@ -31,7 +31,8 @@ StateManager::~StateManager()
 void StateManager::change_state(std::shared_ptr<IState> state)
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "changing state";
-    new_state_ = state;
+    root_win_->addChild(state->window().get());
+    cur_state_ = state;
 }
 
 void StateManager::handle_events()
@@ -61,22 +62,6 @@ void StateManager::handle_events()
     }
 
     inject_time_pulse_();
-}
-
-void StateManager::update()
-{
-    if (new_state_) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "setting state "
-            << new_state_->name() << " (window " << new_state_->window().get()
-            << ")";
-
-        CEGUI::System::getSingleton().getDefaultGUIContext().
-                setRootWindow(new_state_->window().get());
-        CEGUI::System::getSingleton().getDefaultGUIContext().updateWindowContainingMouse();
-
-        inject_time_pulse_();
-        cur_state_ = std::move(new_state_);
-    }
 }
 
 void StateManager::draw()
