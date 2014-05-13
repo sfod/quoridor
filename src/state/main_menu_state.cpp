@@ -11,17 +11,22 @@ namespace Quoridor {
 
 std::string MainMenuState::name_("Main Menu");
 
-MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm)
-    : stm_(stm),
-    win_(CEGUI::WindowManager::getSingleton().loadLayoutFromFile("main_menu.layout"))
+MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm) : stm_(stm)
 {
+    win_ = std::shared_ptr<CEGUI::Window>(
+            CEGUI::WindowManager::getSingleton().
+                    loadLayoutFromFile("main_menu.layout"),
+            [=](CEGUI::Window *w) {
+                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
+                CEGUI::WindowManager::getSingleton().destroyWindow(w);
+            }
+    );
     subscribe_for_events_();
 }
 
 MainMenuState::~MainMenuState()
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "destroying state " << name_;
-    CEGUI::WindowManager::getSingleton().destroyWindow(win_.get());
 }
 
 std::shared_ptr<CEGUI::Window> MainMenuState::window() const
