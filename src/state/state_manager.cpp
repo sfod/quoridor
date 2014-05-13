@@ -22,6 +22,10 @@ StateManager::StateManager()
     CEGUI::FontManager::getSingleton().createFromFile("DejaVuSans-10.font");
     CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().
 	    setDefaultImage("TaharezLook/MouseArrow");
+
+    root_win_ = std::shared_ptr<CEGUI::Window>(CEGUI::WindowManager::
+            getSingleton().createWindow("DefaultWindow", "root"));
+    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(root_win_.get());
 }
 
 StateManager::~StateManager()

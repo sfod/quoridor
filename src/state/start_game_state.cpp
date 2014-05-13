@@ -47,7 +47,7 @@ const std::string &StartGameState::name() const
 
 void StartGameState::subscribe_for_events_()
 {
-    win_->getChild("startGameWindow/returnToMainMenu")->subscribeEvent(
+    win_->getChild("returnToMainMenu")->subscribeEvent(
             CEGUI::Window::EventMouseClick,
             CEGUI::Event::Subscriber(
                     &StartGameState::handle_return_, this
