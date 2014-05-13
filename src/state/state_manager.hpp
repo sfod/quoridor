@@ -32,6 +32,7 @@ private:
 
 private:
     std::shared_ptr<SDL_Window> sdl_win_;
+    std::shared_ptr<CEGUI::Window> root_win_;
     std::shared_ptr<IState> cur_state_;
     double last_time_pulse_;
     bool is_running_;

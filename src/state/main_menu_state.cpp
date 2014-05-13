@@ -41,13 +41,13 @@ const std::string &MainMenuState::name() const
 
 void MainMenuState::subscribe_for_events_()
 {
-    win_->getChild("mainMenuWindow/newGame")->subscribeEvent(
+    win_->getChild("newGame")->subscribeEvent(
             CEGUI::Window::EventMouseClick,
             CEGUI::Event::Subscriber(
                     &MainMenuState::handle_new_game_, this
             )
     );
-    win_->getChild("mainMenuWindow/quitGame")->subscribeEvent(
+    win_->getChild("quitGame")->subscribeEvent(
             CEGUI::Window::EventMouseClick,
             CEGUI::Event::Subscriber(
                     &MainMenuState::handle_quit_game_, this
