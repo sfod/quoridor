@@ -32,7 +32,7 @@ private:
     void inject_time_pulse_();
 
 private:
-    SDL_Window *win_;
+    std::shared_ptr<SDL_Window> sdl_win_;
     std::shared_ptr<IState> cur_state_;
     std::shared_ptr<IState> new_state_;
     double last_time_pulse_;

@@ -11,7 +11,7 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 namespace Quoridor {
 
 StateManager::StateManager()
-    : win_(), cur_state_(), new_state_(),
+    : sdl_win_(), cur_state_(), new_state_(),
     last_time_pulse_(0.001 * SDL_GetTicks()), is_running_(true)
 {
     init_sdl_();
@@ -87,7 +87,7 @@ void StateManager::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     CEGUI::System::getSingleton().renderAllGUIContexts();
-    SDL_GL_SwapWindow(win_);
+    SDL_GL_SwapWindow(sdl_win_.get());
 }
 
 void StateManager::init_sdl_()
@@ -101,13 +101,18 @@ void StateManager::init_sdl_()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-    win_ = SDL_CreateWindow("OpenGL",
+    sdl_win_ = std::shared_ptr<SDL_Window>(
+            SDL_CreateWindow("OpenGL",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_UNDEFINED,
-                800, 600, SDL_WINDOW_RESIZABLE);
+                800, 600, SDL_WINDOW_RESIZABLE),
+            [=](SDL_Window *w) {
+                SDL_DestroyWindow(w);
+            }
+    );
 
-    SDL_CreateRenderer(win_, -1,
+    SDL_CreateRenderer(sdl_win_.get(), -1,
             SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    SDL_GLContext ctx = SDL_GL_CreateContext(win_);
+    SDL_GLContext ctx = SDL_GL_CreateContext(sdl_win_.get());
     if (ctx == NULL) {
         throw std::exception();
     }
