@@ -60,11 +60,7 @@ void StateManager::handle_events()
         }
     }
 
-    double current_time_pulse = 0.001 * SDL_GetTicks();
-    float diff = static_cast<float>(current_time_pulse - last_time_pulse_);
-    CEGUI::System::getSingleton().getDefaultGUIContext().injectTimePulse(diff);
-    CEGUI::System::getSingleton().injectTimePulse(diff);
-    last_time_pulse_ = current_time_pulse;
+    inject_time_pulse_();
 }
 
 void StateManager::update()
