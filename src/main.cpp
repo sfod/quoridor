@@ -38,7 +38,6 @@ int main(int argc, char **argv)
     stm->draw();
     while (stm->is_running()) {
         stm->handle_events();
-        stm->update();
         stm->draw();
     }
 
