@@ -95,7 +95,7 @@ void StateManager::init_sdl_()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
     sdl_win_ = std::shared_ptr<SDL_Window>(
-            SDL_CreateWindow("OpenGL",
+            SDL_CreateWindow("Quoridor",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_UNDEFINED,
                 800, 600, SDL_WINDOW_RESIZABLE),
             [=](SDL_Window *w) {
