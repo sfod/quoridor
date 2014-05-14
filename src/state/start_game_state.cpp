@@ -13,8 +13,7 @@ namespace Quoridor {
 std::string StartGameState::name_("Start Game");
 
 StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
-    : stm_(stm),
-    player_types_(), player_num_(2)
+    : stm_(stm), player_types_(), player_num_(2)
 {
     win_ = std::shared_ptr<CEGUI::Window>(
             CEGUI::WindowManager::getSingleton().
