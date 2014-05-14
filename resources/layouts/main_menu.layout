@@ -7,13 +7,11 @@
         <Property name="Text" value="New Game"/>
         <Property name="Position" value="{ {0.4, 0.0}, {0.1, 0.0} }"/>
         <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
-        <Property name="TooltipText" value="Push me!"/>
     </Window>
     <Window type="GlossySerpent/Button" name="quitGame">
         <Property name="Text" value="Quit Game"/>
         <Property name="Position" value="{ {0.4, 0.0}, {0.2, 0.0} }"/>
         <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
-        <Property name="TooltipText" value="Push me!"/>
     </Window>
 </Window>
 </GUILayout>
