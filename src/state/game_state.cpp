@@ -1,8 +1,5 @@
 #include "game_state.hpp"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/thread/thread.hpp>
-
 #include "start_game_state.hpp"
 #include "imove.hpp"
 #include "walk_move.hpp"
