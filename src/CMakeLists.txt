@@ -16,7 +16,7 @@ set(CORE_SOURCES
 set(STATE_SOURCES
     main_menu_state
     start_game_state
-    # game_state
+    game_state
     state_manager
 )
 

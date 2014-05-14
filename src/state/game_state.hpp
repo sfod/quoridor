@@ -1,27 +1,25 @@
 #ifndef QUORIDOR_GAME_STATE_HPP_
 #define QUORIDOR_GAME_STATE_HPP_
 
+#include <memory>
 #include <vector>
 
-#include "istate.hpp"
-
 #include "board.hpp"
-#include "player_factory.hpp"
 #include "iplayer.hpp"
-#include "UI/window.hpp"
+#include "istate.hpp"
+#include "player_factory.hpp"
+#include "state_manager.hpp"
 
 namespace Quoridor {
 
 class GameState : public IState {
 public:
-    GameState(std::shared_ptr<UI::UI> ui,
+    GameState(std::shared_ptr<StateManager> stm,
             const std::vector<std::string> &player_types);
     virtual ~GameState();
 
-    virtual void handle_events(StateManager *stm);
-    virtual void update();
-    virtual void draw();
-    virtual void change_state();
+    virtual std::shared_ptr<CEGUI::Window> window() const;
+    virtual const std::string &name() const;
 
 private:
     void init_board_repr() const;
@@ -30,7 +28,11 @@ private:
     std::shared_ptr<Pawn> next_pawn() const;
 
 private:
-    std::shared_ptr<UI::Window> win_;
+    static std::string name_;
+
+private:
+    std::shared_ptr<StateManager> stm_;
+    std::shared_ptr<CEGUI::Window> win_;
     std::shared_ptr<Board> board_;
     PlayerFactory pf_;
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
