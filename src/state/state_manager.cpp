@@ -35,8 +35,16 @@ StateManager::~StateManager()
 void StateManager::change_state(std::shared_ptr<IState> state)
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "changing state";
-    root_win_->addChild(state->window().get());
-    cur_state_ = state;
+    try {
+        root_win_->addChild(state->window().get());
+        cur_state_ = state;
+    }
+    catch (CEGUI::Exception &e) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::fatal)
+            << "caught CEGUI exception";
+        BOOST_LOG_SEV(lg, boost::log::trivial::fatal) << e.what();
+        stop();
+    }
 }
 
 void StateManager::handle_events()
