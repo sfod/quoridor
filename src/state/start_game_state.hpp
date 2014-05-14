@@ -6,6 +6,7 @@
 #include <CEGUI/CEGUI.h>
 
 #include "istate.hpp"
+#include "state_manager.hpp"
 
 
 namespace Quoridor {
