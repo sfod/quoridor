@@ -18,10 +18,10 @@ StateManager::StateManager()
     CEGUI::OpenGLRenderer::bootstrapSystem();
     init_resource_provider_();
 
-    CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
+    CEGUI::SchemeManager::getSingleton().createFromFile("GlossySerpent.scheme");
     CEGUI::FontManager::getSingleton().createFromFile("DejaVuSans-10.font");
     CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().
-	    setDefaultImage("TaharezLook/MouseArrow");
+	    setDefaultImage("GlossySerpentCursors/MouseArrow");
 
     root_win_ = std::shared_ptr<CEGUI::Window>(CEGUI::WindowManager::
             getSingleton().createWindow("DefaultWindow", "root"));
