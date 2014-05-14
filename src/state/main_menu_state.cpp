@@ -58,7 +58,18 @@ void MainMenuState::subscribe_for_events_()
 bool MainMenuState::handle_new_game_(const CEGUI::EventArgs &/* e */)
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "creating new game";
-    stm_->change_state(std::shared_ptr<IState>(new StartGameState(stm_)));
+    std::shared_ptr<IState> state;
+    try {
+        state = std::shared_ptr<IState>(new StartGameState(stm_));
+        stm_->change_state(state);
+    }
+    catch (CEGUI::Exception &e) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::fatal)
+            << "failed to create StartGameState";
+        BOOST_LOG_SEV(lg, boost::log::trivial::fatal) << e.what();
+        stm_->stop();
+    }
+
     return true;
 }
 
