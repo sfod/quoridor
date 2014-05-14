@@ -19,7 +19,7 @@ StateManager::StateManager()
     init_resource_provider_();
 
     CEGUI::SchemeManager::getSingleton().createFromFile("GlossySerpent.scheme");
-    CEGUI::FontManager::getSingleton().createFromFile("DejaVuSans-10.font");
+    CEGUI::FontManager::getSingleton().createFromFile("DejaVuSans-12.font");
     CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().
 	    setDefaultImage("GlossySerpentCursors/MouseArrow");
 
