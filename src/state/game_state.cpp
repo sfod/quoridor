@@ -7,18 +7,30 @@
 #include "imove.hpp"
 #include "walk_move.hpp"
 #include "wall_move.hpp"
+#include "logger.hpp"
 #include "exception.hpp"
+
+
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 namespace Quoridor {
 
 static std::vector<std::string> colors = {"red", "green", "blue", "yellow"};
+std::string GameState::name_("Start Game");
 
-GameState::GameState(std::shared_ptr<UI::UI> ui,
-        const std::vector<std::string> &player_types)
-    : board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
+GameState::GameState(std::shared_ptr<StateManager> stm,
+        const std::vector<std::string> &player_types) : stm_(stm),
+    board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     repr_(), is_running_(true)
 {
-    win_ = ui->create_window();
+    win_ = std::shared_ptr<CEGUI::Window>(
+            CEGUI::WindowManager::getSingleton().
+                    loadLayoutFromFile("game.layout"),
+            [=](CEGUI::Window *w) {
+                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
+                CEGUI::WindowManager::getSingleton().destroyWindow(w);
+            }
+    );
 
     if ((player_types.size() != 2) && (player_types.size() != 4)) {
         throw Exception("Invalid number of players");
@@ -26,6 +38,8 @@ GameState::GameState(std::shared_ptr<UI::UI> ui,
 
     int i = 0;
     for (auto player_type : player_types) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "adding player "
+            << player_type;
         std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
         board_->add_pawn(pawn);
         players_[pawn] = pf_.make_player(player_type, board_, pawn);
@@ -42,79 +56,14 @@ GameState::~GameState()
 {
 }
 
-void GameState::handle_events(StateManager *stm)
+std::shared_ptr<CEGUI::Window> GameState::window() const
 {
-    std::shared_ptr<UI::UI> ui = stm->ui();
-    UI::Event ev;
-    IMove *move = NULL;
-
-    if (!is_running_) {
-        win_->print_message(boost::lexical_cast<std::string>(cur_pawn_->color()) + " win");
-        win_->draw();
-        boost::this_thread::sleep(boost::posix_time::seconds(2));
-        std::shared_ptr<IState> start_game_state(new StartGameState(ui));
-        stm->change_state(std::shared_ptr<IState>(start_game_state));
-        return;
-    }
-
-    if (!players_[cur_pawn_]->is_interactive()) {
-        move = players_[cur_pawn_]->get_move();
-    }
-    else if (ui->poll_event(&ev)) {
-        switch (ev) {
-        case UI::kEsc: {
-            std::shared_ptr<IState> start_game_state(new StartGameState(ui));
-            stm->change_state(std::shared_ptr<IState>(start_game_state));
-            break;
-        }
-        default:
-            break;
-        }
-    }
-
-    if (move != NULL) {
-        Pos cur_node = board_->pawn_node(cur_pawn_);
-        int rc;
-
-        if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-            rc = board_->make_walking_move(cur_pawn_, walk_move->node());
-            if (rc == 0) {
-                Pos goal_node = board_->pawn_node(cur_pawn_);
-                redraw_pawn(cur_pawn_->color()[0], cur_node, goal_node);
-            }
-        }
-        else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
-            const Wall &wall = wall_move->wall();
-            rc = board_->add_wall(wall);
-            if (rc == 0) {
-                draw_wall(wall);
-            }
-        }
-
-        if (board_->is_at_goal_node(cur_pawn_)) {
-            is_running_ = false;
-        }
-        else if (rc == 0) {
-            cur_pawn_ = next_pawn();
-        }
-
-    }
-
-    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+    return win_;
 }
 
-void GameState::update()
+const std::string &GameState::name() const
 {
-    win_->draw_board(repr_);
-}
-
-void GameState::draw()
-{
-    win_->draw();
-}
-
-void GameState::change_state()
-{
+    return name_;
 }
 
 void GameState::init_board_repr() const
