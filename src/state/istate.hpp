@@ -4,11 +4,8 @@
 #include <memory>
 #include <string>
 #include <CEGUI/CEGUI.h>
-#include "state_manager.hpp"
 
 namespace Quoridor {
-
-class StateManager;
 
 class IState {
 public:
