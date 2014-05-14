@@ -1,6 +1,6 @@
 #include "start_game_state.hpp"
 
-// #include "game_state.hpp"
+#include "game_state.hpp"
 #include "main_menu_state.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
@@ -46,12 +46,25 @@ const std::string &StartGameState::name() const
 
 void StartGameState::subscribe_for_events_()
 {
+    win_->getChild("startGame")->subscribeEvent(
+            CEGUI::Window::EventMouseClick,
+            CEGUI::Event::Subscriber(
+                    &StartGameState::handle_start_game_, this
+            )
+    );
     win_->getChild("returnToMainMenu")->subscribeEvent(
             CEGUI::Window::EventMouseClick,
             CEGUI::Event::Subscriber(
                     &StartGameState::handle_return_, this
             )
     );
+}
+
+bool StartGameState::handle_start_game_(const CEGUI::EventArgs &/* e */)
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting game";
+    stm_->change_state(std::shared_ptr<IState>(new GameState(stm_, player_types_)));
+    return true;
 }
 
 bool StartGameState::handle_return_(const CEGUI::EventArgs &/* e */)
