@@ -23,6 +23,9 @@ StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
                 CEGUI::WindowManager::getSingleton().destroyWindow(w);
             }
     );
+
+    set_player_num_();
+
     subscribe_for_events_();
 
     player_types_.push_back("fake");
@@ -42,6 +45,33 @@ std::shared_ptr<CEGUI::Window> StartGameState::window() const
 const std::string &StartGameState::name() const
 {
     return name_;
+}
+
+void StartGameState::set_player_num_()
+{
+    CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
+
+    std::vector<std::pair<int, std::string>> num_str_list = {
+        {2, "two players"},
+        {4, "four players"}
+    };
+    int i = 0;
+    for (auto num : num_str_list) {
+        auto item = new CEGUI::ListboxTextItem(num.second, i);
+        item->setUserData(reinterpret_cast<void*>(num.first));
+        cbpn->addItem(item);
+        ++i;
+    }
+
+    if (auto item = cbpn->getListboxItemFromIndex(0)) {
+        cbpn->setItemSelectState(item, true);
+        player_num_ = reinterpret_cast<uintptr_t>(item->getUserData());
+        BOOST_LOG_SEV(lg, boost::log::trivial::info)
+            << "set player number to " << player_num_;
+    }
+    else {
+        throw Exception("failed to set player number");
+    }
 }
 
 void StartGameState::subscribe_for_events_()
