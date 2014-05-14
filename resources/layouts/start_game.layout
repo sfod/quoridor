@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <GUILayout version="4">
-<Window type="GlossySerpent/FrameWindow" name="startGameWindow">
+<Window type="GlossySerpent/SimplePanel" name="startGameWindow">
     <Property name="Position" value="{ {0, 0}, {0, 0} }"/>
     <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }"/>
     <Property name="Text" value="Quoridor" />

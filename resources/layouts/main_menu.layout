@@ -1,9 +1,8 @@
 <?xml version="1.0" ?>
 <GUILayout version="4">
-<Window type="GlossySerpent/FrameWindow" name="mainMenuWindow">
+<Window type="GlossySerpent/SimplePanel" name="mainMenuWindow">
     <Property name="Position" value="{ {0, 0}, {0, 0} }"/>
     <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }"/>
-    <Property name="Text" value="Quoridor" />
     <Window type="GlossySerpent/Button" name="newGame">
         <Property name="Text" value="New Game"/>
         <Property name="Position" value="{ {0.4, 0.0}, {0.1, 0.0} }"/>
