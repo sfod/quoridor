@@ -1,3 +1,6 @@
+#ifndef QUORIDOR_FAKE_PLAYER_HPP_
+#define QUORIDOR_FAKE_PLAYER_HPP_
+
 #include <memory>
 
 #include <boost/random/mersenne_twister.hpp>
@@ -25,3 +28,5 @@ private:
 };
 
 }  /* namespace Quoridor */
+
+#endif  // QUORIDOR_FAKE_PLAYER_HPP_

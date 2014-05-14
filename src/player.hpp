@@ -1,3 +1,6 @@
+#ifndef QUORIDOR_PLAYER_HPP_
+#define QUORIDOR_PLAYER_HPP_
+
 #include <memory>
 #include "iplayer.hpp"
 #include "board.hpp"
@@ -15,3 +18,5 @@ public:
 };
 
 }  /* namespace Quoridor */
+
+#endif  // QUORIDOR_PLAYER_HPP_
