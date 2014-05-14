@@ -1,20 +1,24 @@
 <?xml version="1.0" ?>
 <GUILayout version="4">
-<Window type="TaharezLook/FrameWindow" name="startGameWindow">
+<Window type="GlossySerpent/FrameWindow" name="startGameWindow">
     <Property name="Position" value="{ {0, 0}, {0, 0} }"/>
     <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }"/>
     <Property name="Text" value="Quoridor" />
-    <Window type="TaharezLook/Button" name="startGame">
+    <Window type="GlossySerpent/Button" name="startGame">
         <Property name="Text" value="Start Game"/>
         <Property name="Position" value="{ {0.4, 0.0}, {0.1, 0.0} }"/>
         <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
         <Property name="TooltipText" value="Push me!"/>
     </Window>
-    <Window type="TaharezLook/Button" name="returnToMainMenu">
+    <Window type="GlossySerpent/Button" name="returnToMainMenu">
         <Property name="Text" value="Return to Main Menu"/>
         <Property name="Position" value="{ {0.4, 0.0}, {0.2, 0.0} }"/>
         <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
         <Property name="TooltipText" value="Push me!"/>
+    </Window>
+    <Window type="GlossySerpent/Combobox" name="playerList">
+        <Property name="Position" value="{ {0.4, 0.0}, {0.3, 0.0} }"/>
+        <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
     </Window>
 </Window>
 </GUILayout>
