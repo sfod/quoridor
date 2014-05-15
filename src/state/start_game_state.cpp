@@ -15,11 +15,15 @@ std::string StartGameState::name_("Start Game");
 
 StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
     : stm_(stm), win_(), plist2_win_(), plist4_win_(), cur_plist_win_(),
-    player_types_(), player_num_(0)
+    plist_handlers_(), player_types_(), player_num_(0)
 {
     init_win_();
-    set_player_num_();
+
+    plist_handlers_["two players"] = std::bind(&StartGameState::set_player_list2_, this);
+    plist_handlers_["four players"] = std::bind(&StartGameState::set_player_list4_, this);
+
     subscribe_for_events_();
+    set_player_num_();
 }
 
 StartGameState::~StartGameState()
@@ -93,50 +97,18 @@ void StartGameState::set_player_num_()
 {
     CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
 
-    std::vector<std::pair<int, std::string>> num_str_list = {
-        {2, "two players"},
-        {4, "four players"}
-    };
-    for (auto num : num_str_list) {
-        auto item = new CEGUI::ListboxTextItem(num.second);
-        item->setUserData(reinterpret_cast<void*>(num.first));
+    for (auto name : plist_handlers_) {
+        auto item = new CEGUI::ListboxTextItem(name.first);
         cbpn->addItem(item);
     }
 
     if (auto item = cbpn->getListboxItemFromIndex(0)) {
         cbpn->setItemSelectState(item, true);
-        update_player_num_();
+        handle_player_num_(CEGUI::WindowEventArgs(cbpn));
     }
     else {
         throw Exception("failed to set player number");
     }
-}
-
-int StartGameState::update_player_num_()
-{
-    CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
-    if (auto item = cbpn->getSelectedItem()) {
-        auto pnum = reinterpret_cast<uintptr_t>(item->getUserData());
-        if (pnum != player_num_) {
-            BOOST_LOG_SEV(lg, boost::log::trivial::info)
-                << "set player number to " << pnum;
-            set_player_list_(pnum);
-            player_num_ = pnum;
-        }
-        return 0;
-    }
-    return -1;
-}
-
-void StartGameState::set_player_list_(size_t pnum)
-{
-    plist2_win_->setVisible(false);
-    plist4_win_->setVisible(false);
-
-    std::string plist_name = "playerList" + std::to_string(pnum);
-    CEGUI::DefaultWindow *plist_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild(plist_name));
-    cur_plist_win_->setVisible(false);
-    plist_win->setVisible(true);
 }
 
 void StartGameState::subscribe_for_events_()
@@ -175,13 +147,34 @@ bool StartGameState::handle_return_(const CEGUI::EventArgs &/* e */)
     return true;
 }
 
-bool StartGameState::handle_player_num_(const CEGUI::EventArgs &/* e */)
+bool StartGameState::handle_player_num_(const CEGUI::EventArgs &e)
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "changing player number";
-    if (update_player_num_() == 0) {
-        return true;
-    }
-    return false;
+
+    const CEGUI::WindowEventArgs &we = static_cast<const CEGUI::WindowEventArgs&>(e);
+    CEGUI::Combobox *cb = static_cast<CEGUI::Combobox*>(we.window);
+
+    auto item = cb->getSelectedItem();
+    const CEGUI::String &item_name = item->getText();
+    plist_handlers_[item_name]();
+
+    return true;
+}
+
+void StartGameState::set_player_list2_()
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "list2";
+    plist2_win_->setVisible(true);
+    plist4_win_->setVisible(false);
+    cur_plist_win_ = plist2_win_;
+}
+
+void StartGameState::set_player_list4_()
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "list4";
+    plist2_win_->setVisible(false);
+    plist4_win_->setVisible(true);
+    cur_plist_win_ = plist4_win_;
 }
 
 }  /* namespace Quoridor */
