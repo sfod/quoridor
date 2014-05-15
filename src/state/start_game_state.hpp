@@ -20,7 +20,9 @@ public:
     virtual const std::string &name() const;
 
 private:
-    void set_player_num_();
+    void init_player_num_();
+    int update_player_num_();
+    void set_player_list_();
 
 private:
     void subscribe_for_events_();
