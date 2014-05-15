@@ -15,14 +15,15 @@ class StartGameState : public IState {
 public:
     explicit StartGameState(std::shared_ptr<StateManager> stm);
     virtual ~StartGameState();
-
     virtual std::shared_ptr<CEGUI::Window> window() const;
     virtual const std::string &name() const;
 
 private:
-    void init_player_num_();
+    void init_win_();
+    void init_player_list_(std::shared_ptr<CEGUI::DefaultWindow> win, size_t n);
+    void set_player_num_();
     int update_player_num_();
-    void set_player_list_();
+    void set_player_list_(size_t pnum);
 
 private:
     void subscribe_for_events_();
@@ -34,6 +35,9 @@ private:
     static std::string name_;
     std::shared_ptr<StateManager> stm_;
     std::shared_ptr<CEGUI::Window> win_;
+    std::shared_ptr<CEGUI::DefaultWindow> plist2_win_;
+    std::shared_ptr<CEGUI::DefaultWindow> plist4_win_;
+    std::shared_ptr<CEGUI::DefaultWindow> cur_plist_win_;
     std::vector<std::string> player_types_;
     size_t player_num_;
 };

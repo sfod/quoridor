@@ -2,6 +2,7 @@
 
 #include "game_state.hpp"
 #include "main_menu_state.hpp"
+#include "player_factory.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
 
@@ -13,19 +14,11 @@ namespace Quoridor {
 std::string StartGameState::name_("Start Game");
 
 StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
-    : stm_(stm), player_types_(), player_num_(0)
+    : stm_(stm), win_(), plist2_win_(), plist4_win_(), cur_plist_win_(),
+    player_types_(), player_num_(0)
 {
-    win_ = std::shared_ptr<CEGUI::Window>(
-            CEGUI::WindowManager::getSingleton().
-                    loadLayoutFromFile("start_game.layout"),
-            [=](CEGUI::Window *w) {
-                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
-                CEGUI::WindowManager::getSingleton().destroyWindow(w);
-            }
-    );
-
-    init_player_num_();
-
+    init_win_();
+    set_player_num_();
     subscribe_for_events_();
 }
 
@@ -44,7 +37,59 @@ const std::string &StartGameState::name() const
     return name_;
 }
 
-void StartGameState::init_player_num_()
+void StartGameState::init_win_()
+{
+    win_ = std::shared_ptr<CEGUI::Window>(
+            CEGUI::WindowManager::getSingleton().
+                    loadLayoutFromFile("start_game.layout"),
+            [=](CEGUI::Window *w) {
+                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
+                CEGUI::WindowManager::getSingleton().destroyWindow(w);
+            }
+    );
+    plist2_win_ = std::shared_ptr<CEGUI::DefaultWindow>(
+            static_cast<CEGUI::DefaultWindow*>(
+                CEGUI::WindowManager::getSingleton().
+                        loadLayoutFromFile("start_game_player_list_2.layout")),
+            [=](CEGUI::DefaultWindow *w) {
+                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
+                CEGUI::WindowManager::getSingleton().destroyWindow(w);
+            }
+    );
+    init_player_list_(plist2_win_, 2);
+
+    plist4_win_ = std::shared_ptr<CEGUI::DefaultWindow>(
+            static_cast<CEGUI::DefaultWindow*>(
+                CEGUI::WindowManager::getSingleton().
+                        loadLayoutFromFile("start_game_player_list_4.layout")),
+            [=](CEGUI::DefaultWindow *w) {
+                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
+                CEGUI::WindowManager::getSingleton().destroyWindow(w);
+            }
+    );
+    init_player_list_(plist4_win_, 4);
+
+    cur_plist_win_ = plist2_win_;
+    plist4_win_->setVisible(false);
+
+    win_->addChild(plist2_win_.get());
+    win_->addChild(plist4_win_.get());
+}
+
+void StartGameState::init_player_list_(std::shared_ptr<CEGUI::DefaultWindow> win, size_t n)
+{
+    for (size_t i = 0; i < n; ++i) {
+        std::string cb_name = "playerType" + std::to_string(i);
+        auto ptype_win = static_cast<CEGUI::Combobox*>(win->getChild(cb_name));
+        for (std::string ptype : PlayerFactory::types()) {
+            auto item = new CEGUI::ListboxTextItem(ptype);
+            ptype_win->addItem(item);
+        }
+        ptype_win->setItemSelectState(ptype_win->getListboxItemFromIndex(0), true);
+    }
+}
+
+void StartGameState::set_player_num_()
 {
     CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
 
@@ -71,29 +116,27 @@ int StartGameState::update_player_num_()
 {
     CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
     if (auto item = cbpn->getSelectedItem()) {
-        player_num_ = reinterpret_cast<uintptr_t>(item->getUserData());
-        BOOST_LOG_SEV(lg, boost::log::trivial::info)
-            << "set player number to " << player_num_;
-        set_player_list_();
+        auto pnum = reinterpret_cast<uintptr_t>(item->getUserData());
+        if (pnum != player_num_) {
+            BOOST_LOG_SEV(lg, boost::log::trivial::info)
+                << "set player number to " << pnum;
+            set_player_list_(pnum);
+            player_num_ = pnum;
+        }
         return 0;
     }
     return -1;
 }
 
-void StartGameState::set_player_list_()
+void StartGameState::set_player_list_(size_t pnum)
 {
-    CEGUI::DefaultWindow *plist_win = static_cast<CEGUI::DefaultWindow*>(
-            win_->getChild("playerList"));
-    for (size_t i = 0; i < player_num_; ++i) {
-        auto ptype_win = CEGUI::WindowManager::getSingleton().createWindow("GlossySerpent/Combobox");
-        ptype_win->setPosition(CEGUI::UVector2(
-                    CEGUI::UDim(0, 20),
-                    CEGUI::UDim(0.1 * i, 0)));
-        ptype_win->setSize(CEGUI::USize(
-                    CEGUI::UDim(0.5, 20),
-                    CEGUI::UDim(0.8, 0)));
-        plist_win->addChild(ptype_win);
-    }
+    plist2_win_->setVisible(false);
+    plist4_win_->setVisible(false);
+
+    std::string plist_name = "playerList" + std::to_string(pnum);
+    CEGUI::DefaultWindow *plist_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild(plist_name));
+    cur_plist_win_->setVisible(false);
+    plist_win->setVisible(true);
 }
 
 void StartGameState::subscribe_for_events_()
