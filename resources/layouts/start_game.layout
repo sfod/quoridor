@@ -3,14 +3,6 @@
 <Window type="GlossySerpent/SimplePanel" name="startGameWindow">
     <Property name="Position" value="{ {0, 0}, {0, 0} }"/>
     <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }"/>
-    <Window type="GlossySerpent/SimplePanel" name="playerList">
-        <Property name="Position" value="{ {0.2, 0.0}, {0.0, 50.0} }"/>
-        <Property name="Size" value="{ {0.6, 0.0}, {0.5, 0.0} }"/>
-        <!-- <Window type="GlossySerpent/Combobox" name="playerType"> -->
-        <!--     <Property name="Position" value="{ {0.0, 10.0}, {0.1, 0.0} }"/> -->
-        <!--     <Property name="Size" value="{ {1.0, &#45;20.0}, {0.20, 0.0} }"/> -->
-        <!-- </Window> -->
-    </Window>
     <Window type="GlossySerpent/Combobox" name="playerNum">
         <Property name="Position" value="{ {0.2, 0.0}, {0.5, 60.0} }"/>
         <Property name="Size" value="{ {0.0, 150.0}, {0.0, 70.0} }"/>
