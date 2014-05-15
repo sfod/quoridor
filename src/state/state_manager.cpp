@@ -58,12 +58,10 @@ void StateManager::handle_events()
                     static_cast<float>(e.motion.y));
             break;
         case SDL_MOUSEBUTTONDOWN:
-            BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "caught SDL_MOUSEBUTTONDOWN";
             CEGUI::System::getSingleton().getDefaultGUIContext().
                 injectMouseButtonDown(CEGUI::MouseButton::LeftButton);
             break;
         case SDL_MOUSEBUTTONUP:
-            BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "caught SDL_MOUSEBUTTONUP";
             CEGUI::System::getSingleton().getDefaultGUIContext().
                 injectMouseButtonUp(CEGUI::MouseButton::LeftButton);
             break;
