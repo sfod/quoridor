@@ -22,14 +22,14 @@ private:
     void init_win_();
     void init_player_list_(std::shared_ptr<CEGUI::DefaultWindow> win, size_t n);
     void set_player_num_();
-    int update_player_num_();
-    void set_player_list_(size_t pnum);
 
 private:
     void subscribe_for_events_();
     bool handle_start_game_(const CEGUI::EventArgs &e);
     bool handle_return_(const CEGUI::EventArgs &e);
     bool handle_player_num_(const CEGUI::EventArgs &e);
+    void set_player_list2_();
+    void set_player_list4_();
 
 private:
     static std::string name_;
@@ -38,6 +38,7 @@ private:
     std::shared_ptr<CEGUI::DefaultWindow> plist2_win_;
     std::shared_ptr<CEGUI::DefaultWindow> plist4_win_;
     std::shared_ptr<CEGUI::DefaultWindow> cur_plist_win_;
+    std::map<CEGUI::String, std::function<void()>> plist_handlers_;
     std::vector<std::string> player_types_;
     size_t player_num_;
 };
