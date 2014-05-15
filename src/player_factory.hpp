@@ -19,7 +19,7 @@ public:
     std::shared_ptr<IPlayer> make_player(const std::string &type,
             std::shared_ptr<Board> board, std::shared_ptr<Pawn> pawn);
 
-    const std::vector<std::string> &types() const;
+    static const std::vector<std::string> &types();
 };
 
 }  /* namespace Quoridor */

@@ -29,7 +29,7 @@ std::shared_ptr<IPlayer> PlayerFactory::make_player(const std::string &type,
     }
 }
 
-const std::vector<std::string> &PlayerFactory::types() const
+const std::vector<std::string> &PlayerFactory::types()
 {
     return player_types;
 }
