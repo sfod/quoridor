@@ -24,7 +24,7 @@ StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
             }
     );
 
-    set_player_num_();
+    init_player_num_();
 
     subscribe_for_events_();
 
@@ -47,7 +47,7 @@ const std::string &StartGameState::name() const
     return name_;
 }
 
-void StartGameState::set_player_num_()
+void StartGameState::init_player_num_()
 {
     CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
 
@@ -55,22 +55,47 @@ void StartGameState::set_player_num_()
         {2, "two players"},
         {4, "four players"}
     };
-    int i = 0;
     for (auto num : num_str_list) {
-        auto item = new CEGUI::ListboxTextItem(num.second, i);
+        auto item = new CEGUI::ListboxTextItem(num.second);
         item->setUserData(reinterpret_cast<void*>(num.first));
         cbpn->addItem(item);
-        ++i;
     }
 
     if (auto item = cbpn->getListboxItemFromIndex(0)) {
         cbpn->setItemSelectState(item, true);
-        player_num_ = reinterpret_cast<uintptr_t>(item->getUserData());
-        BOOST_LOG_SEV(lg, boost::log::trivial::info)
-            << "set player number to " << player_num_;
+        update_player_num_();
     }
     else {
         throw Exception("failed to set player number");
+    }
+}
+
+int StartGameState::update_player_num_()
+{
+    CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
+    if (auto item = cbpn->getSelectedItem()) {
+        player_num_ = reinterpret_cast<uintptr_t>(item->getUserData());
+        BOOST_LOG_SEV(lg, boost::log::trivial::info)
+            << "set player number to " << player_num_;
+        set_player_list_();
+        return 0;
+    }
+    return -1;
+}
+
+void StartGameState::set_player_list_()
+{
+    CEGUI::DefaultWindow *plist_win = static_cast<CEGUI::DefaultWindow*>(
+            win_->getChild("playerList"));
+    for (size_t i = 0; i < player_num_; ++i) {
+        auto ptype_win = CEGUI::WindowManager::getSingleton().createWindow("GlossySerpent/Combobox");
+        ptype_win->setPosition(CEGUI::UVector2(
+                    CEGUI::UDim(0, 20),
+                    CEGUI::UDim(0.1 * i, 0)));
+        ptype_win->setSize(CEGUI::USize(
+                    CEGUI::UDim(0.5, 20),
+                    CEGUI::UDim(0.8, 0)));
+        plist_win->addChild(ptype_win);
     }
 }
 
