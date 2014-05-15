@@ -113,6 +113,12 @@ void StartGameState::subscribe_for_events_()
                     &StartGameState::handle_return_, this
             )
     );
+    win_->getChild("playerNum")->subscribeEvent(
+            CEGUI::Combobox::EventListSelectionAccepted,
+            CEGUI::Event::Subscriber(
+                    &StartGameState::handle_player_num_, this
+            )
+    );
 }
 
 bool StartGameState::handle_start_game_(const CEGUI::EventArgs &/* e */)
@@ -129,5 +135,13 @@ bool StartGameState::handle_return_(const CEGUI::EventArgs &/* e */)
     return true;
 }
 
+bool StartGameState::handle_player_num_(const CEGUI::EventArgs &/* e */)
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "changing player number";
+    if (update_player_num_() == 0) {
+        return true;
+    }
+    return false;
+}
 
 }  /* namespace Quoridor */
