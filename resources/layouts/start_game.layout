@@ -21,8 +21,8 @@
         <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
     </Window>
     <Window type="GlossySerpent/Button" name="returnToMainMenu">
-        <Property name="Text" value="Return to Main Menu"/>
-        <Property name="Position" value="{ {0.5, 0.0}, {0.7, 0.0} }"/>
+        <Property name="Text" value="Back"/>
+        <Property name="Position" value="{ {0.6, 0.0}, {0.7, 0.0} }"/>
         <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
     </Window>
 </Window>
