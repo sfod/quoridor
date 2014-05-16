@@ -74,6 +74,11 @@ void StateManager::handle_events()
     inject_time_pulse_();
 }
 
+void StateManager::update()
+{
+    cur_state_->update();
+}
+
 void StateManager::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);

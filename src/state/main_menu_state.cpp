@@ -29,6 +29,10 @@ MainMenuState::~MainMenuState()
     BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "destroying state " << name_;
 }
 
+void MainMenuState::update()
+{
+}
+
 std::shared_ptr<CEGUI::Window> MainMenuState::window() const
 {
     return win_;

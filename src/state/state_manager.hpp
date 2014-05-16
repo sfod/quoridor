@@ -20,6 +20,7 @@ public:
     void change_state(std::shared_ptr<IState> state);
 
     void handle_events();
+    void update();
     void draw();
 
     bool is_running() const { return is_running_; }
