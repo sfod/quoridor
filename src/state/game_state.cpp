@@ -30,6 +30,8 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
             }
     );
 
+    subscribe_for_events_();
+
     if ((player_types.size() != 2) && (player_types.size() != 4)) {
         throw Exception("Invalid number of players");
     }
@@ -108,6 +110,32 @@ std::shared_ptr<CEGUI::Window> GameState::window() const
 const std::string &GameState::name() const
 {
     return name_;
+}
+
+void GameState::subscribe_for_events_()
+{
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            std::string field_name = "field_" + std::to_string(i) + "_"
+                + std::to_string(j);
+            win_->getChild(field_name)->subscribeEvent(
+                    CEGUI::Window::EventDragDropItemDropped,
+                    CEGUI::Event::Subscriber(
+                            &GameState::handle_fields_, this
+                    )
+            );
+        }
+    }
+}
+
+bool GameState::handle_fields_(const CEGUI::EventArgs &e)
+{
+    const CEGUI::DragDropEventArgs &dde = static_cast<const CEGUI::DragDropEventArgs&>(e);
+    if (!dde.window->getChildCount()) {
+        dde.window->addChild(dde.dragDropItem);
+        // dde.dragDropItem->setPosition(CEGUI::UVector2(CEGUI::UDim(0.05, 0), CEGUI::UDim(0.05, 0)));
+    }
+    return true;
 }
 
 void GameState::init_board_repr() const
