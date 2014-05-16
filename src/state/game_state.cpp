@@ -20,6 +20,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     repr_(), is_running_(true)
 {
+    CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
     win_ = std::shared_ptr<CEGUI::Window>(
             CEGUI::WindowManager::getSingleton().
                     loadLayoutFromFile("game.layout"),
