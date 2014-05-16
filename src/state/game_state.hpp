@@ -22,7 +22,7 @@ public:
     virtual const std::string &name() const;
 
 private:
-    void set_pawns_(size_t n);
+    void set_pawns_(const std::vector<std::string> &player_types);
 
 private:
     void subscribe_for_events_();
