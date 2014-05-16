@@ -3,11 +3,32 @@
 
 #include <vector>
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/identity.hpp>
+
 #include <CEGUI/CEGUI.h>
 
 #include "istate.hpp"
 #include "state_manager.hpp"
 
+
+struct plist_handler_t {
+    CEGUI::String name;
+    std::function<void()> handler;
+};
+
+typedef boost::multi_index_container<
+    plist_handler_t,
+    boost::multi_index::indexed_by<
+        boost::multi_index::random_access<>,
+        boost::multi_index::ordered_unique<
+            boost::multi_index::member<plist_handler_t, CEGUI::String, &plist_handler_t::name>
+        >
+    >
+> plist_handler_list_t;
 
 namespace Quoridor {
 
@@ -39,7 +60,7 @@ private:
     std::shared_ptr<CEGUI::DefaultWindow> plist2_win_;
     std::shared_ptr<CEGUI::DefaultWindow> plist4_win_;
     std::shared_ptr<CEGUI::DefaultWindow> cur_plist_win_;
-    std::map<CEGUI::String, std::function<void()>> plist_handlers_;
+    plist_handler_list_t plist_handlers_;
 };
 
 }  /* namespace Quoridor */
