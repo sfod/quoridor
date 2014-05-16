@@ -114,9 +114,15 @@ const std::string &GameState::name() const
 
 void GameState::subscribe_for_events_()
 {
+    win_->getChild("back")->subscribeEvent(
+            CEGUI::Window::EventMouseClick,
+            CEGUI::Event::Subscriber(
+                    &GameState::handle_back_, this
+            )
+    );
     for (int i = 0; i < 9; ++i) {
         for (int j = 0; j < 9; ++j) {
-            std::string field_name = "field_" + std::to_string(i) + "_"
+            std::string field_name = "boardWindow/field_" + std::to_string(i) + "_"
                 + std::to_string(j);
             win_->getChild(field_name)->subscribeEvent(
                     CEGUI::Window::EventDragDropItemDropped,
@@ -126,6 +132,13 @@ void GameState::subscribe_for_events_()
             );
         }
     }
+}
+
+bool GameState::handle_back_(const CEGUI::EventArgs &/* e */)
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "returning to start game menu";
+    stm_->change_state(std::shared_ptr<IState>(new StartGameState(stm_)));
+    return true;
 }
 
 bool GameState::handle_fields_(const CEGUI::EventArgs &e)

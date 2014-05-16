@@ -23,6 +23,7 @@ public:
 
 private:
     void subscribe_for_events_();
+    bool handle_back_(const CEGUI::EventArgs &e);
     bool handle_fields_(const CEGUI::EventArgs &e);
 
 private:
