@@ -36,7 +36,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         throw Exception("Invalid number of players");
     }
 
-    set_pawns_(player_types.size());
+    set_pawns_(player_types);
 
     int i = 0;
     for (auto player_type : player_types) {
@@ -112,17 +112,17 @@ const std::string &GameState::name() const
     return name_;
 }
 
-void GameState::set_pawns_(size_t n)
+void GameState::set_pawns_(const std::vector<std::string> &player_types)
 {
-    auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+    auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
     win_->getChild("boardWindow/field_0_4")->addChild(w1);
-    auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+    auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
     win_->getChild("boardWindow/field_8_4")->addChild(w2);
 
-    if (n == 4) {
-        auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+    if (player_types.size() == 4) {
+        auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
         win_->getChild("boardWindow/field_4_0")->addChild(w1);
-        auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+        auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
         win_->getChild("boardWindow/field_4_8")->addChild(w2);
     }
 }
