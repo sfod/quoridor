@@ -15,7 +15,7 @@ std::string StartGameState::name_("Start Game");
 
 StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
     : stm_(stm), win_(), plist2_win_(), plist4_win_(), cur_plist_win_(),
-    plist_handlers_(), player_types_(), player_num_(0)
+    plist_handlers_()
 {
     init_win_();
 
@@ -140,7 +140,12 @@ void StartGameState::subscribe_for_events_()
 bool StartGameState::handle_start_game_(const CEGUI::EventArgs &/* e */)
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting game";
-    stm_->change_state(std::shared_ptr<IState>(new GameState(stm_, player_types_)));
+    std::vector<std::string> ptypes;
+    for (size_t i = 0; i < cur_plist_win_->getChildCount(); ++i) {
+        auto ptype_win = static_cast<CEGUI::Combobox*>(cur_plist_win_->getChildAtIdx(i));
+        ptypes.push_back(ptype_win->getText().c_str());
+    }
+    stm_->change_state(std::shared_ptr<IState>(new GameState(stm_, ptypes)));
     return true;
 }
 

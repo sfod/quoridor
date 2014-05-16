@@ -40,8 +40,6 @@ private:
     std::shared_ptr<CEGUI::DefaultWindow> plist4_win_;
     std::shared_ptr<CEGUI::DefaultWindow> cur_plist_win_;
     std::map<CEGUI::String, std::function<void()>> plist_handlers_;
-    std::vector<std::string> player_types_;
-    size_t player_num_;
 };
 
 }  /* namespace Quoridor */
