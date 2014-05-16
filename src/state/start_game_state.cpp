@@ -19,8 +19,8 @@ StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
 {
     init_win_();
 
-    plist_handlers_["two players"] = std::bind(&StartGameState::set_player_list2_, this);
-    plist_handlers_["four players"] = std::bind(&StartGameState::set_player_list4_, this);
+    plist_handlers_.push_back({"two players", std::bind(&StartGameState::set_player_list2_, this)});
+    plist_handlers_.push_back({"four players", std::bind(&StartGameState::set_player_list4_, this)});
 
     subscribe_for_events_();
     set_player_num_();
@@ -101,8 +101,8 @@ void StartGameState::set_player_num_()
 {
     CEGUI::Combobox *cbpn = static_cast<CEGUI::Combobox*>(win_->getChild("playerNum"));
 
-    for (auto name : plist_handlers_) {
-        auto item = new CEGUI::ListboxTextItem(name.first);
+    for (auto plist_handler : plist_handlers_) {
+        auto item = new CEGUI::ListboxTextItem(plist_handler.name);
         cbpn->addItem(item);
     }
 
@@ -165,7 +165,8 @@ bool StartGameState::handle_player_num_(const CEGUI::EventArgs &e)
 
     auto item = cb->getSelectedItem();
     const CEGUI::String &item_name = item->getText();
-    plist_handlers_[item_name]();
+    auto it = plist_handlers_.get<1>().find(item_name);
+    (it->handler)();
 
     return true;
 }
