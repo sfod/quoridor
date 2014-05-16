@@ -30,12 +30,15 @@ private:
     void init_sdl_();
     void init_resource_provider_();
     void inject_time_pulse_();
+    void update_fps_(double elapsed);
 
 private:
     std::shared_ptr<SDL_Window> sdl_win_;
     std::shared_ptr<CEGUI::Window> root_win_;
     std::shared_ptr<IState> cur_state_;
     double last_time_pulse_;
+    int frame_num_;
+    double fps_elapsed_;
     bool is_running_;
 };
 

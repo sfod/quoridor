@@ -11,8 +11,8 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 namespace Quoridor {
 
 StateManager::StateManager()
-    : sdl_win_(), cur_state_(),
-    last_time_pulse_(0.001 * SDL_GetTicks()), is_running_(true)
+    : sdl_win_(), cur_state_(), last_time_pulse_(0.001 * SDL_GetTicks()),
+    frame_num_(0), fps_elapsed_(0), is_running_(true)
 {
     init_sdl_();
     CEGUI::OpenGLRenderer::bootstrapSystem();
@@ -84,6 +84,7 @@ void StateManager::draw()
     glClear(GL_COLOR_BUFFER_BIT);
     CEGUI::System::getSingleton().renderAllGUIContexts();
     SDL_GL_SwapWindow(sdl_win_.get());
+    ++frame_num_;
 }
 
 void StateManager::init_sdl_()
@@ -146,6 +147,21 @@ void StateManager::inject_time_pulse_()
     CEGUI::System::getSingleton().getDefaultGUIContext().injectTimePulse(diff);
     CEGUI::System::getSingleton().injectTimePulse(diff);
     last_time_pulse_ = current_time_pulse;
+
+    update_fps_(diff);
+
+}
+
+void StateManager::update_fps_(double elapsed)
+{
+    fps_elapsed_ += elapsed;
+
+    if (fps_elapsed_ >= 5.0) {
+        int fps = frame_num_ / fps_elapsed_;
+        frame_num_ = 0;
+        fps_elapsed_ = 0;
+        BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "FPS: " << fps;
+    }
 }
 
 }  /* namespace Quoridor */
