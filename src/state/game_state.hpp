@@ -22,6 +22,10 @@ public:
     virtual const std::string &name() const;
 
 private:
+    void subscribe_for_events_();
+    bool handle_fields_(const CEGUI::EventArgs &e);
+
+private:
     void init_board_repr() const;
     void draw_wall(const Wall &wall) const;
     void redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const;
