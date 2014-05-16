@@ -76,7 +76,8 @@ void GameState::update()
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
                 << " move: " << walk_move->node().row() << ":"
-                << walk_move->node().col();
+                << walk_move->node().col() << " -> " << cur_node.row() << ":"
+                << cur_node.col();
             rc = board_->make_walking_move(cur_pawn_, walk_move->node());
             if (rc == 0) {
                 Pos goal_node = board_->pawn_node(cur_pawn_);
@@ -189,6 +190,17 @@ void GameState::init_board_repr() const
 
 void GameState::redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const
 {
+    std::string old_pos_field = "boardWindow/field_"
+        + std::to_string(old_pos.row()) + "_"
+        + std::to_string(old_pos.col());
+    std::string new_pos_field = "boardWindow/field_"
+        + std::to_string(new_pos.row()) + "_"
+        + std::to_string(new_pos.col());
+
+    auto pawn_win = win_->getChild(old_pos_field)->getChild("pawn");
+    win_->getChild(old_pos_field)->removeChild(pawn_win);
+    win_->getChild(new_pos_field)->addChild(pawn_win);
+
     repr_[old_pos.row() * 2 + 1][old_pos.col() * 2 + 1] = ' ';
     repr_[new_pos.row() * 2 + 1][new_pos.col() * 2 + 1] = p;
 }
