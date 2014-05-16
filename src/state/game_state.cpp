@@ -36,6 +36,8 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         throw Exception("Invalid number of players");
     }
 
+    set_pawns_(player_types.size());
+
     int i = 0;
     for (auto player_type : player_types) {
         BOOST_LOG_SEV(lg, boost::log::trivial::info) << "adding player "
@@ -97,9 +99,7 @@ void GameState::update()
         else if (rc == 0) {
             cur_pawn_ = next_pawn();
         }
-
     }
-
 }
 
 std::shared_ptr<CEGUI::Window> GameState::window() const
@@ -110,6 +110,21 @@ std::shared_ptr<CEGUI::Window> GameState::window() const
 const std::string &GameState::name() const
 {
     return name_;
+}
+
+void GameState::set_pawns_(size_t n)
+{
+    auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+    win_->getChild("boardWindow/field_0_4")->addChild(w1);
+    auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+    win_->getChild("boardWindow/field_8_4")->addChild(w2);
+
+    if (n == 4) {
+        auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+        win_->getChild("boardWindow/field_4_0")->addChild(w1);
+        auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn.layout");
+        win_->getChild("boardWindow/field_4_8")->addChild(w2);
+    }
 }
 
 void GameState::subscribe_for_events_()
