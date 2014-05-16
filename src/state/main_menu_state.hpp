@@ -13,7 +13,7 @@ class MainMenuState : public IState {
 public:
     explicit MainMenuState(std::shared_ptr<StateManager> stm);
     virtual ~MainMenuState();
-
+    virtual void update();
     virtual std::shared_ptr<CEGUI::Window> window() const;
     virtual const std::string &name() const;
 

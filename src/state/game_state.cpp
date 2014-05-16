@@ -53,6 +53,52 @@ GameState::~GameState()
 {
 }
 
+void GameState::update()
+{
+    IMove *move;
+
+    if (!is_running_) {
+        return;
+    }
+
+    // if (!players_[cur_pawn_]->is_interactive()) {
+        move = players_[cur_pawn_]->get_move();
+    // }
+    if (move != NULL) {
+        Pos cur_node = board_->pawn_node(cur_pawn_);
+        int rc;
+
+        if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
+                << " move: " << walk_move->node().row() << ":"
+                << walk_move->node().col();
+            rc = board_->make_walking_move(cur_pawn_, walk_move->node());
+            if (rc == 0) {
+                Pos goal_node = board_->pawn_node(cur_pawn_);
+                redraw_pawn(cur_pawn_->color()[0], cur_node, goal_node);
+            }
+        }
+        else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
+            const Wall &wall = wall_move->wall();
+            rc = board_->add_wall(wall);
+            if (rc == 0) {
+                draw_wall(wall);
+            }
+        }
+
+        if (board_->is_at_goal_node(cur_pawn_)) {
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
+                << " win";
+            is_running_ = false;
+        }
+        else if (rc == 0) {
+            cur_pawn_ = next_pawn();
+        }
+
+    }
+
+}
+
 std::shared_ptr<CEGUI::Window> GameState::window() const
 {
     return win_;

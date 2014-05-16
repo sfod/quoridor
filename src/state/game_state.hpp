@@ -17,7 +17,7 @@ public:
     GameState(std::shared_ptr<StateManager> stm,
             const std::vector<std::string> &player_types);
     virtual ~GameState();
-
+    virtual void update();
     virtual std::shared_ptr<CEGUI::Window> window() const;
     virtual const std::string &name() const;
 

@@ -15,6 +15,7 @@ class StartGameState : public IState {
 public:
     explicit StartGameState(std::shared_ptr<StateManager> stm);
     virtual ~StartGameState();
+    virtual void update();
     virtual std::shared_ptr<CEGUI::Window> window() const;
     virtual const std::string &name() const;
 
