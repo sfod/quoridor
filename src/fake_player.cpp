@@ -7,10 +7,6 @@
 #include "walk_move.hpp"
 #include "wall_move.hpp"
 #include "exception.hpp"
-#include "logger.hpp"
-
-
-static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 
 namespace Quoridor {
@@ -50,8 +46,6 @@ IMove *FakePlayer::get_move()
 
         auto node_it = min_path.begin();
         Pos next_node = *node_it;
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "moving to "
-            << next_node.row() << ":" << next_node.col();
         if (board_->is_occupied(next_node)) {
             // @todo
         }
