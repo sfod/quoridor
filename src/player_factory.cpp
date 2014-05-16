@@ -5,7 +5,7 @@
 
 namespace Quoridor {
 
-static std::vector<std::string> player_types = {"human", "fake"};
+static std::vector<std::string> player_types = {"fake", "human"};
 
 PlayerFactory::PlayerFactory()
 {
