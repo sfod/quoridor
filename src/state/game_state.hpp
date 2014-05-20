@@ -22,10 +22,19 @@ public:
     virtual const std::string &name() const;
 
 private:
-    void init_win_();
+    enum GameStatus {
+        kWaitingForMove,
+        kPerformedMove,
+        kNeedPawnRedraw,
+        kWaitingForAnimationEnd,
+        kFinished
+    };
+
+private:
     void set_pawns_();
     void redraw_pawn_();
     std::shared_ptr<Pawn> next_pawn() const;
+    void make_move();
 
 private:
     void subscribe_for_events_();
@@ -44,13 +53,8 @@ private:
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
-
-// logic variables
-private:
-    bool is_finished_;
-    bool is_wait_move_;
-    bool need_redraw_;
     std::vector<Pos> pawn_path_;
+    GameStatus status_;
 };
 
 }  /* namespace Quoridor */
