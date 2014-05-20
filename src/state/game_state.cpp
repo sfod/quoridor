@@ -75,8 +75,15 @@ void GameState::update()
         make_move();
         break;
     case kPerformedMove:
-        cur_pawn_ = next_pawn();
         status_ = kWaitingForMove;
+        if (is_finished()) {
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
+                << " win";
+            status_ = kFinished;
+        }
+        else {
+            cur_pawn_ = next_pawn();
+        }
         break;
     case kNeedPawnRedraw:
         redraw_pawn_();
@@ -193,13 +200,13 @@ void GameState::make_move()
                 status_ = kPerformedMove;
             }
         }
-
-        if (board_->is_at_goal_node(cur_pawn_)) {
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
-                << " win";
-            status_ = kFinished;
-        }
     }
+}
+
+bool GameState::is_finished() const
+{
+    return board_->is_at_goal_node(cur_pawn_);
+
 }
 
 void GameState::subscribe_for_events_()
