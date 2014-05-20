@@ -4,9 +4,10 @@
     <Property name="Position" value="{ {0, 0}, {0, 0} }"/>
     <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }"/>
     <Window type="GlossySerpent/StaticImage" name="boardWindow">
-        <Property name="Position" value="{ {0.0, 0.0}, {0.0, 0.0} }"/>
+        <Property name="Position" value="{ {0.0, 4.0}, {0.0, 4.0} }"/>
         <Property name="Size" value="{ {0.0, 468.0}, {0.0, 468.0} }"/>
         <Property name="Image" value="BoardSet/Board"/>
+        <Property name="FrameEnabled" value="false"/>
     </Window>
     <Window type="GlossySerpent/Button" name="back">
         <Property name="Text" value="Back"/>
