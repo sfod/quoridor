@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <GUILayout version="4">
-    <Window type="GlossySerpent/StaticImage" name="pawnImage">
-        <Property name="Size" value="{ {1, 0}, {1, 0} }"/>
-        <Property name="Image" value="PawnSet/Pawn"/>
+    <Window type="GlossySerpent/StaticImage" name="wallImage">
+        <Property name="Size" value="{ {0, 52}, {0, 4} }"/>
+        <Property name="Image" value="WallSet/HorizontalWall"/>
         <Property name="MousePassThroughEnabled" value="true"/>
         <Property name="BackgroundEnabled" value="false"/>
         <Property name="FrameEnabled" value="false"/>

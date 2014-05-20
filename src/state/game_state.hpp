@@ -26,6 +26,7 @@ private:
         kWaitingForMove,
         kPerformedMove,
         kNeedPawnRedraw,
+        kNeedDrawWall,
         kWaitingForAnimationEnd,
         kFinished
     };
@@ -33,6 +34,7 @@ private:
 private:
     void set_pawns_();
     void redraw_pawn_();
+    void draw_wall_();
     std::shared_ptr<Pawn> next_pawn() const;
     void make_move();
     bool is_finished() const;
@@ -55,6 +57,8 @@ private:
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
     std::vector<Pos> pawn_path_;
+    Wall added_wall_;
+    size_t wall_idx_;
     GameStatus status_;
 };
 
