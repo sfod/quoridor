@@ -146,7 +146,7 @@ void GameState::set_pawns_()
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
         Pos pos = board_->pawn_node(pawn);
         float x_coord = 0.1111 * pos.col();
-        float y_coord = 0.1111 * pos.row();
+        float y_coord = 0.1111 * (8 - pos.row());
         drag_win->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
         drag_win->subscribeEvent(CEGUI::AnimationInstance::EventAnimationEnded, CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
 
@@ -187,9 +187,9 @@ void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
     pawn_path_.clear();
 
     float old_x_coord = 0.1111 * old_pos.col();
-    float old_y_coord = 0.1111 * old_pos.row();
+    float old_y_coord = 0.1111 * (8 - old_pos.row());
     float new_x_coord = 0.1111 * new_pos.col();
-    float new_y_coord = 0.1111 * new_pos.row();
+    float new_y_coord = 0.1111 * (8 - new_pos.row());
 
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn path: "
         << old_x_coord << ":" << old_y_coord << " --> " << new_x_coord
