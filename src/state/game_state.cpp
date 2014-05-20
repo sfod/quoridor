@@ -156,29 +156,6 @@ void GameState::set_pawns_()
     }
 }
 
-void GameState::subscribe_for_events_()
-{
-    win_->getChild("back")->subscribeEvent(
-            CEGUI::Window::EventMouseClick,
-            CEGUI::Event::Subscriber(
-                    &GameState::handle_back_, this
-            )
-    );
-}
-
-bool GameState::handle_back_(const CEGUI::EventArgs &/* e */)
-{
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "returning to start game menu";
-    stm_->change_state(std::shared_ptr<IState>(new StartGameState(stm_)));
-    return true;
-}
-
-bool GameState::handle_end_anim_(const CEGUI::EventArgs &/* e */)
-{
-    is_wait_move_ = true;
-    return true;
-}
-
 void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
 {
     Pos old_pos = pawn_path_[0];
@@ -203,6 +180,29 @@ void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
             getSingleton().instantiateAnimation(anim_.get());
     instance->setTargetWindow(pawn_win);
     instance->start();
+}
+
+void GameState::subscribe_for_events_()
+{
+    win_->getChild("back")->subscribeEvent(
+            CEGUI::Window::EventMouseClick,
+            CEGUI::Event::Subscriber(
+                    &GameState::handle_back_, this
+            )
+    );
+}
+
+bool GameState::handle_back_(const CEGUI::EventArgs &/* e */)
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "returning to start game menu";
+    stm_->change_state(std::shared_ptr<IState>(new StartGameState(stm_)));
+    return true;
+}
+
+bool GameState::handle_end_anim_(const CEGUI::EventArgs &/* e */)
+{
+    is_wait_move_ = true;
+    return true;
 }
 
 std::shared_ptr<Pawn> GameState::next_pawn() const
