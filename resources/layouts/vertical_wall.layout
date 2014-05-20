@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<GUILayout version="4">
+    <Window type="GlossySerpent/StaticImage" name="wallImage">
+        <Property name="Size" value="{ {0, 4}, {0, 52} }"/>
+        <Property name="Image" value="WallSet/VerticalWall"/>
+        <Property name="MousePassThroughEnabled" value="true"/>
+        <Property name="BackgroundEnabled" value="false"/>
+        <Property name="FrameEnabled" value="false"/>
+    </Window>
+</GUILayout>
