@@ -22,17 +22,18 @@ public:
     virtual const std::string &name() const;
 
 private:
-    void set_pawns_(const std::vector<std::string> &player_types);
+    void init_win_();
+    void set_pawns_();
 
 private:
     void subscribe_for_events_();
     bool handle_back_(const CEGUI::EventArgs &e);
-    bool handle_fields_(const CEGUI::EventArgs &e);
+    bool handle_end_anim_(const CEGUI::EventArgs &e);
 
 private:
     void init_board_repr() const;
     void draw_wall(const Wall &wall) const;
-    void redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const;
+    void redraw_pawn(std::shared_ptr<Pawn> pawn);
     std::shared_ptr<Pawn> next_pawn() const;
 
 private:
@@ -41,13 +42,20 @@ private:
 private:
     std::shared_ptr<StateManager> stm_;
     std::shared_ptr<CEGUI::Window> win_;
+    std::shared_ptr<CEGUI::Animation> anim_;
     std::shared_ptr<Board> board_;
     PlayerFactory pf_;
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
     mutable std::vector<std::vector<char>> repr_;
-    bool is_running_;
+
+// logic variables
+private:
+    bool is_finished_;
+    bool is_wait_move_;
+    bool need_redraw_;
+    std::vector<Pos> pawn_path_;
 };
 
 }  /* namespace Quoridor */

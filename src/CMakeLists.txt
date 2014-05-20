@@ -14,6 +14,7 @@ set(CORE_SOURCES
     fake_player
 )
 set(STATE_SOURCES
+    dragged_window
     main_menu_state
     start_game_state
     game_state
