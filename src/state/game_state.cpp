@@ -117,8 +117,15 @@ void GameState::set_pawns_()
 {
     auto board_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
 
+    CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
-        CEGUI::DraggedWindow *drag_win = new CEGUI::DraggedWindow("DefaultWindow", pawn->color());
+        if (players_[pawn]->is_interactive()) {
+            drag_win = new CEGUI::DraggedWindow("DefaultWindow", pawn->color());
+        }
+        else {
+            drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());
+        }
+
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
         Pos pos = board_->pawn_node(pawn);
         float x_coord = 0.1111 * pos.col();
@@ -208,11 +215,12 @@ std::shared_ptr<Pawn> GameState::next_pawn() const
 
 void GameState::make_move()
 {
-    IMove *move;
+    IMove *move = NULL;
 
-    // if (!players_[cur_pawn_]->is_interactive()) {
+    if (!players_[cur_pawn_]->is_interactive()) {
         move = players_[cur_pawn_]->get_move();
-    // }
+    }
+
     if (move != NULL) {
         Pos cur_node = board_->pawn_node(cur_pawn_);
         int rc;
