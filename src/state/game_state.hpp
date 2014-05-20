@@ -25,14 +25,12 @@ private:
     void init_win_();
     void set_pawns_();
     void redraw_pawn_(std::shared_ptr<Pawn> pawn);
+    std::shared_ptr<Pawn> next_pawn() const;
 
 private:
     void subscribe_for_events_();
     bool handle_back_(const CEGUI::EventArgs &e);
     bool handle_end_anim_(const CEGUI::EventArgs &e);
-
-private:
-    std::shared_ptr<Pawn> next_pawn() const;
 
 private:
     static std::string name_;

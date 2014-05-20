@@ -182,6 +182,22 @@ void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
     instance->start();
 }
 
+std::shared_ptr<Pawn> GameState::next_pawn() const
+{
+    auto it = pawn_list_.begin();
+    for (;it != pawn_list_.end(); ++it) {
+        if (*it == cur_pawn_) {
+            break;
+        }
+    }
+    if (++it == pawn_list_.end()) {
+        return pawn_list_[0];
+    }
+    else {
+        return *it;
+    }
+}
+
 void GameState::subscribe_for_events_()
 {
     win_->getChild("back")->subscribeEvent(
@@ -203,22 +219,6 @@ bool GameState::handle_end_anim_(const CEGUI::EventArgs &/* e */)
 {
     is_wait_move_ = true;
     return true;
-}
-
-std::shared_ptr<Pawn> GameState::next_pawn() const
-{
-    auto it = pawn_list_.begin();
-    for (;it != pawn_list_.end(); ++it) {
-        if (*it == cur_pawn_) {
-            break;
-        }
-    }
-    if (++it == pawn_list_.end()) {
-        return pawn_list_[0];
-    }
-    else {
-        return *it;
-    }
 }
 
 }  /* namespace Quoridor */
