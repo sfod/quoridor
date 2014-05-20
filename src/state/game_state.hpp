@@ -48,7 +48,6 @@ private:
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
-    mutable std::vector<std::vector<char>> repr_;
 
 // logic variables
 private:

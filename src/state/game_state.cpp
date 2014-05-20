@@ -19,7 +19,7 @@ std::string GameState::name_("Start Game");
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    repr_(), is_finished_(false), is_wait_move_(true), need_redraw_(false),
+    is_finished_(false), is_wait_move_(true), need_redraw_(false),
     pawn_path_()
 {
     CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
