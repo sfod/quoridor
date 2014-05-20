@@ -1,5 +1,6 @@
 #include "game_state.hpp"
 
+#include "dragged_window.hpp"
 #include "start_game_state.hpp"
 #include "imove.hpp"
 #include "walk_move.hpp"
@@ -16,11 +17,13 @@ static std::vector<std::string> colors = {"red", "green", "blue", "yellow"};
 std::string GameState::name_("Start Game");
 
 GameState::GameState(std::shared_ptr<StateManager> stm,
-        const std::vector<std::string> &player_types) : stm_(stm),
+        const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    repr_(), is_running_(true)
+    repr_(), is_finished_(false), is_wait_move_(true), need_redraw_(false),
+    pawn_path_()
 {
     CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
+    CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
     win_ = std::shared_ptr<CEGUI::Window>(
             CEGUI::WindowManager::getSingleton().
                     loadLayoutFromFile("game.layout"),
@@ -36,7 +39,6 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         throw Exception("Invalid number of players");
     }
 
-    set_pawns_(player_types);
 
     int i = 0;
     for (auto player_type : player_types) {
@@ -49,9 +51,19 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         ++i;
     }
 
-    cur_pawn_ = pawn_list_[0];
+    anim_ = std::shared_ptr<CEGUI::Animation>(
+            CEGUI::AnimationManager::getSingleton().
+                    createAnimation("movePawn"),
+            [=](CEGUI::Animation *anim) {
+                CEGUI::AnimationManager::getSingleton().destroyAnimation(anim);
+            }
+    );
+    anim_->setDuration(0.5);
+    anim_->setReplayMode(CEGUI::Animation::RM_Once);
 
-    init_board_repr();
+    set_pawns_();
+
+    cur_pawn_ = pawn_list_[0];
 }
 
 GameState::~GameState()
@@ -62,7 +74,17 @@ void GameState::update()
 {
     IMove *move;
 
-    if (!is_running_) {
+    if (need_redraw_) {
+        redraw_pawn(cur_pawn_);
+        need_redraw_ = false;
+        return;
+    }
+
+    if (!is_wait_move_) {
+        return;
+    }
+
+    if (is_finished_) {
         return;
     }
 
@@ -75,27 +97,29 @@ void GameState::update()
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
-                << " move: " << walk_move->node().row() << ":"
-                << walk_move->node().col() << " -> " << cur_node.row() << ":"
-                << cur_node.col();
+                << " move: " << cur_node.row() << ":" << cur_node.col()
+                << " -> " << walk_move->node().row() << ":"
+                << walk_move->node().col();
+
             rc = board_->make_walking_move(cur_pawn_, walk_move->node());
             if (rc == 0) {
-                Pos goal_node = board_->pawn_node(cur_pawn_);
-                redraw_pawn(cur_pawn_->color()[0], cur_node, goal_node);
+                pawn_path_.push_back(cur_node);
+                pawn_path_.push_back(board_->pawn_node(cur_pawn_));
+                is_wait_move_ = false;
+                need_redraw_ = true;
             }
         }
         else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
             const Wall &wall = wall_move->wall();
             rc = board_->add_wall(wall);
             if (rc == 0) {
-                draw_wall(wall);
             }
         }
 
         if (board_->is_at_goal_node(cur_pawn_)) {
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
                 << " win";
-            is_running_ = false;
+            is_finished_ = true;
         }
         else if (rc == 0) {
             cur_pawn_ = next_pawn();
@@ -113,18 +137,22 @@ const std::string &GameState::name() const
     return name_;
 }
 
-void GameState::set_pawns_(const std::vector<std::string> &player_types)
+void GameState::set_pawns_()
 {
-    auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
-    win_->getChild("boardWindow/field_0_4")->addChild(w1);
-    auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
-    win_->getChild("boardWindow/field_8_4")->addChild(w2);
+    auto board_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
 
-    if (player_types.size() == 4) {
-        auto w1 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
-        win_->getChild("boardWindow/field_4_0")->addChild(w1);
-        auto w2 = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
-        win_->getChild("boardWindow/field_4_8")->addChild(w2);
+    for (auto pawn : pawn_list_) {
+        CEGUI::DraggedWindow *drag_win = new CEGUI::DraggedWindow("DefaultWindow", pawn->color());
+        drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
+        Pos pos = board_->pawn_node(pawn);
+        float x_coord = 0.1111 * pos.col();
+        float y_coord = 0.1111 * pos.row();
+        drag_win->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
+        drag_win->subscribeEvent(CEGUI::AnimationInstance::EventAnimationEnded, CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
+
+        auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
+        drag_win->addChild(pawn_win);
+        board_win->addChild(drag_win);
     }
 }
 
@@ -136,18 +164,6 @@ void GameState::subscribe_for_events_()
                     &GameState::handle_back_, this
             )
     );
-    for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 9; ++j) {
-            std::string field_name = "boardWindow/field_" + std::to_string(i) + "_"
-                + std::to_string(j);
-            win_->getChild(field_name)->subscribeEvent(
-                    CEGUI::Window::EventDragDropItemDropped,
-                    CEGUI::Event::Subscriber(
-                            &GameState::handle_fields_, this
-                    )
-            );
-        }
-    }
 }
 
 bool GameState::handle_back_(const CEGUI::EventArgs &/* e */)
@@ -157,66 +173,40 @@ bool GameState::handle_back_(const CEGUI::EventArgs &/* e */)
     return true;
 }
 
-bool GameState::handle_fields_(const CEGUI::EventArgs &e)
+bool GameState::handle_end_anim_(const CEGUI::EventArgs &/* e */)
 {
-    const CEGUI::DragDropEventArgs &dde = static_cast<const CEGUI::DragDropEventArgs&>(e);
-    if (!dde.window->getChildCount()) {
-        dde.window->addChild(dde.dragDropItem);
-        // dde.dragDropItem->setPosition(CEGUI::UVector2(CEGUI::UDim(0.05, 0), CEGUI::UDim(0.05, 0)));
-    }
+    is_wait_move_ = true;
     return true;
 }
 
-void GameState::init_board_repr() const
+void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
 {
-    repr_.resize(19);
-    for (int i = 0; i < 19; ++i) {
-        repr_[i].resize(19);
-        for (int j = 0; j < 19; ++j) {
-            if (i % 2 == 1) {
-                repr_[i][j] = (j % 2 == 0 ? '|' : ' ');
-            }
-            else {
-                repr_[i][j] = (j % 2 == 0 ? ' ' : '_');
-            }
-        }
-    }
+    Pos old_pos = pawn_path_[0];
+    Pos new_pos = pawn_path_[1];
 
-    for (auto pawn : pawn_list_) {
-        Pos pos = board_->pawn_node(pawn);
-        repr_[pos.row() * 2 + 1][pos.col() * 2 + 1] = pawn->color()[0];
-    }
-}
+    pawn_path_.clear();
 
-void GameState::redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const
-{
-    std::string old_pos_field = "boardWindow/field_"
-        + std::to_string(old_pos.row()) + "_"
-        + std::to_string(old_pos.col());
-    std::string new_pos_field = "boardWindow/field_"
-        + std::to_string(new_pos.row()) + "_"
-        + std::to_string(new_pos.col());
+    float old_x_coord = 0.1111 * old_pos.col();
+    float old_y_coord = 0.1111 * old_pos.row();
+    float new_x_coord = 0.1111 * new_pos.col();
+    float new_y_coord = 0.1111 * new_pos.row();
 
-    auto pawn_win = win_->getChild(old_pos_field)->getChild("pawn");
-    win_->getChild(old_pos_field)->removeChild(pawn_win);
-    win_->getChild(new_pos_field)->addChild(pawn_win);
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn path: "
+        << old_x_coord << ":" << old_y_coord << " --> " << new_x_coord
+        << ":" << new_y_coord;
 
-    repr_[old_pos.row() * 2 + 1][old_pos.col() * 2 + 1] = ' ';
-    repr_[new_pos.row() * 2 + 1][new_pos.col() * 2 + 1] = p;
-}
+    CEGUI::Affector *affector = anim_->createAffector("Position", "UVector2");
+    affector->setApplicationMethod(CEGUI::Affector::AM_Absolute);
+    affector->createKeyFrame(0.0, "{{" + std::to_string(old_x_coord)
+            + ", 2.0}, { " + std::to_string(old_y_coord) + ", 2.0}}");
+    affector->createKeyFrame(0.5, "{{" + std::to_string(new_x_coord)
+            + ", 2.0}, { " + std::to_string(new_y_coord) + ", 2.0}}");
 
-void GameState::draw_wall(const Wall &wall) const
-{
-    if (wall.orientation() == 0) {
-        for (int i = 0; i < wall.cnt(); ++i) {
-            repr_[wall.line() * 2 + 2][(wall.start_pos() + i) * 2 + 1] = '=';
-        }
-    }
-    else {
-        for (int i = 0; i < wall.cnt(); ++i) {
-            repr_[(wall.start_pos() + i) * 2 + 1][wall.line() * 2 + 2] = '$';
-        }
-    }
+    auto pawn_win = win_->getChild("boardWindow/" + pawn->color());
+    CEGUI::AnimationInstance *instance = CEGUI::AnimationManager::
+            getSingleton().instantiateAnimation(anim_.get());
+    instance->setTargetWindow(pawn_win);
+    instance->start();
 }
 
 std::shared_ptr<Pawn> GameState::next_pawn() const
