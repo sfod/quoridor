@@ -24,7 +24,7 @@ public:
 private:
     void init_win_();
     void set_pawns_();
-    void redraw_pawn_(std::shared_ptr<Pawn> pawn);
+    void redraw_pawn_();
     std::shared_ptr<Pawn> next_pawn() const;
 
 private:

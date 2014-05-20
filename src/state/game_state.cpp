@@ -156,7 +156,7 @@ void GameState::set_pawns_()
     }
 }
 
-void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
+void GameState::redraw_pawn()
 {
     Pos old_pos = pawn_path_[0];
     Pos new_pos = pawn_path_[1];
@@ -175,7 +175,7 @@ void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
     affector->createKeyFrame(0.5, "{{" + std::to_string(new_x_coord)
             + ", 2.0}, { " + std::to_string(new_y_coord) + ", 2.0}}");
 
-    auto pawn_win = win_->getChild("boardWindow/" + pawn->color());
+    auto pawn_win = win_->getChild("boardWindow/" + cur_pawn_->color());
     CEGUI::AnimationInstance *instance = CEGUI::AnimationManager::
             getSingleton().instantiateAnimation(anim_.get());
     instance->setTargetWindow(pawn_win);
