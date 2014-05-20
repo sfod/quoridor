@@ -35,6 +35,7 @@ private:
     void redraw_pawn_();
     std::shared_ptr<Pawn> next_pawn() const;
     void make_move();
+    bool is_finished() const;
 
 private:
     void subscribe_for_events_();
