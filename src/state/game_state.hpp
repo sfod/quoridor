@@ -24,6 +24,7 @@ public:
 private:
     void init_win_();
     void set_pawns_();
+    void redraw_pawn_(std::shared_ptr<Pawn> pawn);
 
 private:
     void subscribe_for_events_();
@@ -31,9 +32,6 @@ private:
     bool handle_end_anim_(const CEGUI::EventArgs &e);
 
 private:
-    void init_board_repr() const;
-    void draw_wall(const Wall &wall) const;
-    void redraw_pawn(std::shared_ptr<Pawn> pawn);
     std::shared_ptr<Pawn> next_pawn() const;
 
 private:
