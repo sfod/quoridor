@@ -191,10 +191,6 @@ void GameState::redraw_pawn(std::shared_ptr<Pawn> pawn)
     float new_x_coord = 0.1111 * new_pos.col();
     float new_y_coord = 0.1111 * (8 - new_pos.row());
 
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn path: "
-        << old_x_coord << ":" << old_y_coord << " --> " << new_x_coord
-        << ":" << new_y_coord;
-
     CEGUI::Affector *affector = anim_->createAffector("Position", "UVector2");
     affector->setApplicationMethod(CEGUI::Affector::AM_Absolute);
     affector->createKeyFrame(0.0, "{{" + std::to_string(old_x_coord)
