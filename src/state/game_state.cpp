@@ -19,10 +19,11 @@ std::string GameState::name_("Start Game");
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    pawn_path_(), status_(kWaitingForMove)
+    pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0), status_(kWaitingForMove)
 {
     CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
+    CEGUI::ImageManager::getSingleton().loadImageset("wall.imageset");
     win_ = std::shared_ptr<CEGUI::Window>(
             CEGUI::WindowManager::getSingleton().
                     loadLayoutFromFile("game.layout"),
@@ -89,6 +90,10 @@ void GameState::update()
         redraw_pawn_();
         status_ = kWaitingForAnimationEnd;
         break;
+    case kNeedDrawWall:
+        draw_wall_();
+        status_ = kPerformedMove;
+        break;
     case kWaitingForAnimationEnd:
         break;
     case kFinished:
@@ -153,6 +158,38 @@ void GameState::redraw_pawn_()
     instance->start();
 }
 
+void GameState::draw_wall_()
+{
+    auto board_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
+
+    if (added_wall_.orientation() == 0) {
+        for (int i = 0; i < added_wall_.cnt(); ++i) {
+            float x = 0.1111 * (added_wall_.start_pos() + i);
+            float y = 0.1111 * ( 8 - added_wall_.line());
+            auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("horizontal_wall.layout");
+            wall_win->setPosition(CEGUI::UVector2({x, 0}, {y, -2}));
+            wall_win->setName("wallWindow" + std::to_string(wall_idx_));
+            ++wall_idx_;
+            board_win->addChild(wall_win);
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at "
+                << x << ":" << y;
+        }
+    }
+    else {
+        for (int i = 0; i < added_wall_.cnt(); ++i) {
+            float x = 0.1111 * (added_wall_.line());
+            float y = 0.1111 * ( 8 - added_wall_.start_pos() - i);
+            auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
+            wall_win->setPosition(CEGUI::UVector2({x, -2}, {y, 0}));
+            wall_win->setName("wallWindow" + std::to_string(wall_idx_));
+            ++wall_idx_;
+            board_win->addChild(wall_win);
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at "
+                << x << ":" << y;
+        }
+    }
+}
+
 std::shared_ptr<Pawn> GameState::next_pawn() const
 {
     auto it = pawn_list_.begin();
@@ -197,7 +234,8 @@ void GameState::make_move()
             const Wall &wall = wall_move->wall();
             rc = board_->add_wall(wall);
             if (rc == 0) {
-                status_ = kPerformedMove;
+                added_wall_ = wall;
+                status_ = kNeedDrawWall;
             }
         }
     }
