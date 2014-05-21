@@ -117,6 +117,8 @@ void GameState::set_pawns_()
 {
     auto board_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
 
+    board_win->subscribeEvent(CEGUI::Window::EventDragDropItemDropped, CEGUI::Event::Subscriber(&GameState::handle_pawn_dropped_, this));
+
     CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
         if (players_[pawn]->is_interactive()) {
@@ -217,8 +219,13 @@ void GameState::make_move_()
 {
     IMove *move = NULL;
 
+    // bot's turn
     if (!players_[cur_pawn_]->is_interactive()) {
         move = players_[cur_pawn_]->get_move();
+    }
+    // human's turn, handle it in one of event handlers
+    else {
+        return;
     }
 
     if (move != NULL) {
@@ -252,7 +259,6 @@ void GameState::make_move_()
 bool GameState::is_finished_() const
 {
     return board_->is_at_goal_node(cur_pawn_);
-
 }
 
 void GameState::subscribe_for_events_()
@@ -275,6 +281,15 @@ bool GameState::handle_back_(const CEGUI::EventArgs &/* e */)
 bool GameState::handle_end_anim_(const CEGUI::EventArgs &/* e */)
 {
     status_ = kPerformedMove;
+    return true;
+}
+
+bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn was dropped!";
+    auto we = static_cast<const CEGUI::WindowEventArgs &>(e);
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << we.window << " position "
+        << CEGUI::CoordConverter::asRelative(we.window->getPosition(), {468, 468});
     return true;
 }
 
