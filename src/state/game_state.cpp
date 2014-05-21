@@ -124,6 +124,7 @@ void GameState::set_pawns_()
         }
         else {
             drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());
+            drag_win->subscribeEvent(CEGUI::AnimationInstance::EventAnimationEnded, CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
         }
 
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
@@ -131,7 +132,6 @@ void GameState::set_pawns_()
         float x_coord = 0.1111 * pos.col();
         float y_coord = 0.1111 * (8 - pos.row());
         drag_win->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
-        drag_win->subscribeEvent(CEGUI::AnimationInstance::EventAnimationEnded, CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
 
         auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
         drag_win->addChild(pawn_win);
