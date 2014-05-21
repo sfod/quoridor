@@ -45,6 +45,9 @@ bool DraggedWindow::handle_stop_drag_(const EventArgs &e)
                 System::getSingleton().getDefaultGUIContext().
                         getMouseCursor().getPosition());
         is_dragged_ = false;
+
+        WindowEventArgs we(me.window);
+        me.window->getParent()->fireEvent(CEGUI::Window::EventDragDropItemDropped, we, "");
     }
     return true;
 }
