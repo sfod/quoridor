@@ -44,6 +44,7 @@ private:
     bool handle_back_(const CEGUI::EventArgs &e);
     bool handle_end_anim_(const CEGUI::EventArgs &e);
     bool handle_pawn_dropped_(const CEGUI::EventArgs &e);
+    Pos normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos);
 
 private:
     static std::string name_;
