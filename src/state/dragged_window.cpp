@@ -47,6 +47,7 @@ bool DraggedWindow::handle_stop_drag_(const EventArgs &e)
         is_dragged_ = false;
 
         WindowEventArgs we(me.window);
+        // @todo add mouse position to the fired event
         me.window->getParent()->fireEvent(CEGUI::Window::EventDragDropItemDropped, we, "");
     }
     return true;
