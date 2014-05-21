@@ -287,10 +287,32 @@ bool GameState::handle_end_anim_(const CEGUI::EventArgs &/* e */)
 bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn was dropped!";
+
     auto we = static_cast<const CEGUI::WindowEventArgs &>(e);
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << we.window << " position "
-        << CEGUI::CoordConverter::asRelative(we.window->getPosition(), {468, 468});
+    CEGUI::Vector2f mouse_pos_in_win = CEGUI::CoordConverter::screenToWindow(
+            *we.window,
+            CEGUI::System::getSingleton().getDefaultGUIContext().
+                    getMouseCursor().getPosition());
+    CEGUI::UVector2 mouse_offset_in_win(
+            {0, mouse_pos_in_win.d_x},
+            {0, mouse_pos_in_win.d_y});
+
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << we.window << " position in window " << mouse_pos_in_win;
+
+    CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(we.window->getPosition() + mouse_offset_in_win, {468, 468});
+    Pos node = normalize_pawn_pos_(rel_pos);
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << we.window << " position " << node.row() << ":" << node.col();
+
+    float x_coord = 0.1111 * node.col();
+    float y_coord = 0.1111 * (8 - node.row());
+    we.window->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
+
     return true;
+}
+
+Pos GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
+{
+    return Pos(8 - static_cast<int>(rel_pos.d_y / 0.1111), static_cast<int>(rel_pos.d_x / 0.1111));
 }
 
 }  /* namespace Quoridor */
