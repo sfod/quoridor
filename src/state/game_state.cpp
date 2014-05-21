@@ -73,11 +73,11 @@ void GameState::update()
 {
     switch (status_) {
     case kWaitingForMove:
-        make_move();
+        make_move_();
         break;
     case kPerformedMove:
         status_ = kWaitingForMove;
-        if (is_finished()) {
+        if (is_finished_()) {
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
                 << " win";
             status_ = kFinished;
@@ -213,7 +213,7 @@ std::shared_ptr<Pawn> GameState::next_pawn() const
     }
 }
 
-void GameState::make_move()
+void GameState::make_move_()
 {
     IMove *move = NULL;
 
@@ -249,7 +249,7 @@ void GameState::make_move()
     }
 }
 
-bool GameState::is_finished() const
+bool GameState::is_finished_() const
 {
     return board_->is_at_goal_node(cur_pawn_);
 
