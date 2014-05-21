@@ -36,8 +36,8 @@ private:
     void redraw_pawn_();
     void draw_wall_();
     std::shared_ptr<Pawn> next_pawn() const;
-    void make_move();
-    bool is_finished() const;
+    void make_move_();
+    bool is_finished_() const;
 
 private:
     void subscribe_for_events_();
