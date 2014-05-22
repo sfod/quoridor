@@ -36,7 +36,14 @@ bool DraggedWindow::handle_start_drag_(const EventArgs &e)
             *me.window,
             System::getSingleton().getDefaultGUIContext().
                     getMouseCursor().getPosition());
+    UVector2 mouse_offset_in_win(
+            {0, mouse_pos_in_win_.d_x},
+            {0, mouse_pos_in_win_.d_y});
     is_dragged_ = true;
+
+    DragEvent de(me.window, mouse_offset_in_win);
+    me.window->getParent()->fireEvent(EventDraggedWindowStartDragging, de, "");
+
     return true;
 }
 
