@@ -2,6 +2,8 @@
 
 namespace CEGUI_Ext {
 
+using namespace CEGUI;
+
 DraggedWindow::DraggedWindow(const String &type, const String &name)
     : DefaultWindow(type, name), conn_(), mouse_pos_in_win_(),
     is_dragged_(false)
