@@ -5,21 +5,19 @@
 
 namespace CEGUI_Ext {
 
-using namespace CEGUI;
-
-class DraggedWindow : public DefaultWindow {
+class DraggedWindow : public CEGUI::DefaultWindow {
 public:
-    DraggedWindow(const String &type, const String &name);
+    DraggedWindow(const CEGUI::String &type, const CEGUI::String &name);
     virtual ~DraggedWindow();
 
 private:
-    bool handle_start_drag_(const EventArgs &e);
-    bool handle_stop_drag_(const EventArgs &e);
-    bool handle_move_(const EventArgs &e);
+    bool handle_start_drag_(const CEGUI::EventArgs &e);
+    bool handle_stop_drag_(const CEGUI::EventArgs &e);
+    bool handle_move_(const CEGUI::EventArgs &e);
 
 private:
-    Event::Connection conn_;
-    Vector2f mouse_pos_in_win_;
+    CEGUI::Event::Connection conn_;
+    CEGUI::Vector2f mouse_pos_in_win_;
     bool is_dragged_;
 };
 
