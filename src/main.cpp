@@ -5,74 +5,52 @@
 
 #include <boost/program_options.hpp>
 
-#include "UI/ui_factory.hpp"
 #include "player_factory.hpp"
 #include "exception.hpp"
 #include "logger.hpp"
 
-#include "state/main_menu_state.hpp"
-#include "state/game_state.hpp"
 #include "state/state_manager.hpp"
+#include "state/main_menu_state.hpp"
 
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
 
 
-struct game_opts_t {
-    std::string ui_type;
-};
-
-
 BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", boost::log::attributes::named_scope::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
 
 
-
-static int init(int argc, char **argv, game_opts_t *game_opts);
+static int init(int argc, char **argv);
 static void init_logging(const std::string &logfile);
 
 int main(int argc, char **argv)
 {
-    game_opts_t game_opts;
-
-    if (init(argc, argv, &game_opts) < 0) {
+    if (init(argc, argv) < 0) {
         return EXIT_FAILURE;
     }
 
     boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
+    BOOST_LOG_SEV(lg, logging::trivial::info) << "initializing game";
 
-    BOOST_LOG_SEV(lg, logging::trivial::info) << "Creating "
-        << game_opts.ui_type << " UI";
-
-    Quoridor::StateManager stm;
-    Quoridor::UI::UIFactory uif;
-
-    stm.create_ui(uif, game_opts.ui_type);
-    std::shared_ptr<Quoridor::IState> menu_state(new Quoridor::MainMenuState(stm.ui()));
-    stm.change_state(std::shared_ptr<Quoridor::IState>(menu_state));
-
-    stm.draw();
-    while (stm.is_running()) {
-        stm.handle_events();
-        stm.update();
-        stm.draw();
+    std::shared_ptr<Quoridor::StateManager> stm(new Quoridor::StateManager);
+    stm->change_state(std::shared_ptr<Quoridor::IState>(new Quoridor::MainMenuState(stm)));
+    stm->draw();
+    while (stm->is_running()) {
+        stm->handle_events();
+        stm->update();
+        stm->draw();
     }
 
     return EXIT_SUCCESS;
 }
 
-static int init(int argc, char **argv, game_opts_t *game_opts)
+static int init(int argc, char **argv)
 {
     std::string logfile;
 
     po::options_description options("Options");
     options.add_options()
-    (
-        "ui,i",
-        po::value<std::string>(&game_opts->ui_type)->default_value("ncurses"),
-        "user interface"
-    )
     (
          "log,l",
         po::value<std::string>(&logfile)->default_value("quoridor.log"),

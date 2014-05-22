@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<GUILayout version="4">
+<Window type="GlossySerpent/SimplePanel" name="startGameWindow">
+    <Property name="Position" value="{ {0, 0}, {0, 0} }"/>
+    <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }"/>
+    <Window type="GlossySerpent/Combobox" name="playerNum">
+        <Property name="Position" value="{ {0.2, 0.0}, {0.5, 60.0} }"/>
+        <Property name="Size" value="{ {0.0, 150.0}, {0.0, 70.0} }"/>
+    </Window>
+    <Window type="GlossySerpent/Button" name="startGame">
+        <Property name="Text" value="Start Game"/>
+        <Property name="Position" value="{ {0.2, 0.0}, {0.7, 0.0} }"/>
+        <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
+    </Window>
+    <Window type="GlossySerpent/Button" name="returnToMainMenu">
+        <Property name="Text" value="Back"/>
+        <Property name="Position" value="{ {0.6, 0.0}, {0.7, 0.0} }"/>
+        <Property name="Size" value="{ {0.2, 0.0}, {0.1, 0.0} }"/>
+    </Window>
+</Window>
+</GUILayout>

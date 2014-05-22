@@ -3,8 +3,10 @@
 
 #include <memory>
 #include <vector>
+
+#include <SDL2/SDL.h>
+
 #include "istate.hpp"
-#include "UI/ui_factory.hpp"
 
 namespace Quoridor {
 
@@ -15,8 +17,6 @@ public:
     StateManager();
     ~StateManager();
 
-    void create_ui(UI::UIFactory &uif, const std::string &ui_type);
-    std::shared_ptr<UI::UI> ui() const;
     void change_state(std::shared_ptr<IState> state);
 
     void handle_events();
@@ -27,8 +27,18 @@ public:
     void stop() { is_running_ = false; }
 
 private:
-    std::vector<std::shared_ptr<IState>> states_;
-    std::shared_ptr<UI::UI> ui_;
+    void init_sdl_();
+    void init_resource_provider_();
+    void inject_time_pulse_();
+    void update_fps_(double elapsed);
+
+private:
+    std::shared_ptr<SDL_Window> sdl_win_;
+    std::shared_ptr<CEGUI::Window> root_win_;
+    std::shared_ptr<IState> cur_state_;
+    double last_time_pulse_;
+    int frame_num_;
+    double fps_elapsed_;
     bool is_running_;
 };
 

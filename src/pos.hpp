@@ -14,6 +14,7 @@ public:
 
     bool operator<(const Pos &pos) const;
     bool operator==(const Pos &pos) const;
+    bool operator!=(const Pos &pos) const;
     const Pos &operator+=(const Pos &pos);
     const Pos operator+(const Pos &pos);
 
