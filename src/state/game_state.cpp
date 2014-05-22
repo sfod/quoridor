@@ -307,16 +307,23 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
     float x_coord;
     float y_coord;
 
-    int rc = board_->make_walking_move(cur_pawn_, node);
-    if (rc == 0) {
-        x_coord = 0.1111 * node.col();
-        y_coord = 0.1111 * (8 - node.row());
-        status_ = kPerformedMove;
+    if (dragging_pawn_node_ != board_->pawn_node(cur_pawn_)) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn is not current";
+        x_coord = 0.1111 * dragging_pawn_node_.col();
+        y_coord = 0.1111 * (8 - dragging_pawn_node_.row());
     }
     else {
-        Pos cur_node = board_->pawn_node(cur_pawn_);
-        x_coord = 0.1111 * cur_node.col();
-        y_coord = 0.1111 * (8 - cur_node.row());
+        int rc = board_->make_walking_move(cur_pawn_, node);
+        if (rc == 0) {
+            x_coord = 0.1111 * node.col();
+            y_coord = 0.1111 * (8 - node.row());
+            status_ = kPerformedMove;
+        }
+        else {
+            Pos cur_node = board_->pawn_node(cur_pawn_);
+            x_coord = 0.1111 * cur_node.col();
+            y_coord = 0.1111 * (8 - cur_node.row());
+        }
     }
 
     de.window()->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
