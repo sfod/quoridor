@@ -1,9 +1,11 @@
-#ifndef QUORIDOR_DRAGGED_WINDOW_HPP_
-#define QUORIDOR_DRAGGED_WINDOW_HPP_
+#ifndef CEGUI_EXT_DRAGGED_WINDOW_HPP_
+#define CEGUI_EXT_DRAGGED_WINDOW_HPP_
 
 #include "CEGUI/CEGUI.h"
 
-namespace CEGUI {
+namespace CEGUI_Ext {
+
+using namespace CEGUI;
 
 class DraggedWindow : public DefaultWindow {
 public:
@@ -23,4 +25,4 @@ private:
 
 }  // namespace CEGUI
 
-#endif  // QUORIDOR_DRAGGED_WINDOW_HPP_
+#endif  // CEGUI_EXT_DRAGGED_WINDOW_HPP_

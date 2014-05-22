@@ -122,7 +122,7 @@ void GameState::set_pawns_()
     CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
         if (players_[pawn]->is_interactive()) {
-            drag_win = new CEGUI::DraggedWindow("DefaultWindow", pawn->color());
+            drag_win = new CEGUI_Ext::DraggedWindow("DefaultWindow", pawn->color());
         }
         else {
             drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());
