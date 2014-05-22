@@ -20,6 +20,7 @@ set(STATE_SOURCES
     state_manager
 )
 set(CEGUI_EXT_SOURCES
+    drag_event
     dragged_window
 )
 
