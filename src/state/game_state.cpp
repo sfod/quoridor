@@ -117,7 +117,9 @@ void GameState::set_pawns_()
 {
     auto board_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
 
-    board_win->subscribeEvent(CEGUI::Window::EventDragDropItemDropped, CEGUI::Event::Subscriber(&GameState::handle_pawn_dropped_, this));
+    board_win->subscribeEvent(
+            CEGUI_Ext::DraggedWindow::EventDraggedWindowDropped,
+            CEGUI::Event::Subscriber(&GameState::handle_pawn_dropped_, this));
 
     CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
@@ -288,20 +290,15 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
 {
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn was dropped!";
 
-    auto we = static_cast<const CEGUI::WindowEventArgs &>(e);
-    CEGUI::Vector2f mouse_pos_in_win = CEGUI::CoordConverter::screenToWindow(
-            *we.window,
-            CEGUI::System::getSingleton().getDefaultGUIContext().
-                    getMouseCursor().getPosition());
-    CEGUI::UVector2 mouse_offset_in_win(
-            {0, mouse_pos_in_win.d_x},
-            {0, mouse_pos_in_win.d_y});
-
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << we.window << " position in window " << mouse_pos_in_win;
-
-    CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(we.window->getPosition() + mouse_offset_in_win, {468, 468});
+    auto de = static_cast<const CEGUI_Ext::DragEvent &>(e);
+    CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(
+            de.window()->getPosition() + de.pos(),
+            {468, 468}  // @fixme get parent size
+    );
     Pos node = normalize_pawn_pos_(rel_pos);
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << we.window << " position " << node.row() << ":" << node.col();
+
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << de.window() << " position "
+        << node.row() << ":" << node.col();
 
     float x_coord;
     float y_coord;
@@ -318,7 +315,7 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
         y_coord = 0.1111 * (8 - cur_node.row());
     }
 
-    we.window->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
+    de.window()->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
 
     return true;
 }
