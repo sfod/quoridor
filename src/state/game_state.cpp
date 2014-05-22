@@ -325,7 +325,10 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
 
 Pos GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
 {
-    return Pos(8 - static_cast<int>(rel_pos.d_y / 0.1111), static_cast<int>(rel_pos.d_x / 0.1111));
+    return Pos(
+            8 - static_cast<int>(rel_pos.d_y / 0.1111),
+            static_cast<int>(rel_pos.d_x / 0.1111)
+    );
 }
 
 }  /* namespace Quoridor */
