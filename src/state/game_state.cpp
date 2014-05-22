@@ -1,12 +1,12 @@
 #include "game_state.hpp"
 
-#include "dragged_window.hpp"
 #include "start_game_state.hpp"
 #include "imove.hpp"
 #include "walk_move.hpp"
 #include "wall_move.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
+#include "cegui_ext/dragged_window.hpp"
 
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;

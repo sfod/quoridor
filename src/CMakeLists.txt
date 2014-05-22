@@ -14,11 +14,13 @@ set(CORE_SOURCES
     fake_player
 )
 set(STATE_SOURCES
-    dragged_window
     main_menu_state
     start_game_state
     game_state
     state_manager
+)
+set(CEGUI_EXT_SOURCES
+    dragged_window
 )
 
 set(SOURCES)
@@ -33,6 +35,10 @@ endforeach()
 foreach (source ${STATE_SOURCES})
     LIST(APPEND SOURCES state/${source}.cpp)
     add_library(${source}_cxx_obj OBJECT state/${source}.cpp)
+endforeach()
+foreach (source ${CEGUI_EXT_SOURCES})
+    LIST(APPEND SOURCES state/cegui_ext/${source}.cpp)
+    add_library(${source}_cxx_obj OBJECT state/cegui_ext/${source}.cpp)
 endforeach()
 
 set(ADDITIONAL_LIBRARIES boost_program_options boost_log boost_log_setup boost_thread boost_system pthread SDL2 GL CEGUIOpenGLRenderer-0_d CEGUIBase-0_d)
