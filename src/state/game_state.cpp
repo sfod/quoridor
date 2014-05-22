@@ -303,12 +303,22 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
     Pos node = normalize_pawn_pos_(rel_pos);
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << we.window << " position " << node.row() << ":" << node.col();
 
-    float x_coord = 0.1111 * node.col();
-    float y_coord = 0.1111 * (8 - node.row());
-    we.window->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
+    float x_coord;
+    float y_coord;
 
-    board_->make_walking_move(cur_pawn_, node);
-    status_ = kPerformedMove;
+    int rc = board_->make_walking_move(cur_pawn_, node);
+    if (rc == 0) {
+        x_coord = 0.1111 * node.col();
+        y_coord = 0.1111 * (8 - node.row());
+        status_ = kPerformedMove;
+    }
+    else {
+        Pos cur_node = board_->pawn_node(cur_pawn_);
+        x_coord = 0.1111 * cur_node.col();
+        y_coord = 0.1111 * (8 - cur_node.row());
+    }
+
+    we.window->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
 
     return true;
 }
