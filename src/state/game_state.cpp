@@ -19,7 +19,8 @@ std::string GameState::name_("Start Game");
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0), status_(kWaitingForMove)
+    dragging_pawn_node_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
+    status_(kWaitingForMove)
 {
     CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
@@ -120,6 +121,9 @@ void GameState::set_pawns_()
     board_win->subscribeEvent(
             CEGUI_Ext::DraggedWindow::EventDraggedWindowDropped,
             CEGUI::Event::Subscriber(&GameState::handle_pawn_dropped_, this));
+    board_win->subscribeEvent(
+            CEGUI_Ext::DraggedWindow::EventDraggedWindowStartDragging,
+            CEGUI::Event::Subscriber(&GameState::handle_pawn_start_dragging_, this));
 
     CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
@@ -317,6 +321,21 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
 
     de.window()->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
 
+    return true;
+}
+
+bool GameState::handle_pawn_start_dragging_(const CEGUI::EventArgs &e)
+{
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn is dragging";
+
+    auto de = static_cast<const CEGUI_Ext::DragEvent &>(e);
+    CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(
+            de.window()->getPosition() + de.pos(),
+            {468, 468}
+    );
+    dragging_pawn_node_ = normalize_pawn_pos_(rel_pos);
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "position is "
+        << dragging_pawn_node_.row() << ":" << dragging_pawn_node_.col();
     return true;
 }
 

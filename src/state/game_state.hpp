@@ -44,6 +44,7 @@ private:
     bool handle_back_(const CEGUI::EventArgs &e);
     bool handle_end_anim_(const CEGUI::EventArgs &e);
     bool handle_pawn_dropped_(const CEGUI::EventArgs &e);
+    bool handle_pawn_start_dragging_(const CEGUI::EventArgs &e);
     Pos normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos);
 
 private:
@@ -58,6 +59,7 @@ private:
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
+    Pos dragging_pawn_node_;
     std::vector<Pos> pawn_path_;
     Wall added_wall_;
     size_t wall_idx_;
