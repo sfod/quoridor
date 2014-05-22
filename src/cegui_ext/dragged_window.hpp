@@ -2,6 +2,7 @@
 #define CEGUI_EXT_DRAGGED_WINDOW_HPP_
 
 #include "CEGUI/CEGUI.h"
+#include "drag_event.hpp"
 
 namespace CEGUI_Ext {
 
@@ -9,6 +10,10 @@ class DraggedWindow : public CEGUI::DefaultWindow {
 public:
     DraggedWindow(const CEGUI::String &type, const CEGUI::String &name);
     virtual ~DraggedWindow();
+
+public:
+    static const CEGUI::String EventDraggedWindowStartDragging;
+    static const CEGUI::String EventDraggedWindowDropped;
 
 private:
     bool handle_start_drag_(const CEGUI::EventArgs &e);

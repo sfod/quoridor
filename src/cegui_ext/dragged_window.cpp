@@ -4,6 +4,9 @@ namespace CEGUI_Ext {
 
 using namespace CEGUI;
 
+const String DraggedWindow::EventDraggedWindowStartDragging("DraggedWindowStartDragging");
+const String DraggedWindow::EventDraggedWindowDropped("DraggedWindowDropped");
+
 DraggedWindow::DraggedWindow(const String &type, const String &name)
     : DefaultWindow(type, name), conn_(), mouse_pos_in_win_(),
     is_dragged_(false)
@@ -46,11 +49,13 @@ bool DraggedWindow::handle_stop_drag_(const EventArgs &e)
                 *me.window,
                 System::getSingleton().getDefaultGUIContext().
                         getMouseCursor().getPosition());
+        UVector2 mouse_offset_in_win(
+                {0, mouse_pos_in_win_.d_x},
+                {0, mouse_pos_in_win_.d_y});
         is_dragged_ = false;
 
-        WindowEventArgs we(me.window);
-        // @todo add mouse position to the fired event
-        me.window->getParent()->fireEvent(CEGUI::Window::EventDragDropItemDropped, we, "");
+        DragEvent de(me.window, mouse_offset_in_win);
+        me.window->getParent()->fireEvent(EventDraggedWindowDropped, de, "");
     }
     return true;
 }
