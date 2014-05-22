@@ -5,6 +5,8 @@
 
 namespace Quoridor {
 
+static std::vector<std::string> player_types = {"fake", "human"};
+
 PlayerFactory::PlayerFactory()
 {
 }
@@ -25,6 +27,11 @@ std::shared_ptr<IPlayer> PlayerFactory::make_player(const std::string &type,
     else {
 	throw Exception("Invalid Player type");
     }
+}
+
+const std::vector<std::string> &PlayerFactory::types()
+{
+    return player_types;
 }
 
 }  /* namespace Quoridor */

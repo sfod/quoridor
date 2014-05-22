@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<Imageset version="2" name="BoardSet" imagefile="board.png" nativeHorzRes="468" nativeVertRes="468" autoScaled="vertical">
+	<Image name="Board" xPos="0" yPos="0" width="468" height="468" />
+</Imageset>

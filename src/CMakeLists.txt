@@ -19,13 +19,9 @@ set(STATE_SOURCES
     game_state
     state_manager
 )
-set(UI_SOURCES
-    ui_factory
-)
-set(UI_NCURSES_SOURCES
-    ncurses_menu
-    ncurses_window
-    ncurses_ui
+set(CEGUI_EXT_SOURCES
+    drag_event
+    dragged_window
 )
 
 set(SOURCES)
@@ -41,19 +37,18 @@ foreach (source ${STATE_SOURCES})
     LIST(APPEND SOURCES state/${source}.cpp)
     add_library(${source}_cxx_obj OBJECT state/${source}.cpp)
 endforeach()
-foreach (source ${UI_SOURCES})
-    LIST(APPEND SOURCES UI/${source}.cpp)
-    add_library(${source}_cxx_obj OBJECT UI/${source}.cpp)
-endforeach()
-foreach (source ${UI_NCURSES_SOURCES})
-    LIST(APPEND SOURCES UI/ncurses/${source}.cpp)
-    add_library(${source}_cxx_obj OBJECT UI/ncurses/${source}.cpp)
+foreach (source ${CEGUI_EXT_SOURCES})
+    LIST(APPEND SOURCES cegui_ext/${source}.cpp)
+    add_library(${source}_cxx_obj OBJECT cegui_ext/${source}.cpp)
 endforeach()
 
-set(ADDITIONAL_LIBRARIES boost_program_options boost_log boost_log_setup boost_thread menu ncurses pthread)
+set(ADDITIONAL_LIBRARIES boost_program_options boost_log boost_log_setup boost_thread boost_system pthread SDL2 GL CEGUIOpenGLRenderer-0_d CEGUIBase-0_d)
 
 include_directories(${${PROJECT}_SOURCE_DIR}/src)
 include_directories(${${PROJECT}_SOURCE_DIR}/)
+include_directories(/usr/local/cegui/include/cegui-0/)
+
+link_directories(/usr/local/cegui/lib/)
 
 add_executable(${PROJECT} ${SOURCES})
 set_target_properties(${PROJECT} PROPERTIES

@@ -1,43 +1,69 @@
 #ifndef QUORIDOR_GAME_STATE_HPP_
 #define QUORIDOR_GAME_STATE_HPP_
 
+#include <memory>
 #include <vector>
 
-#include "istate.hpp"
-
 #include "board.hpp"
-#include "player_factory.hpp"
 #include "iplayer.hpp"
-#include "UI/window.hpp"
+#include "istate.hpp"
+#include "player_factory.hpp"
+#include "state_manager.hpp"
 
 namespace Quoridor {
 
 class GameState : public IState {
 public:
-    GameState(std::shared_ptr<UI::UI> ui,
+    GameState(std::shared_ptr<StateManager> stm,
             const std::vector<std::string> &player_types);
     virtual ~GameState();
-
-    virtual void handle_events(StateManager *stm);
     virtual void update();
-    virtual void draw();
-    virtual void change_state();
+    virtual std::shared_ptr<CEGUI::Window> window() const;
+    virtual const std::string &name() const;
 
 private:
-    void init_board_repr() const;
-    void draw_wall(const Wall &wall) const;
-    void redraw_pawn(char p, const Pos &old_pos, const Pos &new_pos) const;
+    enum GameStatus {
+        kWaitingForMove,
+        kPerformedMove,
+        kNeedPawnRedraw,
+        kNeedDrawWall,
+        kWaitingForAnimationEnd,
+        kFinished
+    };
+
+private:
+    void set_pawns_();
+    void redraw_pawn_();
+    void draw_wall_();
     std::shared_ptr<Pawn> next_pawn() const;
+    void make_move_();
+    bool is_finished_() const;
 
 private:
-    std::shared_ptr<UI::Window> win_;
+    void subscribe_for_events_();
+    bool handle_back_(const CEGUI::EventArgs &e);
+    bool handle_end_anim_(const CEGUI::EventArgs &e);
+    bool handle_pawn_dropped_(const CEGUI::EventArgs &e);
+    bool handle_pawn_start_dragging_(const CEGUI::EventArgs &e);
+    Pos normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos);
+
+private:
+    static std::string name_;
+
+private:
+    std::shared_ptr<StateManager> stm_;
+    std::shared_ptr<CEGUI::Window> win_;
+    std::shared_ptr<CEGUI::Animation> anim_;
     std::shared_ptr<Board> board_;
     PlayerFactory pf_;
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
-    mutable std::vector<std::vector<char>> repr_;
-    bool is_running_;
+    Pos dragging_pawn_node_;
+    std::vector<Pos> pawn_path_;
+    Wall added_wall_;
+    size_t wall_idx_;
+    GameStatus status_;
 };
 
 }  /* namespace Quoridor */

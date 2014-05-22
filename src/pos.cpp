@@ -27,6 +27,11 @@ bool Pos::operator==(const Pos &pos) const
     return (row_ == pos.row_) && (col_ == pos.col_);
 }
 
+bool Pos::operator!=(const Pos &pos) const
+{
+    return !(*this == pos);
+}
+
 const Pos &Pos::operator+=(const Pos &pos)
 {
     row_ += pos.row_;

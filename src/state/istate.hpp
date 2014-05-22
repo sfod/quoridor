@@ -2,22 +2,18 @@
 #define QUORIDOR_ISTATE_HPP_
 
 #include <memory>
-#include "state_manager.hpp"
-#include "UI/ui.hpp"
+#include <string>
+#include <CEGUI/CEGUI.h>
 
 namespace Quoridor {
-
-class StateManager;
 
 class IState {
 public:
     IState() {}
     virtual ~IState() {}
-
-    virtual void handle_events(StateManager *stm) = 0;
     virtual void update() = 0;
-    virtual void draw() = 0;
-    virtual void change_state() = 0;
+    virtual std::shared_ptr<CEGUI::Window> window() const = 0;
+    virtual const std::string &name() const = 0;
 };
 
 }  /* namespace Quoridor */
