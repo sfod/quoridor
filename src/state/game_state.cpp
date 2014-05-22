@@ -307,6 +307,9 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
     float y_coord = 0.1111 * (8 - node.row());
     we.window->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
 
+    board_->make_walking_move(cur_pawn_, node);
+    status_ = kPerformedMove;
+
     return true;
 }
 
