@@ -22,6 +22,8 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     dragging_pawn_node_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
     status_(kWaitingForMove)
 {
+    lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
+
     CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("wall.imageset");

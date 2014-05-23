@@ -17,6 +17,8 @@ StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
     : stm_(stm), win_(), plist2_win_(), plist4_win_(), cur_plist_win_(),
     plist_handlers_()
 {
+    lg.add_attribute("Tag", blattrs::constant<std::string>("start game"));
+
     init_win_();
 
     plist_handlers_.push_back({"two players", std::bind(&StartGameState::set_player_list2_, this)});

@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     }
 
     boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
-    lg.add_attribute("Tag", boost::log::attributes::constant<std::string>("main"));
+    lg.add_attribute("Tag", blattrs::constant<std::string>("main"));
     BOOST_LOG_SEV(lg, logging::trivial::info) << "initializing game";
 
     std::shared_ptr<Quoridor::StateManager> stm(new Quoridor::StateManager);
