@@ -14,6 +14,8 @@ StateManager::StateManager()
     : sdl_win_(), cur_state_(), last_time_pulse_(0.001 * SDL_GetTicks()),
     frame_num_(0), fps_elapsed_(0), is_running_(true)
 {
+    lg.add_attribute( "Tag", blattrs::constant<std::string>("state manager"));
+
     init_sdl_();
     CEGUI::OpenGLRenderer::bootstrapSystem();
     init_resource_provider_();

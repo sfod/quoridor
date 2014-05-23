@@ -13,6 +13,8 @@ std::string MainMenuState::name_("Main Menu");
 
 MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm) : stm_(stm)
 {
+    lg.add_attribute("Tag", blattrs::constant<std::string>("main menu"));
+
     win_ = std::shared_ptr<CEGUI::Window>(
             CEGUI::WindowManager::getSingleton().
                     loadLayoutFromFile("main_menu.layout"),

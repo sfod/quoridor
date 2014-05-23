@@ -21,4 +21,6 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+namespace blattrs = boost::log::attributes;
+
 #endif  // QUORIDOR_LOGGER_HPP_
