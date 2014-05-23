@@ -6,7 +6,6 @@
 #include "wall_move.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
-#include "cegui_ext/draggable_window.hpp"
 
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
@@ -19,7 +18,7 @@ std::string GameState::name_("Start Game");
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    dragging_pawn_node_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
+    drag_list_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
     status_(kWaitingForMove)
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
@@ -64,8 +63,11 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     anim_->setReplayMode(CEGUI::Animation::RM_Once);
 
     set_pawns_();
+    switch_cur_pawn_();
 
-    cur_pawn_ = pawn_list_[0];
+    if (drag_list_.count(cur_pawn_)) {
+        drag_list_[cur_pawn_]->enable_drag();
+    }
 }
 
 GameState::~GameState()
@@ -86,7 +88,7 @@ void GameState::update()
             status_ = kFinished;
         }
         else {
-            cur_pawn_ = next_pawn();
+            switch_cur_pawn_();
         }
         break;
     case kNeedPawnRedraw:
@@ -123,14 +125,13 @@ void GameState::set_pawns_()
     board_win->subscribeEvent(
             CEGUI_Ext::DraggableWindow::EventDraggableWindowDropped,
             CEGUI::Event::Subscriber(&GameState::handle_pawn_dropped_, this));
-    board_win->subscribeEvent(
-            CEGUI_Ext::DraggableWindow::EventDraggableWindowStartDragging,
-            CEGUI::Event::Subscriber(&GameState::handle_pawn_start_dragging_, this));
 
     CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
         if (players_[pawn]->is_interactive()) {
             drag_win = new CEGUI_Ext::DraggableWindow("DefaultWindow", pawn->color());
+            drag_list_[pawn] = static_cast<CEGUI_Ext::DraggableWindow*>(drag_win);
+            drag_list_[pawn]->disable_drag();
         }
         else {
             drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());
@@ -207,19 +208,28 @@ void GameState::draw_wall_()
     }
 }
 
-std::shared_ptr<Pawn> GameState::next_pawn() const
+void GameState::switch_cur_pawn_()
 {
+    if (drag_list_.count(cur_pawn_)) {
+        drag_list_.at(cur_pawn_)->disable_drag();
+    }
+
     auto it = pawn_list_.begin();
     for (;it != pawn_list_.end(); ++it) {
-        if (cur_pawn_ && (*it == cur_pawn_)) {
+        if (*it == cur_pawn_) {
             break;
         }
     }
-    if (++it == pawn_list_.end()) {
-        return pawn_list_[0];
+
+    if ((it == pawn_list_.end()) || (++it == pawn_list_.end())) {
+        cur_pawn_ = pawn_list_[0];
     }
     else {
-        return *it;
+        cur_pawn_ = *it;
+    }
+
+    if (drag_list_.count(cur_pawn_)) {
+        drag_list_.at(cur_pawn_)->enable_drag();
     }
 }
 
@@ -309,42 +319,20 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
     float x_coord;
     float y_coord;
 
-    if (dragging_pawn_node_ != board_->pawn_node(cur_pawn_)) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn is not current";
-        x_coord = 0.1111 * dragging_pawn_node_.col();
-        y_coord = 0.1111 * (8 - dragging_pawn_node_.row());
+    int rc = board_->make_walking_move(cur_pawn_, node);
+    if (rc == 0) {
+        x_coord = 0.1111 * node.col();
+        y_coord = 0.1111 * (8 - node.row());
+        status_ = kPerformedMove;
     }
     else {
-        int rc = board_->make_walking_move(cur_pawn_, node);
-        if (rc == 0) {
-            x_coord = 0.1111 * node.col();
-            y_coord = 0.1111 * (8 - node.row());
-            status_ = kPerformedMove;
-        }
-        else {
-            Pos cur_node = board_->pawn_node(cur_pawn_);
-            x_coord = 0.1111 * cur_node.col();
-            y_coord = 0.1111 * (8 - cur_node.row());
-        }
+        Pos cur_node = board_->pawn_node(cur_pawn_);
+        x_coord = 0.1111 * cur_node.col();
+        y_coord = 0.1111 * (8 - cur_node.row());
     }
 
     de.window()->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
 
-    return true;
-}
-
-bool GameState::handle_pawn_start_dragging_(const CEGUI::EventArgs &e)
-{
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn is dragging";
-
-    auto de = static_cast<const CEGUI_Ext::DragEvent &>(e);
-    CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(
-            de.window()->getPosition() + de.pos(),
-            {468, 468}
-    );
-    dragging_pawn_node_ = normalize_pawn_pos_(rel_pos);
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "position is "
-        << dragging_pawn_node_.row() << ":" << dragging_pawn_node_.col();
     return true;
 }
 

@@ -9,7 +9,7 @@ const String DraggableWindow::EventDraggableWindowDropped("DraggableWindowDroppe
 
 DraggableWindow::DraggableWindow(const String &type, const String &name)
     : DefaultWindow(type, name), conn_(), mouse_pos_in_win_(),
-    is_dragged_(false)
+    is_dragged_(false), is_enabled_(true)
 {
     subscribeEvent(
             Window::EventMouseButtonDown,
@@ -26,8 +26,22 @@ DraggableWindow::~DraggableWindow()
 {
 }
 
+void DraggableWindow::disable_drag()
+{
+    is_enabled_ = false;
+}
+
+void DraggableWindow::enable_drag()
+{
+    is_enabled_ = true;
+}
+
 bool DraggableWindow::handle_start_drag_(const EventArgs &e)
 {
+    if (!is_enabled_) {
+        return false;
+    }
+
     auto me = static_cast<const MouseEventArgs&>(e);
     conn_ = me.window->subscribeEvent(
             Window::EventMouseMove,

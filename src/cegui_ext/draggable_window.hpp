@@ -11,6 +11,9 @@ public:
     DraggableWindow(const CEGUI::String &type, const CEGUI::String &name);
     virtual ~DraggableWindow();
 
+    void disable_drag();
+    void enable_drag();
+
 public:
     static const CEGUI::String EventDraggableWindowStartDragging;
     static const CEGUI::String EventDraggableWindowDropped;
@@ -24,6 +27,7 @@ private:
     CEGUI::Event::Connection conn_;
     CEGUI::Vector2f mouse_pos_in_win_;
     bool is_dragged_;
+    bool is_enabled_;
 };
 
 }  // namespace CEGUI
