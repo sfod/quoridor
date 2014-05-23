@@ -175,7 +175,6 @@ bool StartGameState::handle_player_num_(const CEGUI::EventArgs &e)
 
 void StartGameState::set_player_list2_()
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "list2";
     plist2_win_->setVisible(true);
     plist4_win_->setVisible(false);
     cur_plist_win_ = plist2_win_;
@@ -183,7 +182,6 @@ void StartGameState::set_player_list2_()
 
 void StartGameState::set_player_list4_()
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "list4";
     plist2_win_->setVisible(false);
     plist4_win_->setVisible(true);
     cur_plist_win_ = plist4_win_;
