@@ -141,13 +141,24 @@ void StartGameState::subscribe_for_events_()
 
 bool StartGameState::handle_start_game_(const CEGUI::EventArgs &/* e */)
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting game";
     std::vector<std::string> ptypes;
     for (size_t i = 0; i < cur_plist_win_->getChildCount(); ++i) {
         auto ptype_win = static_cast<CEGUI::Combobox*>(cur_plist_win_->getChildAtIdx(i));
         ptypes.push_back(ptype_win->getText().c_str());
     }
-    stm_->change_state(std::shared_ptr<IState>(new GameState(stm_, ptypes)));
+
+    try {
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting game...";
+        auto state = std::shared_ptr<IState>(new GameState(stm_, ptypes));
+        stm_->change_state(state);
+    }
+    catch (CEGUI::Exception &e) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::fatal)
+            << "failed to create GameState";
+        BOOST_LOG_SEV(lg, boost::log::trivial::fatal) << e.what();
+        stm_->stop();
+    }
+
     return true;
 }
 
