@@ -6,7 +6,7 @@
 #include "wall_move.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
-#include "cegui_ext/dragged_window.hpp"
+#include "cegui_ext/draggable_window.hpp"
 
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
@@ -121,16 +121,16 @@ void GameState::set_pawns_()
     auto board_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
 
     board_win->subscribeEvent(
-            CEGUI_Ext::DraggedWindow::EventDraggedWindowDropped,
+            CEGUI_Ext::DraggableWindow::EventDraggableWindowDropped,
             CEGUI::Event::Subscriber(&GameState::handle_pawn_dropped_, this));
     board_win->subscribeEvent(
-            CEGUI_Ext::DraggedWindow::EventDraggedWindowStartDragging,
+            CEGUI_Ext::DraggableWindow::EventDraggableWindowStartDragging,
             CEGUI::Event::Subscriber(&GameState::handle_pawn_start_dragging_, this));
 
     CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
         if (players_[pawn]->is_interactive()) {
-            drag_win = new CEGUI_Ext::DraggedWindow("DefaultWindow", pawn->color());
+            drag_win = new CEGUI_Ext::DraggableWindow("DefaultWindow", pawn->color());
         }
         else {
             drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());

@@ -1,37 +1,37 @@
-#include "dragged_window.hpp"
+#include "draggable_window.hpp"
 
 namespace CEGUI_Ext {
 
 using namespace CEGUI;
 
-const String DraggedWindow::EventDraggedWindowStartDragging("DraggedWindowStartDragging");
-const String DraggedWindow::EventDraggedWindowDropped("DraggedWindowDropped");
+const String DraggableWindow::EventDraggableWindowStartDragging("DraggableWindowStartDragging");
+const String DraggableWindow::EventDraggableWindowDropped("DraggableWindowDropped");
 
-DraggedWindow::DraggedWindow(const String &type, const String &name)
+DraggableWindow::DraggableWindow(const String &type, const String &name)
     : DefaultWindow(type, name), conn_(), mouse_pos_in_win_(),
     is_dragged_(false)
 {
     subscribeEvent(
             Window::EventMouseButtonDown,
-            Event::Subscriber(&DraggedWindow::handle_start_drag_, this));
+            Event::Subscriber(&DraggableWindow::handle_start_drag_, this));
     subscribeEvent(
             Window::EventMouseButtonUp,
-            Event::Subscriber(&DraggedWindow::handle_stop_drag_, this));
+            Event::Subscriber(&DraggableWindow::handle_stop_drag_, this));
     subscribeEvent(
             Window::EventMouseLeavesArea,
-            Event::Subscriber(&DraggedWindow::handle_stop_drag_, this));
+            Event::Subscriber(&DraggableWindow::handle_stop_drag_, this));
 }
 
-DraggedWindow::~DraggedWindow()
+DraggableWindow::~DraggableWindow()
 {
 }
 
-bool DraggedWindow::handle_start_drag_(const EventArgs &e)
+bool DraggableWindow::handle_start_drag_(const EventArgs &e)
 {
     auto me = static_cast<const MouseEventArgs&>(e);
     conn_ = me.window->subscribeEvent(
             Window::EventMouseMove,
-            Event::Subscriber(&DraggedWindow::handle_move_, this));
+            Event::Subscriber(&DraggableWindow::handle_move_, this));
     mouse_pos_in_win_ = CoordConverter::screenToWindow(
             *me.window,
             System::getSingleton().getDefaultGUIContext().
@@ -42,12 +42,12 @@ bool DraggedWindow::handle_start_drag_(const EventArgs &e)
     is_dragged_ = true;
 
     DragEvent de(me.window, mouse_offset_in_win);
-    me.window->getParent()->fireEvent(EventDraggedWindowStartDragging, de, "");
+    me.window->getParent()->fireEvent(EventDraggableWindowStartDragging, de, "");
 
     return true;
 }
 
-bool DraggedWindow::handle_stop_drag_(const EventArgs &e)
+bool DraggableWindow::handle_stop_drag_(const EventArgs &e)
 {
     if (is_dragged_) {
         auto me = static_cast<const MouseEventArgs&>(e);
@@ -62,12 +62,12 @@ bool DraggedWindow::handle_stop_drag_(const EventArgs &e)
         is_dragged_ = false;
 
         DragEvent de(me.window, mouse_offset_in_win);
-        me.window->getParent()->fireEvent(EventDraggedWindowDropped, de, "");
+        me.window->getParent()->fireEvent(EventDraggableWindowDropped, de, "");
     }
     return true;
 }
 
-bool DraggedWindow::handle_move_(const EventArgs &e)
+bool DraggableWindow::handle_move_(const EventArgs &e)
 {
     auto me = static_cast<const MouseEventArgs&>(e);
     Vector2f local_pos = CoordConverter::screenToWindow(*me.window, me.position);
