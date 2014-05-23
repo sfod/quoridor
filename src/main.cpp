@@ -19,6 +19,8 @@ namespace logging = boost::log;
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", boost::log::attributes::named_scope::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
+BOOST_LOG_ATTRIBUTE_KEYWORD(tag_attr, "Tag", std::string)
+BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", boost::log::trivial::severity_level)
 
 
 static int init(int argc, char **argv);
@@ -31,6 +33,7 @@ int main(int argc, char **argv)
     }
 
     boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
+    lg.add_attribute("Tag", boost::log::attributes::constant<std::string>("main"));
     BOOST_LOG_SEV(lg, logging::trivial::info) << "initializing game";
 
     std::shared_ptr<Quoridor::StateManager> stm(new Quoridor::StateManager);
@@ -85,22 +88,25 @@ static int init(int argc, char **argv)
 void formatter(boost::log::record_view const &rec, boost::log::formatting_ostream &strm)
 {
     strm << rec[timestamp]
-        << " [" << rec[boost::log::trivial::severity] << "] ";
+        << " [" << rec[severity] << "] ";
 
     boost::log::attributes::named_scope_list scope_list = rec[scope].get();
     for (auto iter = scope_list.begin(); iter != scope_list.end(); ++iter) {
         strm << "(" << iter->scope_name << ") ";
     }
 
+    strm << "(" << rec[tag_attr] << ") ";
     strm << rec[boost::log::expressions::smessage];
 }
 
 static void init_logging(const std::string &logfile)
 {
-    typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> text_sink;
+    typedef boost::log::sinks::synchronous_sink<
+            boost::log::sinks::text_ostream_backend> text_sink;
     boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
 
-    sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(logfile));
+    sink->locked_backend()->add_stream(
+            boost::make_shared<std::ofstream>(logfile));
     sink->locked_backend()->auto_flush(true);
     sink->set_formatter(&formatter);
 
@@ -110,7 +116,7 @@ static void init_logging(const std::string &logfile)
         std::clog,
         boost::log::keywords::format = (
             boost::log::expressions::stream
-                << "[" << boost::log::trivial::severity << "] "
+                << "[" << severity << "] (" << tag_attr << ") "
                 << boost::log::expressions::smessage
         )
     );
