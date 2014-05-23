@@ -30,7 +30,6 @@ StartGameState::StartGameState(std::shared_ptr<StateManager> stm)
 
 StartGameState::~StartGameState()
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "destroying state " << name_;
 }
 
 void StartGameState::update()
@@ -53,7 +52,6 @@ void StartGameState::init_win_()
             CEGUI::WindowManager::getSingleton().
                     loadLayoutFromFile("start_game.layout"),
             [=](CEGUI::Window *w) {
-                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
                 CEGUI::WindowManager::getSingleton().destroyWindow(w);
             }
     );
@@ -62,7 +60,6 @@ void StartGameState::init_win_()
                 CEGUI::WindowManager::getSingleton().
                         loadLayoutFromFile("start_game_player_list_2.layout")),
             [=](CEGUI::DefaultWindow *w) {
-                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
                 CEGUI::WindowManager::getSingleton().destroyWindow(w);
             }
     );
@@ -73,7 +70,6 @@ void StartGameState::init_win_()
                 CEGUI::WindowManager::getSingleton().
                         loadLayoutFromFile("start_game_player_list_4.layout")),
             [=](CEGUI::DefaultWindow *w) {
-                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
                 CEGUI::WindowManager::getSingleton().destroyWindow(w);
             }
     );
@@ -171,8 +167,6 @@ bool StartGameState::handle_return_(const CEGUI::EventArgs &/* e */)
 
 bool StartGameState::handle_player_num_(const CEGUI::EventArgs &e)
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "changing player number";
-
     const CEGUI::WindowEventArgs &we = static_cast<const CEGUI::WindowEventArgs&>(e);
     CEGUI::Combobox *cb = static_cast<CEGUI::Combobox*>(we.window);
 
@@ -186,6 +180,8 @@ bool StartGameState::handle_player_num_(const CEGUI::EventArgs &e)
 
 void StartGameState::set_player_list2_()
 {
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "set player number to 2";
+
     plist2_win_->setVisible(true);
     plist4_win_->setVisible(false);
     cur_plist_win_ = plist2_win_;
@@ -193,6 +189,8 @@ void StartGameState::set_player_list2_()
 
 void StartGameState::set_player_list4_()
 {
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "set player number to 4";
+
     plist2_win_->setVisible(false);
     plist4_win_->setVisible(true);
     cur_plist_win_ = plist4_win_;

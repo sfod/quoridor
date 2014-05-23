@@ -19,7 +19,6 @@ MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm) : stm_(stm)
             CEGUI::WindowManager::getSingleton().
                     loadLayoutFromFile("main_menu.layout"),
             [=](CEGUI::Window *w) {
-                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
                 CEGUI::WindowManager::getSingleton().destroyWindow(w);
             }
     );
@@ -28,7 +27,6 @@ MainMenuState::MainMenuState(std::shared_ptr<StateManager> stm) : stm_(stm)
 
 MainMenuState::~MainMenuState()
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "destroying state " << name_;
 }
 
 void MainMenuState::update()
@@ -63,7 +61,8 @@ void MainMenuState::subscribe_for_events_()
 
 bool MainMenuState::handle_new_game_(const CEGUI::EventArgs &/* e */)
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "creating new game";
+    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "creating new game...";
+
     std::shared_ptr<IState> state;
     try {
         state = std::shared_ptr<IState>(new StartGameState(stm_));
