@@ -21,7 +21,7 @@ set(STATE_SOURCES
 )
 set(CEGUI_EXT_SOURCES
     drag_event
-    dragged_window
+    draggable_window
 )
 
 set(SOURCES)
