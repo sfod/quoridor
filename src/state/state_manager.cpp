@@ -36,7 +36,8 @@ StateManager::~StateManager()
 
 void StateManager::change_state(std::shared_ptr<IState> state)
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "changing state";
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "changing state to "
+        << state->name();
     try {
         root_win_->addChild(state->window().get());
         cur_state_ = state;
@@ -151,7 +152,6 @@ void StateManager::inject_time_pulse_()
     last_time_pulse_ = current_time_pulse;
 
     update_fps_(diff);
-
 }
 
 void StateManager::update_fps_(double elapsed)
@@ -159,10 +159,8 @@ void StateManager::update_fps_(double elapsed)
     fps_elapsed_ += elapsed;
 
     if (fps_elapsed_ >= 5.0) {
-        int fps = frame_num_ / fps_elapsed_;
         frame_num_ = 0;
         fps_elapsed_ = 0;
-        BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "FPS: " << fps;
     }
 }
 

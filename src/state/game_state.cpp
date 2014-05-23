@@ -26,11 +26,11 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("wall.imageset");
+
     win_ = std::shared_ptr<CEGUI::Window>(
             CEGUI::WindowManager::getSingleton().
                     loadLayoutFromFile("game.layout"),
             [=](CEGUI::Window *w) {
-                BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "removing window " << w;
                 CEGUI::WindowManager::getSingleton().destroyWindow(w);
             }
     );
