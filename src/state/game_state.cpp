@@ -77,18 +77,22 @@ GameState::~GameState()
 void GameState::update()
 {
     switch (status_) {
+    case kPreparingMove:
+        pre_process_move_();
+        status_ = kWaitingForMove;
+        break;
     case kWaitingForMove:
         make_move_();
         break;
     case kPerformedMove:
-        status_ = kWaitingForMove;
+        post_process_move_();
         if (is_finished_()) {
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
-                << " win";
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color() << " win";
             status_ = kFinished;
         }
         else {
             switch_cur_pawn_();
+            status_ = kPreparingMove;
         }
         break;
     case kNeedPawnRedraw:
@@ -208,12 +212,22 @@ void GameState::draw_wall_()
     }
 }
 
-void GameState::switch_cur_pawn_()
+void GameState::pre_process_move_()
+{
+    if (drag_list_.count(cur_pawn_)) {
+        drag_list_.at(cur_pawn_)->enable_drag();
+    }
+}
+
+void GameState::post_process_move_()
 {
     if (drag_list_.count(cur_pawn_)) {
         drag_list_.at(cur_pawn_)->disable_drag();
     }
+}
 
+void GameState::switch_cur_pawn_()
+{
     auto it = pawn_list_.begin();
     for (;it != pawn_list_.end(); ++it) {
         if (*it == cur_pawn_) {
@@ -226,10 +240,6 @@ void GameState::switch_cur_pawn_()
     }
     else {
         cur_pawn_ = *it;
-    }
-
-    if (drag_list_.count(cur_pawn_)) {
-        drag_list_.at(cur_pawn_)->enable_drag();
     }
 }
 

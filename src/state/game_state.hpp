@@ -24,6 +24,7 @@ public:
 
 private:
     enum GameStatus {
+        kPreparingMove,
         kWaitingForMove,
         kPerformedMove,
         kNeedPawnRedraw,
@@ -36,6 +37,8 @@ private:
     void set_pawns_();
     void redraw_pawn_();
     void draw_wall_();
+    void pre_process_move_();
+    void post_process_move_();
     void switch_cur_pawn_();
     void make_move_();
     bool is_finished_() const;
