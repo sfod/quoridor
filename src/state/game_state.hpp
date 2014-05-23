@@ -9,6 +9,7 @@
 #include "istate.hpp"
 #include "player_factory.hpp"
 #include "state_manager.hpp"
+#include "cegui_ext/draggable_window.hpp"
 
 namespace Quoridor {
 
@@ -35,7 +36,7 @@ private:
     void set_pawns_();
     void redraw_pawn_();
     void draw_wall_();
-    std::shared_ptr<Pawn> next_pawn() const;
+    void switch_cur_pawn_();
     void make_move_();
     bool is_finished_() const;
 
@@ -44,7 +45,6 @@ private:
     bool handle_back_(const CEGUI::EventArgs &e);
     bool handle_end_anim_(const CEGUI::EventArgs &e);
     bool handle_pawn_dropped_(const CEGUI::EventArgs &e);
-    bool handle_pawn_start_dragging_(const CEGUI::EventArgs &e);
     Pos normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos);
 
 private:
@@ -59,7 +59,7 @@ private:
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
-    Pos dragging_pawn_node_;
+    std::map<std::shared_ptr<Pawn>, CEGUI_Ext::DraggableWindow*> drag_list_;
     std::vector<Pos> pawn_path_;
     Wall added_wall_;
     size_t wall_idx_;
