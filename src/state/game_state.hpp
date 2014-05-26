@@ -34,6 +34,7 @@ private:
     };
 
 private:
+    void init_gui_();
     void set_pawns_();
     void redraw_pawn_();
     void draw_wall_();

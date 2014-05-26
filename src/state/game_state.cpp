@@ -23,18 +23,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
 
-    CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
-    CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
-    CEGUI::ImageManager::getSingleton().loadImageset("wall.imageset");
-
-    win_ = std::shared_ptr<CEGUI::Window>(
-            CEGUI::WindowManager::getSingleton().
-                    loadLayoutFromFile("game.layout"),
-            [=](CEGUI::Window *w) {
-                CEGUI::WindowManager::getSingleton().destroyWindow(w);
-            }
-    );
-
+    init_gui_();
     subscribe_for_events_();
 
     if ((player_types.size() != 2) && (player_types.size() != 4)) {
@@ -51,16 +40,6 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         pawn_list_.push_back(pawn);
         ++i;
     }
-
-    anim_ = std::shared_ptr<CEGUI::Animation>(
-            CEGUI::AnimationManager::getSingleton().
-                    createAnimation("movePawn"),
-            [=](CEGUI::Animation *anim) {
-                CEGUI::AnimationManager::getSingleton().destroyAnimation(anim);
-            }
-    );
-    anim_->setDuration(0.5);
-    anim_->setReplayMode(CEGUI::Animation::RM_Once);
 
     set_pawns_();
     switch_cur_pawn_();
@@ -120,6 +99,31 @@ std::shared_ptr<CEGUI::Window> GameState::window() const
 const std::string &GameState::name() const
 {
     return name_;
+}
+
+void GameState::init_gui_()
+{
+    CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
+    CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
+    CEGUI::ImageManager::getSingleton().loadImageset("wall.imageset");
+
+    win_ = std::shared_ptr<CEGUI::Window>(
+            CEGUI::WindowManager::getSingleton().
+                    loadLayoutFromFile("game.layout"),
+            [=](CEGUI::Window *w) {
+                CEGUI::WindowManager::getSingleton().destroyWindow(w);
+            }
+    );
+
+    anim_ = std::shared_ptr<CEGUI::Animation>(
+            CEGUI::AnimationManager::getSingleton().
+                    createAnimation("movePawn"),
+            [=](CEGUI::Animation *anim) {
+                CEGUI::AnimationManager::getSingleton().destroyAnimation(anim);
+            }
+    );
+    anim_->setDuration(0.5);
+    anim_->setReplayMode(CEGUI::Animation::RM_Once);
 }
 
 void GameState::set_pawns_()
