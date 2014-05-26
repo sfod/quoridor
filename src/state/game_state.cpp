@@ -42,6 +42,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     }
 
     set_pawns_();
+    init_walls_();
     switch_cur_pawn_();
 
     if (drag_list_.count(cur_pawn_)) {
@@ -155,6 +156,23 @@ void GameState::set_pawns_()
         auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
         drag_win->addChild(pawn_win);
         board_win->addChild(drag_win);
+    }
+}
+
+void GameState::init_walls_()
+{
+    auto ws1 = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
+    for (int i = 0; i < 10; ++i) {
+        auto w1 = new CEGUI_Ext::DraggableWindow("DefaultWindow", "wall_1_" + std::to_string(i));
+        w1->setPosition(CEGUI::UVector2({{(float) 0.1 * (float) i, -5}, {0, 4}}));
+        w1->setSize(CEGUI::USize({{0.3, 0}, {0.9, 0}}));
+
+        auto wall_img = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
+        wall_img->setName("vwall");
+        wall_img->setPosition(CEGUI::UVector2({0.0, 0.0}, {0.0, 0.0}));
+        w1->addChild(wall_img);
+
+        ws1->addChild(w1);
     }
 }
 
