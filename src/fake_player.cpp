@@ -29,9 +29,9 @@ IMove *FakePlayer::get_move()
 
     if (dist(gen_) == 0) {
         size_t min_path_len = 81;
-        std::list<Pos> min_path;
+        std::list<Node> min_path;
         for (auto end_node : goal_nodes_) {
-            std::list<Pos> path;
+            std::list<Node> path;
             if (board_->get_path(pawn_, end_node, &path)) {
                 if (min_path_len > path.size()) {
                     min_path_len = path.size();
@@ -45,7 +45,7 @@ IMove *FakePlayer::get_move()
         }
 
         auto node_it = min_path.begin();
-        Pos next_node = *node_it;
+        Node next_node = *node_it;
         if (board_->is_occupied(next_node)) {
             // @todo
         }

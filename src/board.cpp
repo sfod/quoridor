@@ -32,20 +32,20 @@ Board::~Board()
 int Board::add_pawn(std::shared_ptr<Pawn> pawn)
 {
     pawn_sides_[pawn] = next_side();
-    Pos node;
+    Node node;
 
     switch (pawn_sides_[pawn]) {
     case 0:
-        node = Pos(0, size_ / 2);
+        node = Node(0, size_ / 2);
         break;
     case 1:
-        node = Pos(size_ / 2, 0);
+        node = Node(size_ / 2, 0);
         break;
     case 2:
-        node = Pos(size_ - 1, size_ / 2);
+        node = Node(size_ - 1, size_ / 2);
         break;
     case 3:
-        node = Pos(size_ / 2, size_ - 1);
+        node = Node(size_ / 2, size_ - 1);
         break;
     default:
         throw Exception("invalid pawn side: "
@@ -60,19 +60,19 @@ int Board::add_pawn(std::shared_ptr<Pawn> pawn)
     return 0;
 }
 
-bool Board::is_occupied(const Pos &node) const
+bool Board::is_occupied(const Node &node) const
 {
     return occ_nodes_.find(node) != occ_nodes_.end();
 }
 
-Pos Board::pawn_node(std::shared_ptr<Pawn> pawn) const
+Node Board::pawn_node(std::shared_ptr<Pawn> pawn) const
 {
     return pawn_nodes_.at(pawn);
 }
 
-int Board::make_walking_move(std::shared_ptr<Pawn> pawn, const Pos &node)
+int Board::make_walking_move(std::shared_ptr<Pawn> pawn, const Node &node)
 {
-    Pos cur_node = pawn_nodes_[pawn];
+    Node cur_node = pawn_nodes_[pawn];
 
     if (!is_possible_move(cur_node, node)) {
         return -1;
@@ -90,7 +90,7 @@ int Board::make_walking_move(std::shared_ptr<Pawn> pawn, const Pos &node)
 
 bool Board::is_at_goal_node(std::shared_ptr<Pawn> pawn) const
 {
-    Pos node = pawn_nodes_.at(pawn);
+    Node node = pawn_nodes_.at(pawn);
     switch (pawn_sides_.at(pawn)) {
     case 0:
         return node.row() == size_ - 1;
@@ -108,7 +108,7 @@ bool Board::is_at_goal_node(std::shared_ptr<Pawn> pawn) const
 
 int Board::add_wall(const Wall &wall)
 {
-    std::vector<std::pair<Pos, Pos>> edges;
+    std::vector<std::pair<Node, Node>> edges;
     if (try_add_wall(wall, &edges) < 0) {
         return -1;
     }
@@ -124,7 +124,7 @@ int Board::add_wall(const Wall &wall)
 }
 
 int Board::try_add_wall(const Wall &wall,
-        std::vector<std::pair<Pos, Pos>> *edges)
+        std::vector<std::pair<Node, Node>> *edges)
 {
     int line_lim = size_ - 1;
     int start_pos_lim = size_ - 1;
@@ -139,24 +139,24 @@ int Board::try_add_wall(const Wall &wall,
 
     bg_.reset_filters();
 
-    Pos node1;
-    Pos node2;
-    Pos node_tmp;
+    Node node1;
+    Node node2;
+    Node node_tmp;
     if (wall.orientation() == 0) {
         for (int i = 0; i < wall.cnt(); ++i) {
-            node1 = Pos(wall.line(), wall.start_pos() + i);
-            node2 = Pos(wall.line() + 1, wall.start_pos() + i);
+            node1 = Node(wall.line(), wall.start_pos() + i);
+            node2 = Node(wall.line() + 1, wall.start_pos() + i);
             bg_.filter_edges(node1, node2);
             edges->push_back(std::make_pair(node1, node2));
 
-            node_tmp = Pos(wall.line() + 2, wall.start_pos() + i);
+            node_tmp = Node(wall.line() + 2, wall.start_pos() + i);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                 bg_.filter_edges(node1, node_tmp);
                 edges->push_back(std::make_pair(node1, node_tmp));
             }
 
-            node_tmp = Pos(wall.line() - 1, wall.start_pos() + i);
+            node_tmp = Node(wall.line() - 1, wall.start_pos() + i);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                 bg_.filter_edges(node_tmp, node2);
@@ -164,14 +164,14 @@ int Board::try_add_wall(const Wall &wall,
             }
 
             for (int j = i - 1; j <= i + 1; j += 2) {
-                node_tmp = Pos(wall.line() + 1, wall.start_pos() + j);
+                node_tmp = Node(wall.line() + 1, wall.start_pos() + j);
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                     bg_.filter_edges(node1, node_tmp);
                     edges->push_back(std::make_pair(node1, node_tmp));
                 }
 
-                node_tmp = Pos(wall.line(), wall.start_pos() + j);
+                node_tmp = Node(wall.line(), wall.start_pos() + j);
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                     bg_.filter_edges(node_tmp, node2);
@@ -183,19 +183,19 @@ int Board::try_add_wall(const Wall &wall,
     }
     else {
         for (int i = 0; i < wall.cnt(); ++i) {
-            node1 = Pos(wall.start_pos() + i, wall.line());
-            node2 = Pos(wall.start_pos() + i, wall.line() + 1);
+            node1 = Node(wall.start_pos() + i, wall.line());
+            node2 = Node(wall.start_pos() + i, wall.line() + 1);
             bg_.filter_edges(node1, node2);
             edges->push_back(std::make_pair(node1, node2));
 
-            node_tmp = Pos(wall.start_pos() + i, wall.line() + 2);
+            node_tmp = Node(wall.start_pos() + i, wall.line() + 2);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                 bg_.filter_edges(node1, node_tmp);
                 edges->push_back(std::make_pair(node1, node_tmp));
             }
 
-            node_tmp = Pos(wall.start_pos() + i, wall.line() - 1);
+            node_tmp = Node(wall.start_pos() + i, wall.line() - 1);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                 bg_.filter_edges(node_tmp, node2);
@@ -203,14 +203,14 @@ int Board::try_add_wall(const Wall &wall,
             }
 
             for (int j = i - 1; j <= i + 1; j += 2) {
-                node_tmp = Pos(wall.start_pos() + j, wall.line() + 1);
+                node_tmp = Node(wall.start_pos() + j, wall.line() + 1);
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                     bg_.filter_edges(node1, node_tmp);
                     edges->push_back(std::make_pair(node1, node_tmp));
                 }
 
-                node_tmp = Pos(wall.start_pos() + j, wall.line());
+                node_tmp = Node(wall.start_pos() + j, wall.line());
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < size_)) {
                     bg_.filter_edges(node_tmp, node2);
@@ -223,7 +223,7 @@ int Board::try_add_wall(const Wall &wall,
     bool path_blocked = false;
 
     for (auto pawn_node : pawn_nodes_) {
-        std::vector<Pos> nodes;
+        std::vector<Node> nodes;
         int side = (pawn_sides_[pawn_node.first] + 2) % 4;
         path_blocked = true;
 
@@ -249,14 +249,14 @@ int Board::try_add_wall(const Wall &wall,
 }
 
 void Board::pawn_goal_nodes(std::shared_ptr<Pawn> pawn,
-        std::vector<Pos> *nodes) const
+        std::vector<Node> *nodes) const
 {
     int side = (pawn_sides_.at(pawn) + 2) % 4;
     side_nodes(side, nodes);
 }
 
-bool Board::get_path(std::shared_ptr<Pawn> pawn, const Pos &node,
-        std::list<Pos> *path) const
+bool Board::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
+        std::list<Node> *path) const
 {
     return bg_.find_path(pawn_nodes_.at(pawn), node, path);
 }
@@ -272,7 +272,7 @@ int Board::next_side() const
     return -1;
 }
 
-bool Board::is_possible_move(const Pos &cur_node, const Pos &node) const
+bool Board::is_possible_move(const Node &cur_node, const Node &node) const
 {
     return bg_.is_adjacent(cur_node, node);
 }
@@ -336,27 +336,27 @@ bool Board::wall_intersects(const Wall &wall) const
     return false;
 }
 
-void Board::side_nodes(int side, std::vector<Pos> *nodes) const
+void Board::side_nodes(int side, std::vector<Node> *nodes) const
 {
     switch (side) {
     case 0:
         for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Pos(0, i));
+            nodes->push_back(Node(0, i));
         }
         break;
     case 1:
         for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Pos(i, 0));
+            nodes->push_back(Node(i, 0));
         }
         break;
     case 2:
         for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Pos(size_ - 1, i));
+            nodes->push_back(Node(size_ - 1, i));
         }
         break;
     case 3:
         for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Pos(i, size_ - 1));
+            nodes->push_back(Node(i, size_ - 1));
         }
         break;
     default:
