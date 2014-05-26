@@ -12,6 +12,9 @@ public:
     int row() const { return row_; }
     int col() const { return col_; }
 
+    void set_row(int row) { row_ = row; }
+    void set_col(int col) { col_ = col; }
+
     bool operator<(const Node &node) const;
     bool operator==(const Node &node) const;
     bool operator!=(const Node &node) const;
