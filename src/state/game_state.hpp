@@ -48,7 +48,7 @@ private:
     bool handle_back_(const CEGUI::EventArgs &e);
     bool handle_end_anim_(const CEGUI::EventArgs &e);
     bool handle_pawn_dropped_(const CEGUI::EventArgs &e);
-    Pos normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos);
+    Node normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos);
 
 private:
     static std::string name_;
@@ -63,7 +63,7 @@ private:
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
     std::map<std::shared_ptr<Pawn>, CEGUI_Ext::DraggableWindow*> drag_list_;
-    std::vector<Pos> pawn_path_;
+    std::vector<Node> pawn_path_;
     Wall added_wall_;
     size_t wall_idx_;
     GameStatus status_;
