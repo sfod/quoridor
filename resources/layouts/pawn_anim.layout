@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <GUILayout version="4">
     <Window type="GlossySerpent/StaticImage" name="pawnImage">
-        <Property name="Size" value="{ {1, 0}, {1, 0} }"/>
+        <Property name="Size" value="{ {0.9, 0.0}, {0.9, 0.0} }"/>
         <Property name="Image" value="PawnSet/Pawn"/>
         <Property name="MousePassThroughEnabled" value="true"/>
         <Property name="BackgroundEnabled" value="false"/>
