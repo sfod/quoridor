@@ -1,5 +1,7 @@
 include_directories(${${PROJECT}_SOURCE_DIR})
 include_directories(${${PROJECT}_SOURCE_DIR}/src)
+include_directories(${${PROJECT}_SOURCE_DIR}/src/state)
+include_directories(/usr/local/cegui/include/cegui-0/)
 
 # board unittests
 set(TEST_TARGET board_unittest)
