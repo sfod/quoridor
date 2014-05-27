@@ -2,21 +2,21 @@
 #define QUORIDOR_WALK_MOVE_HPP_
 
 #include "imove.hpp"
-#include "pos.hpp"
+#include "node.hpp"
 
 namespace Quoridor {
 
 class WalkMove : public IMove {
 public:
     WalkMove();
-    explicit WalkMove(Pos node);
+    explicit WalkMove(Node node);
     virtual ~WalkMove();
 
-    void set_node(Pos node) { node_ = node; }
-    Pos node() const { return node_; }
+    void set_node(Node node) { node_ = node; }
+    Node node() const { return node_; }
 
 private:
-    Pos node_;
+    Node node_;
 };
 
 }  /* namespace Quoridor */
