@@ -6,7 +6,7 @@ set(TEST_TARGET board_unittest)
 set(TEST_TARGET_ADDITIONAL_LIBS gtest)
 add_executable(${TEST_TARGET}
     $<TARGET_OBJECTS:pawn_cxx_obj>
-    $<TARGET_OBJECTS:pos_cxx_obj>
+    $<TARGET_OBJECTS:node_cxx_obj>
     $<TARGET_OBJECTS:wall_cxx_obj>
     $<TARGET_OBJECTS:board_graph_cxx_obj>
     $<TARGET_OBJECTS:board_cxx_obj>
