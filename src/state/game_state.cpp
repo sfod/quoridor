@@ -222,7 +222,8 @@ void GameState::draw_wall_()
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at " << pos;
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at "
+                << added_wall_.line() << ":" << added_wall_.start_pos() + i;
         }
     }
     else {
@@ -236,7 +237,8 @@ void GameState::draw_wall_()
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at " << pos;
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at "
+                << added_wall_.line() << ":" << added_wall_.start_pos() + i;
         }
     }
 }
