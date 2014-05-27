@@ -8,7 +8,7 @@
 #include <boost/graph/adjacency_iterator.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
-#include "pos.hpp"
+#include "node.hpp"
 
 
 namespace Quoridor {
@@ -56,17 +56,17 @@ public:
     BoardGraph(int row_num, int col_num);
     ~BoardGraph();
 
-    void remove_edges(const Pos &node1, const Pos &node2);
-    void block_neighbours(const Pos &node);
-    void unblock_neighbours(const Pos &node);
+    void remove_edges(const Node &node1, const Node &node2);
+    void block_neighbours(const Node &node);
+    void unblock_neighbours(const Node &node);
 
-    bool find_path(const Pos &start_node, const Pos &end_node,
-            std::list<Pos> *path) const;
-    bool is_adjacent(const Pos &node1, const Pos &node2) const;
+    bool find_path(const Node &start_node, const Node &end_node,
+            std::list<Node> *path) const;
+    bool is_adjacent(const Node &node1, const Node &node2) const;
 
-    void filter_edges(const Pos &node1, const Pos &node2);
+    void filter_edges(const Node &node1, const Node &node2);
     void reset_filters();
-    bool is_path_exists(const Pos &node1, const Pos &node2) const;
+    bool is_path_exists(const Node &node1, const Node &node2) const;
 
 private:
     bool is_neighbours(int inode1, int inode2) const;

@@ -89,7 +89,7 @@ BoardGraph::~BoardGraph()
 {
 }
 
-void BoardGraph::remove_edges(const Pos &node1, const Pos &node2)
+void BoardGraph::remove_edges(const Node &node1, const Node &node2)
 {
     int inode1 = node1.row() * col_num_ + node1.col();
     int inode2 = node2.row() * col_num_ + node2.col();
@@ -110,7 +110,7 @@ void BoardGraph::remove_edges(const Pos &node1, const Pos &node2)
     edges_.erase(edge(inode2, inode1));
 }
 
-void BoardGraph::block_neighbours(const Pos &node)
+void BoardGraph::block_neighbours(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
     int nf = 0;
@@ -157,7 +157,7 @@ void BoardGraph::block_neighbours(const Pos &node)
     }
 }
 
-void BoardGraph::unblock_neighbours(const Pos &node)
+void BoardGraph::unblock_neighbours(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
     int nf = 0;
@@ -204,8 +204,8 @@ void BoardGraph::unblock_neighbours(const Pos &node)
     }
 }
 
-bool BoardGraph::find_path(const Pos &start_node, const Pos &end_node,
-        std::list<Pos> *path) const
+bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
+        std::list<Node> *path) const
 {
     int start_inode = start_node.row() * col_num_ + start_node.col();
     int end_inode = end_node.row() * col_num_ + end_node.col();
@@ -216,7 +216,7 @@ bool BoardGraph::find_path(const Pos &start_node, const Pos &end_node,
     vertex start = boost::vertex(start_inode, g_);
     vertex end = boost::vertex(end_inode, g_);
 
-    Pos node;
+    Node node;
 
     try {
         astar_search(g_, start, boost::astar_heuristic<graph_t, int>(),
@@ -226,7 +226,7 @@ bool BoardGraph::find_path(const Pos &start_node, const Pos &end_node,
         for (vertex v = end_inode;; v = p[v]) {
             if (p[v] == v)
                 break;
-            node = Pos(v / col_num_, v % col_num_);
+            node = Node(v / col_num_, v % col_num_);
             path->push_front(node);
         }
         return true;
@@ -235,7 +235,7 @@ bool BoardGraph::find_path(const Pos &start_node, const Pos &end_node,
     return false;
 }
 
-bool BoardGraph::is_adjacent(const Pos &node1, const Pos &node2) const
+bool BoardGraph::is_adjacent(const Node &node1, const Node &node2) const
 {
     int inode1 = node1.row() * col_num_ + node1.col();
     int inode2 = node2.row() * col_num_ + node2.col();
@@ -253,7 +253,7 @@ bool BoardGraph::is_adjacent(const Pos &node1, const Pos &node2) const
     return false;
 }
 
-void BoardGraph::filter_edges(const Pos &node1, const Pos &node2)
+void BoardGraph::filter_edges(const Node &node1, const Node &node2)
 {
     int inode1 = node1.row() * col_num_ + node1.col();
     int inode2 = node2.row() * col_num_ + node2.col();
@@ -276,7 +276,7 @@ void BoardGraph::reset_filters()
     fe_.clear();
 }
 
-bool BoardGraph::is_path_exists(const Pos &start_node, const Pos &end_node) const
+bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node) const
 {
     int start_inode = start_node.row() * col_num_ + start_node.col();
     int end_inode = end_node.row() * col_num_ + end_node.col();
