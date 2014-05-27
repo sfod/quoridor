@@ -19,7 +19,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     drag_list_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
-    status_(kWaitingForMove)
+    status_(kWaitingForMove), node_utils_(9, 52, 50)
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
 
@@ -149,9 +149,8 @@ void GameState::set_pawns_()
 
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
         Node node = board_->pawn_node(pawn);
-        float x_coord = 0.1111 * node.col();
-        float y_coord = 0.1111 * (8 - node.row());
-        drag_win->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
+        CEGUI::UVector2 pos = node_utils_.node_to_pos(node);
+        drag_win->setPosition(pos);
 
         auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
         drag_win->addChild(pawn_win);
@@ -183,17 +182,21 @@ void GameState::redraw_pawn_()
 
     pawn_path_.clear();
 
-    float old_x_coord = 0.1111 * old_node.col();
-    float old_y_coord = 0.1111 * (8 - old_node.row());
-    float new_x_coord = 0.1111 * new_node.col();
-    float new_y_coord = 0.1111 * (8 - new_node.row());
+    CEGUI::UVector2 old_pos = node_utils_.node_to_pos(old_node);
+    CEGUI::UVector2 new_pos = node_utils_.node_to_pos(new_node);
+    std::string old_pos_str = "{{" + std::to_string(old_pos.d_x.d_scale) + ", "
+        + std::to_string(old_pos.d_x.d_offset) + "}, {"
+        + std::to_string(old_pos.d_y.d_scale) + ", "
+        + std::to_string(old_pos.d_y.d_offset)+ "}}";
+    std::string new_pos_str = "{{" + std::to_string(new_pos.d_x.d_scale) + ", "
+        + std::to_string(new_pos.d_x.d_offset) + "}, {"
+        + std::to_string(new_pos.d_y.d_scale) + ", "
+        + std::to_string(new_pos.d_y.d_offset)+ "}}";
 
     CEGUI::Affector *affector = anim_->createAffector("Position", "UVector2");
     affector->setApplicationMethod(CEGUI::Affector::AM_Absolute);
-    affector->createKeyFrame(0.0, "{{" + std::to_string(old_x_coord)
-            + ", 2.0}, { " + std::to_string(old_y_coord) + ", 2.0}}");
-    affector->createKeyFrame(0.5, "{{" + std::to_string(new_x_coord)
-            + ", 2.0}, { " + std::to_string(new_y_coord) + ", 2.0}}");
+    affector->createKeyFrame(0.0, old_pos_str);
+    affector->createKeyFrame(0.5, new_pos_str);
 
     auto pawn_win = win_->getChild("boardWindow/" + cur_pawn_->color());
     CEGUI::AnimationInstance *instance = CEGUI::AnimationManager::
@@ -205,31 +208,35 @@ void GameState::redraw_pawn_()
 void GameState::draw_wall_()
 {
     auto board_win = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
+    Node node;
+    CEGUI::UVector2 pos;
 
     if (added_wall_.orientation() == 0) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            float x = 0.1111 * (added_wall_.start_pos() + i);
-            float y = 0.1111 * ( 8 - added_wall_.line());
+            node.set_row(8 - added_wall_.line());
+            node.set_col(added_wall_.start_pos() + i);
+            pos = node_utils_.node_to_pos(node);
+            pos.d_y.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("horizontal_wall.layout");
-            wall_win->setPosition(CEGUI::UVector2({x, 0}, {y, -2}));
+            wall_win->setPosition(pos);
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at "
-                << x << ":" << y;
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at " << pos;
         }
     }
     else {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            float x = 0.1111 * (added_wall_.line());
-            float y = 0.1111 * ( 8 - added_wall_.start_pos() - i);
+            node.set_row(8 - added_wall_.start_pos() - i);
+            node.set_col(added_wall_.line());
+            pos = node_utils_.node_to_pos(node);
+            pos.d_x.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
-            wall_win->setPosition(CEGUI::UVector2({x, -2}, {y, 0}));
+            wall_win->setPosition(pos);
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at "
-                << x << ":" << y;
+            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at " << pos;
         }
     }
 }
@@ -341,39 +348,34 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
     auto de = static_cast<const CEGUI_Ext::DragEvent &>(e);
     CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(
             de.window()->getPosition() + de.pos(),
-            {468, 468}  // @fixme get parent size
+            {568, 568}  // @fixme get parent size
     );
     Node node = normalize_pawn_pos_(rel_pos);
 
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << de.window() << " position "
         << node.row() << ":" << node.col();
 
-    float x_coord;
-    float y_coord;
+    CEGUI::UVector2 pos;
 
     int rc = board_->make_walking_move(cur_pawn_, node);
     if (rc == 0) {
-        x_coord = 0.1111 * node.col();
-        y_coord = 0.1111 * (8 - node.row());
+        pos = node_utils_.node_to_pos(node);
         status_ = kPerformedMove;
     }
     else {
         Node cur_node = board_->pawn_node(cur_pawn_);
-        x_coord = 0.1111 * cur_node.col();
-        y_coord = 0.1111 * (8 - cur_node.row());
+        pos = node_utils_.node_to_pos(cur_node);
     }
 
-    de.window()->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
+    de.window()->setPosition(pos);
 
     return true;
 }
 
 Node GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
 {
-    return Node(
-            8 - static_cast<int>(rel_pos.d_y / 0.1111),
-            static_cast<int>(rel_pos.d_x / 0.1111)
-    );
+    CEGUI::UVector2 pos({rel_pos.d_x, 0.0}, {rel_pos.d_y, 0.0});
+    return node_utils_.pos_to_node(pos);
 }
 
 }  /* namespace Quoridor */

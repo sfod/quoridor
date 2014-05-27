@@ -9,6 +9,7 @@
 #include "istate.hpp"
 #include "player_factory.hpp"
 #include "state_manager.hpp"
+#include "node_utils.hpp"
 #include "cegui_ext/draggable_window.hpp"
 
 namespace Quoridor {
@@ -69,6 +70,7 @@ private:
     Wall added_wall_;
     size_t wall_idx_;
     GameStatus status_;
+    NodeUtils node_utils_;
 };
 
 }  /* namespace Quoridor */
