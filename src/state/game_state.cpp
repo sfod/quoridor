@@ -143,9 +143,9 @@ void GameState::set_pawns_()
         }
 
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
-        Pos pos = board_->pawn_node(pawn);
-        float x_coord = 0.1111 * pos.col();
-        float y_coord = 0.1111 * (8 - pos.row());
+        Node node = board_->pawn_node(pawn);
+        float x_coord = 0.1111 * node.col();
+        float y_coord = 0.1111 * (8 - node.row());
         drag_win->setPosition(CEGUI::UVector2({x_coord, 2}, {y_coord, 2}));
 
         auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
@@ -156,15 +156,15 @@ void GameState::set_pawns_()
 
 void GameState::redraw_pawn_()
 {
-    Pos old_pos = pawn_path_[0];
-    Pos new_pos = pawn_path_[1];
+    Node old_node = pawn_path_[0];
+    Node new_node = pawn_path_[1];
 
     pawn_path_.clear();
 
-    float old_x_coord = 0.1111 * old_pos.col();
-    float old_y_coord = 0.1111 * (8 - old_pos.row());
-    float new_x_coord = 0.1111 * new_pos.col();
-    float new_y_coord = 0.1111 * (8 - new_pos.row());
+    float old_x_coord = 0.1111 * old_node.col();
+    float old_y_coord = 0.1111 * (8 - old_node.row());
+    float new_x_coord = 0.1111 * new_node.col();
+    float new_y_coord = 0.1111 * (8 - new_node.row());
 
     CEGUI::Affector *affector = anim_->createAffector("Position", "UVector2");
     affector->setApplicationMethod(CEGUI::Affector::AM_Absolute);
@@ -257,7 +257,7 @@ void GameState::make_move_()
     }
 
     if (move != NULL) {
-        Pos cur_node = board_->pawn_node(cur_pawn_);
+        Node cur_node = board_->pawn_node(cur_pawn_);
         int rc;
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
@@ -321,7 +321,7 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
             de.window()->getPosition() + de.pos(),
             {468, 468}  // @fixme get parent size
     );
-    Pos node = normalize_pawn_pos_(rel_pos);
+    Node node = normalize_pawn_pos_(rel_pos);
 
     BOOST_LOG_SEV(lg, boost::log::trivial::info) << de.window() << " position "
         << node.row() << ":" << node.col();
@@ -336,7 +336,7 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
         status_ = kPerformedMove;
     }
     else {
-        Pos cur_node = board_->pawn_node(cur_pawn_);
+        Node cur_node = board_->pawn_node(cur_pawn_);
         x_coord = 0.1111 * cur_node.col();
         y_coord = 0.1111 * (8 - cur_node.row());
     }
@@ -346,9 +346,9 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
     return true;
 }
 
-Pos GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
+Node GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
 {
-    return Pos(
+    return Node(
             8 - static_cast<int>(rel_pos.d_y / 0.1111),
             static_cast<int>(rel_pos.d_x / 0.1111)
     );

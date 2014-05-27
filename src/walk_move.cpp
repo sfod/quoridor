@@ -6,7 +6,7 @@ WalkMove::WalkMove() : node_()
 {
 }
 
-WalkMove::WalkMove(Pos node) : node_(node)
+WalkMove::WalkMove(Node node) : node_(node)
 {
 }
 
