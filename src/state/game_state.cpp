@@ -213,7 +213,7 @@ void GameState::draw_wall_()
 
     if (added_wall_.orientation() == 0) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            node.set_row(8 - added_wall_.line());
+            node.set_row(added_wall_.line());
             node.set_col(added_wall_.start_pos() + i);
             pos = node_utils_.node_to_pos(node);
             pos.d_y.d_offset = -2.0;
@@ -227,7 +227,7 @@ void GameState::draw_wall_()
     }
     else {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            node.set_row(8 - added_wall_.start_pos() - i);
+            node.set_row(added_wall_.start_pos() + i);
             node.set_col(added_wall_.line());
             pos = node_utils_.node_to_pos(node);
             pos.d_x.d_offset = -2.0;
