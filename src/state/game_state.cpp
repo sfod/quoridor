@@ -19,7 +19,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
-    status_(kWaitingForMove), node_utils_(9, 52, 50)
+    status_(kWaitingForMove), pos_utils_(9, 52, 50)
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
 
@@ -151,7 +151,7 @@ void GameState::set_pawns_()
 
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
         Node node = board_->pawn_node(pawn);
-        CEGUI::UVector2 pos = node_utils_.node_to_pos(node);
+        CEGUI::UVector2 pos = pos_utils_.node_to_pos(node);
         drag_win->setPosition(pos);
 
         auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
@@ -183,8 +183,8 @@ void GameState::redraw_pawn_()
 
     pawn_path_.clear();
 
-    CEGUI::UVector2 old_pos = node_utils_.node_to_pos(old_node);
-    CEGUI::UVector2 new_pos = node_utils_.node_to_pos(new_node);
+    CEGUI::UVector2 old_pos = pos_utils_.node_to_pos(old_node);
+    CEGUI::UVector2 new_pos = pos_utils_.node_to_pos(new_node);
     std::string old_pos_str = "{{" + std::to_string(old_pos.d_x.d_scale) + ", "
         + std::to_string(old_pos.d_x.d_offset) + "}, {"
         + std::to_string(old_pos.d_y.d_scale) + ", "
@@ -216,7 +216,7 @@ void GameState::draw_wall_()
         for (int i = 0; i < added_wall_.cnt(); ++i) {
             node.set_row(added_wall_.line());
             node.set_col(added_wall_.start_pos() + i);
-            pos = node_utils_.node_to_pos(node);
+            pos = pos_utils_.node_to_pos(node);
             pos.d_y.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("horizontal_wall.layout");
             wall_win->setPosition(pos);
@@ -231,7 +231,7 @@ void GameState::draw_wall_()
         for (int i = 0; i < added_wall_.cnt(); ++i) {
             node.set_row(added_wall_.start_pos() + i);
             node.set_col(added_wall_.line() + 1);
-            pos = node_utils_.node_to_pos(node);
+            pos = pos_utils_.node_to_pos(node);
             pos.d_x.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
             wall_win->setPosition(pos);
@@ -375,12 +375,12 @@ bool GameState::handle_pawn_dropped_(const CEGUI_Ext::DragEvent &de)
     CEGUI::UVector2 pos;
     int rc = board_->make_walking_move(cur_pawn_, node);
     if (rc == 0) {
-        pos = node_utils_.node_to_pos(node);
+        pos = pos_utils_.node_to_pos(node);
         status_ = kPerformedMove;
     }
     else {
         Node cur_node = board_->pawn_node(cur_pawn_);
-        pos = node_utils_.node_to_pos(cur_node);
+        pos = pos_utils_.node_to_pos(cur_node);
     }
 
     de.window()->setPosition(pos);
@@ -408,13 +408,13 @@ bool GameState::handle_wall_dropped_(const CEGUI_Ext::DragEvent &de)
 Node GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
 {
     CEGUI::UVector2 pos({rel_pos.d_x, 0.0}, {rel_pos.d_y, 0.0});
-    return node_utils_.pos_to_node(pos);
+    return pos_utils_.pos_to_node(pos);
 }
 
 Wall GameState::normalize_wall_pos_(const CEGUI::Vector2f &rel_pos)
 {
     CEGUI::UVector2 pos({rel_pos.d_x, 0.0}, {rel_pos.d_y, 0.0});
-    Node node = node_utils_.pos_to_node(pos);
+    Node node = pos_utils_.pos_to_node(pos);
     Wall w(0, node.row(), node.col(), 2);
     return w;
 }
