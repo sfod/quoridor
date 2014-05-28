@@ -107,6 +107,7 @@ void GameState::init_gui_()
     CEGUI::ImageManager::getSingleton().loadImageset("pawn.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("board.imageset");
     CEGUI::ImageManager::getSingleton().loadImageset("wall.imageset");
+    CEGUI::ImageManager::getSingleton().loadImageset("wall_repr.imageset");
 
     win_ = std::shared_ptr<CEGUI::Window>(
             CEGUI::WindowManager::getSingleton().
@@ -163,12 +164,10 @@ void GameState::init_walls_()
     auto ws1 = static_cast<CEGUI::DefaultWindow*>(win_->getChild("boardWindow"));
     for (int i = 0; i < 10; ++i) {
         auto w1 = new CEGUI_Ext::DraggableWindow("DefaultWindow", "wall_1_" + std::to_string(i));
-        w1->setPosition(CEGUI::UVector2({{(float) 0.1 * (float) i, -5}, {0, 4}}));
-        w1->setSize(CEGUI::USize({{0.3, 0}, {0.9, 0}}));
+        w1->setPosition(CEGUI::UVector2({{0.0f, 25.0f * i + 4.0f}, {0.0f, 4.0f}}));
+        w1->setSize(CEGUI::USize({{0.0, 21.0}, {0.0, 42.0}}));
 
-        auto wall_img = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
-        wall_img->setName("vwall");
-        wall_img->setPosition(CEGUI::UVector2({0.0, 0.0}, {0.0, 0.0}));
+        auto wall_img = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("wall_repr.layout");
         w1->addChild(wall_img);
 
         ws1->addChild(w1);
