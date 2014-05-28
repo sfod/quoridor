@@ -18,7 +18,7 @@ set(STATE_SOURCES
     start_game_state
     game_state
     state_manager
-    node_utils
+    pos_utils
 )
 set(CEGUI_EXT_SOURCES
     drag_event

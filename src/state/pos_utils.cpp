@@ -1,18 +1,17 @@
-#include "node_utils.hpp"
-
+#include "pos_utils.hpp"
 
 namespace Quoridor {
 
-NodeUtils::NodeUtils(int node_cnt, int node_width, int border_width)
+PosUtils::PosUtils(int node_cnt, int node_width, int border_width)
     : node_cnt_(node_cnt), node_width_(node_width), border_width_(border_width)
 {
 }
 
-NodeUtils::~NodeUtils()
+PosUtils::~PosUtils()
 {
 }
 
-Node NodeUtils::pos_to_node(const CEGUI::UVector2 &pos) const
+Node PosUtils::pos_to_node(const CEGUI::UVector2 &pos) const
 {
     static int total_width = node_width_ * node_cnt_ + 2 * border_width_;
 
@@ -40,7 +39,7 @@ Node NodeUtils::pos_to_node(const CEGUI::UVector2 &pos) const
     return n;
 }
 
-CEGUI::UVector2 NodeUtils::node_to_pos(const Node &node) const
+CEGUI::UVector2 PosUtils::node_to_pos(const Node &node) const
 {
     static int total_width = node_width_ * node_cnt_ + 2 * border_width_;
 

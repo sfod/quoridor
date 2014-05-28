@@ -1,15 +1,15 @@
-#ifndef QUORIDOR_NODE_UTILS_HPP_
-#define QUORIDOR_NODE_UTILS_HPP_
+#ifndef QUORIDOR_POS_UTILS_HPP_
+#define QUORIDOR_POS_UTILS_HPP_
 
 #include <CEGUI/CEGUI.h>
 #include "node.hpp"
 
 namespace Quoridor {
 
-class NodeUtils {
+class PosUtils {
 public:
-    NodeUtils(int node_cnt, int node_width, int border_width);
-    ~NodeUtils();
+    PosUtils(int node_cnt, int node_width, int border_width);
+    ~PosUtils();
 
 public:
     Node pos_to_node(const CEGUI::UVector2 &pos) const;
@@ -23,4 +23,4 @@ private:
 
 }  // namespace Quoridor
 
-#endif  // QUORIDOR_NODE_UTILS_HPP_
+#endif  // QUORIDOR_POS_UTILS_HPP_
