@@ -5,6 +5,7 @@ namespace Quoridor {
 
 class Wall {
 public:
+    Wall();
     Wall(int orientation, int line, int start_pos, int cnt);
     virtual ~Wall();
 

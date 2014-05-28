@@ -18,7 +18,7 @@ std::string GameState::name_("Game");
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
     board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    drag_list_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
+    drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
     status_(kWaitingForMove), node_utils_(9, 52, 50)
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
@@ -134,7 +134,7 @@ void GameState::set_pawns_()
 
     board_win->subscribeEvent(
             CEGUI_Ext::DraggableWindow::EventDraggableWindowDropped,
-            CEGUI::Event::Subscriber(&GameState::handle_pawn_dropped_, this));
+            CEGUI::Event::Subscriber(&GameState::handle_window_dropped_, this));
 
     CEGUI::Window *drag_win;
     for (auto pawn : pawn_list_) {
@@ -142,6 +142,7 @@ void GameState::set_pawns_()
             drag_win = new CEGUI_Ext::DraggableWindow("DefaultWindow", pawn->color());
             drag_list_[pawn] = static_cast<CEGUI_Ext::DraggableWindow*>(drag_win);
             drag_list_[pawn]->disable_drag();
+            pawn_wins_[drag_win] = pawn;
         }
         else {
             drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());
@@ -169,8 +170,9 @@ void GameState::init_walls_()
 
         auto wall_img = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("wall_repr.layout");
         w1->addChild(wall_img);
-
         ws1->addChild(w1);
+
+        wall_wins_[w1] = 1;
     }
 }
 
@@ -342,11 +344,25 @@ bool GameState::handle_end_anim_(const CEGUI::EventArgs &/* e */)
     return true;
 }
 
-bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
+bool GameState::handle_window_dropped_(const CEGUI::EventArgs &e)
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn was dropped!";
+    auto de = static_cast<const CEGUI_Ext::DragEvent&>(e);
+    if (pawn_wins_.count(de.window())) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn was dropped!";
+        return handle_pawn_dropped_(de);
+    }
+    else if (wall_wins_.count(de.window())) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "wall was dropped!";
+        return handle_wall_dropped_(de);
+    }
+    else {
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "unknown object was dropped!";
+        return false;
+    }
+}
 
-    auto de = static_cast<const CEGUI_Ext::DragEvent &>(e);
+bool GameState::handle_pawn_dropped_(const CEGUI_Ext::DragEvent &de)
+{
     CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(
             de.window()->getPosition() + de.pos(),
             {568, 568}  // @fixme get parent size
@@ -357,7 +373,6 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
         << node.row() << ":" << node.col();
 
     CEGUI::UVector2 pos;
-
     int rc = board_->make_walking_move(cur_pawn_, node);
     if (rc == 0) {
         pos = node_utils_.node_to_pos(node);
@@ -373,10 +388,35 @@ bool GameState::handle_pawn_dropped_(const CEGUI::EventArgs &e)
     return true;
 }
 
+bool GameState::handle_wall_dropped_(const CEGUI_Ext::DragEvent &de)
+{
+    CEGUI::Vector2f rel_pos = CEGUI::CoordConverter::asRelative(
+            de.window()->getPosition() + de.pos(),
+            {568, 568}  // @fixme get parent size
+    );
+    Wall wall = normalize_wall_pos_(rel_pos);
+    int rc = board_->add_wall(wall);
+    if (rc == 0) {
+        added_wall_ = wall;
+        status_ = kNeedDrawWall;
+        de.window()->setVisible(false);
+    }
+
+    return true;
+}
+
 Node GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
 {
     CEGUI::UVector2 pos({rel_pos.d_x, 0.0}, {rel_pos.d_y, 0.0});
     return node_utils_.pos_to_node(pos);
+}
+
+Wall GameState::normalize_wall_pos_(const CEGUI::Vector2f &rel_pos)
+{
+    CEGUI::UVector2 pos({rel_pos.d_x, 0.0}, {rel_pos.d_y, 0.0});
+    Node node = node_utils_.pos_to_node(pos);
+    Wall w(0, node.row(), node.col(), 2);
+    return w;
 }
 
 }  /* namespace Quoridor */
