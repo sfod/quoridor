@@ -229,7 +229,7 @@ void GameState::draw_wall_()
     else {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
             node.set_row(added_wall_.start_pos() + i);
-            node.set_col(added_wall_.line());
+            node.set_col(added_wall_.line() + 1);
             pos = node_utils_.node_to_pos(node);
             pos.d_x.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
