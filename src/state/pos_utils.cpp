@@ -49,4 +49,36 @@ CEGUI::UVector2 PosUtils::node_to_pos(const Node &node) const
     return p;
 }
 
+Wall PosUtils::pos_to_wall(const CEGUI::UVector2 &pos, int wall_size) const
+{
+    static int total_width = node_width_ * node_cnt_ + 2 * border_width_;
+
+    Wall wall;
+    wall.set_cnt(wall_size);
+
+    float x = (pos.d_x.d_scale * static_cast<float>(total_width) - border_width_) / static_cast<float>(node_width_);
+    float y = (pos.d_y.d_scale * static_cast<float>(total_width) - border_width_) / static_cast<float>(node_width_);
+    int round_x = roundf(x);
+    int round_y = roundf(y);
+    int int_x = floor(x);
+    int int_y = floor(y);
+    float diff_x = fabs(x - round_x);
+    float diff_y = fabs(y - round_y);
+
+    // make horizontal wall
+    if (diff_y < diff_x) {
+        wall.set_orientation(0);
+        wall.set_line(node_cnt_ - 1 - round_y);
+        wall.set_start_pos(int_x);
+    }
+    // make vertical wall
+    else {
+        wall.set_orientation(1);
+        wall.set_line(round_x - 1);
+        wall.set_start_pos(node_cnt_ - 1 - int_y);
+    }
+
+    return wall;
+}
+
 }  // namespace Quoridor

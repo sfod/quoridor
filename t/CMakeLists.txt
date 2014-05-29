@@ -20,16 +20,17 @@ add_test(NAME board_unittest
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
     COMMAND ./board_unittest)
 
-# node utils unittests
-set(TEST_TARGET node_utils_unittest)
+# pos utils unittests
+set(TEST_TARGET pos_utils_unittest)
 set(TEST_TARGET_ADDITIONAL_LIBS gtest)
 add_executable(${TEST_TARGET}
     $<TARGET_OBJECTS:node_cxx_obj>
-    $<TARGET_OBJECTS:node_utils_cxx_obj>
-    node_utils_unittest.cpp)
+    $<TARGET_OBJECTS:wall_cxx_obj>
+    $<TARGET_OBJECTS:pos_utils_cxx_obj>
+    pos_utils_unittest.cpp)
 target_link_libraries(${TEST_TARGET} ${TEST_TARGET_ADDITIONAL_LIBS})
 set_target_properties(${TEST_TARGET} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-add_test(NAME node_utils_unittest
+add_test(NAME pos_utils_unittest
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-    COMMAND ./node_utils_unittest)
+    COMMAND ./pos_utils_unittest)
