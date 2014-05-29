@@ -3,6 +3,7 @@
 
 #include <CEGUI/CEGUI.h>
 #include "node.hpp"
+#include "wall.hpp"
 
 namespace Quoridor {
 
@@ -14,6 +15,7 @@ public:
 public:
     Node pos_to_node(const CEGUI::UVector2 &pos) const;
     CEGUI::UVector2 node_to_pos(const Node &node) const;
+    Wall pos_to_wall(const CEGUI::UVector2 &pos, int wall_size) const;
 
 private:
     int node_cnt_;

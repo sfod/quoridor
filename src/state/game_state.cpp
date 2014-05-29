@@ -395,6 +395,9 @@ bool GameState::handle_wall_dropped_(const CEGUI_Ext::DragEvent &de)
             {568, 568}  // @fixme get parent size
     );
     Wall wall = normalize_wall_pos_(rel_pos);
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "adding wall: "
+        << wall.orientation() << ", " << wall.line() << ", "
+        << wall.start_pos();
     int rc = board_->add_wall(wall);
     if (rc == 0) {
         added_wall_ = wall;
@@ -414,9 +417,8 @@ Node GameState::normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos)
 Wall GameState::normalize_wall_pos_(const CEGUI::Vector2f &rel_pos)
 {
     CEGUI::UVector2 pos({rel_pos.d_x, 0.0}, {rel_pos.d_y, 0.0});
-    Node node = pos_utils_.pos_to_node(pos);
-    Wall w(0, node.row(), node.col(), 2);
-    return w;
+    Wall wall = pos_utils_.pos_to_wall(pos, 2);
+    return wall;
 }
 
 }  /* namespace Quoridor */
