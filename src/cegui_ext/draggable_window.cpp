@@ -1,4 +1,8 @@
 #include "draggable_window.hpp"
+#include "logger.hpp"
+
+
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 namespace CEGUI_Ext {
 
@@ -8,18 +12,10 @@ const String DraggableWindow::EventDraggableWindowStartDragging("DraggableWindow
 const String DraggableWindow::EventDraggableWindowDropped("DraggableWindowDropped");
 
 DraggableWindow::DraggableWindow(const String &type, const String &name)
-    : DefaultWindow(type, name), conn_(), mouse_pos_in_win_(),
-    is_dragged_(false), is_enabled_(true)
+    : Window(type, name), mouse_pos_in_win_(), is_dragging_(false),
+    is_enabled_(true)
 {
-    subscribeEvent(
-            Window::EventMouseButtonDown,
-            Event::Subscriber(&DraggableWindow::handle_start_drag_, this));
-    subscribeEvent(
-            Window::EventMouseButtonUp,
-            Event::Subscriber(&DraggableWindow::handle_stop_drag_, this));
-    subscribeEvent(
-            Window::EventMouseLeavesArea,
-            Event::Subscriber(&DraggableWindow::handle_stop_drag_, this));
+    lg.add_attribute("Tag", blattrs::constant<std::string>("draggable window"));
 }
 
 DraggableWindow::~DraggableWindow()
@@ -36,36 +32,14 @@ void DraggableWindow::enable_drag()
     is_enabled_ = true;
 }
 
-bool DraggableWindow::handle_start_drag_(const EventArgs &e)
+void DraggableWindow::onMouseButtonDown(MouseEventArgs &me)
 {
     if (!is_enabled_) {
-        return false;
+        return;
     }
 
-    auto me = static_cast<const MouseEventArgs&>(e);
-    conn_ = me.window->subscribeEvent(
-            Window::EventMouseMove,
-            Event::Subscriber(&DraggableWindow::handle_move_, this));
-    mouse_pos_in_win_ = CoordConverter::screenToWindow(
-            *me.window,
-            System::getSingleton().getDefaultGUIContext().
-                    getMouseCursor().getPosition());
-    UVector2 mouse_offset_in_win(
-            {0, mouse_pos_in_win_.d_x},
-            {0, mouse_pos_in_win_.d_y});
-    is_dragged_ = true;
-
-    DragEvent de(me.window, mouse_offset_in_win);
-    me.window->getParent()->fireEvent(EventDraggableWindowStartDragging, de, "");
-
-    return true;
-}
-
-bool DraggableWindow::handle_stop_drag_(const EventArgs &e)
-{
-    if (is_dragged_) {
-        auto me = static_cast<const MouseEventArgs&>(e);
-        conn_->disconnect();
+    activate();
+    if (captureInput()) {
         mouse_pos_in_win_ = CoordConverter::screenToWindow(
                 *me.window,
                 System::getSingleton().getDefaultGUIContext().
@@ -73,27 +47,61 @@ bool DraggableWindow::handle_stop_drag_(const EventArgs &e)
         UVector2 mouse_offset_in_win(
                 {0, mouse_pos_in_win_.d_x},
                 {0, mouse_pos_in_win_.d_y});
-        is_dragged_ = false;
+        is_dragging_ = true;
+
+        notifyScreenAreaChanged();
+
+        DragEvent de(me.window, mouse_offset_in_win);
+        me.window->getParent()->fireEvent(EventDraggableWindowStartDragging, de, "");
+    }
+    else {
+        BOOST_LOG_SEV(lg, boost::log::trivial::warning)
+            << "failed to capture input";
+    }
+}
+
+void DraggableWindow::onMouseButtonUp(MouseEventArgs &me)
+{
+    if (is_dragging_) {
+        mouse_pos_in_win_ = CoordConverter::screenToWindow(
+                *me.window,
+                System::getSingleton().getDefaultGUIContext().
+                        getMouseCursor().getPosition());
+        UVector2 mouse_offset_in_win(
+                {0, mouse_pos_in_win_.d_x},
+                {0, mouse_pos_in_win_.d_y});
+        is_dragging_ = false;
 
         DragEvent de(me.window, mouse_offset_in_win);
         me.window->getParent()->fireEvent(EventDraggableWindowDropped, de, "");
+
+        releaseInput();
     }
-    return true;
 }
 
-bool DraggableWindow::handle_move_(const EventArgs &e)
+void DraggableWindow::onMouseMove(MouseEventArgs &me)
 {
-    auto me = static_cast<const MouseEventArgs&>(e);
-    Vector2f local_pos = CoordConverter::screenToWindow(*me.window, me.position);
+    if (is_dragging_) {
+        Vector2f local_pos = CoordConverter::screenToWindow(*me.window, me.position);
 
-    UVector2 mouse_move_offset({0, local_pos.d_x}, {0, local_pos.d_y});
-    UVector2 mouse_offset_in_win(
-            {0, mouse_pos_in_win_.d_x},
-            {0, mouse_pos_in_win_.d_y});
+        UVector2 mouse_move_offset({0, local_pos.d_x}, {0, local_pos.d_y});
+        UVector2 mouse_offset_in_win(
+                {0, mouse_pos_in_win_.d_x},
+                {0, mouse_pos_in_win_.d_y});
 
-    me.window->setPosition(me.window->getPosition() + mouse_move_offset
-            - mouse_offset_in_win);
-    return true;
+        me.window->setPosition(me.window->getPosition() + mouse_move_offset
+                - mouse_offset_in_win);
+    }
+}
+
+void DraggableWindow::onMouseLeavesArea(CEGUI::MouseEventArgs &me)
+{
+    onMouseButtonUp(me);
+}
+
+void DraggableWindow::onCaptureLost(CEGUI::WindowEventArgs &we)
+{
+    Window::onCaptureLost(we);
 }
 
 }  // namespace CEGUI
