@@ -10,51 +10,27 @@
 namespace Quoridor {
 
 Board::Board(int size)
-    : size_(size), sides_(), pawn_sides_(), walls_(), occ_nodes_(), pawn_nodes_(),
+    : size_(size), pawn_goal_nodes_(), walls_(), occ_nodes_(), pawn_nodes_(),
     bg_(size_, size_)
 {
     if ((size <= 0) || (size % 2 == 0)) {
         throw Exception("invalid board size: "
                 + boost::lexical_cast<std::string>(size));
     }
-
-    sides_.push_back(std::pair<int, int>(0, 0));
-    sides_.push_back(std::pair<int, int>(2, 0));
-    sides_.push_back(std::pair<int, int>(1, 0));
-    sides_.push_back(std::pair<int, int>(3, 0));
 }
 
 Board::~Board()
 {
 }
 
-int Board::add_pawn(std::shared_ptr<Pawn> pawn)
+int Board::add_pawn(std::shared_ptr<Pawn> pawn, const Node &start_node,
+        const std::set<Node> &goal_nodes)
 {
-    pawn_sides_[pawn] = next_side();
-    Node node;
+    occ_nodes_[start_node] = pawn;
+    pawn_nodes_[pawn] = start_node;
+    pawn_goal_nodes_[pawn] = goal_nodes;
 
-    switch (pawn_sides_[pawn]) {
-    case 0:
-        node = Node(0, size_ / 2);
-        break;
-    case 1:
-        node = Node(size_ / 2, 0);
-        break;
-    case 2:
-        node = Node(size_ - 1, size_ / 2);
-        break;
-    case 3:
-        node = Node(size_ / 2, size_ - 1);
-        break;
-    default:
-        throw Exception("invalid pawn side: "
-                + boost::lexical_cast<std::string>(pawn_sides_[pawn]));
-    }
-
-    occ_nodes_[node] = pawn;
-    pawn_nodes_[pawn] = node;
-
-    bg_.block_neighbours(node);
+    bg_.block_neighbours(start_node);
 
     return 0;
 }
@@ -90,19 +66,7 @@ int Board::make_walking_move(std::shared_ptr<Pawn> pawn, const Node &node)
 bool Board::is_at_goal_node(std::shared_ptr<Pawn> pawn) const
 {
     Node node = pawn_nodes_.at(pawn);
-    switch (pawn_sides_.at(pawn)) {
-    case 0:
-        return node.row() == size_ - 1;
-    case 1:
-        return node.col() == size_ - 1;
-    case 2:
-        return node.row() == 0;
-    case 3:
-        return node.col() == 0;
-    default:
-        throw Exception("invalid board side: "
-                + boost::lexical_cast<std::string>(pawn_sides_.at(pawn)));
-    }
+    return pawn_goal_nodes_.at(pawn).count(node) != 0;
 }
 
 int Board::add_wall(const Wall &wall)
@@ -222,12 +186,8 @@ int Board::try_add_wall(const Wall &wall,
     bool path_blocked = false;
 
     for (auto pawn_node : pawn_nodes_) {
-        std::vector<Node> nodes;
-        int side = (pawn_sides_[pawn_node.first] + 2) % 4;
         path_blocked = true;
-
-        side_nodes(side, &nodes);
-        for (auto node : nodes) {
+        for (auto node : pawn_goal_nodes_[pawn_node.first]) {
             if (bg_.is_path_exists(pawn_node.second, node)) {
                 path_blocked = false;
                 break;
@@ -247,28 +207,10 @@ int Board::try_add_wall(const Wall &wall,
     return 0;
 }
 
-void Board::pawn_goal_nodes(std::shared_ptr<Pawn> pawn,
-        std::vector<Node> *nodes) const
-{
-    int side = (pawn_sides_.at(pawn) + 2) % 4;
-    side_nodes(side, nodes);
-}
-
 bool Board::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
         std::list<Node> *path) const
 {
     return bg_.find_path(pawn_nodes_.at(pawn), node, path);
-}
-
-int Board::next_side() const
-{
-    for (auto &side : sides_) {
-        if (side.second == 0) {
-            side.second = 1;
-            return side.first;
-        }
-    }
-    return -1;
 }
 
 bool Board::is_possible_move(const Node &cur_node, const Node &node) const
@@ -333,34 +275,6 @@ bool Board::wall_intersects(const Wall &wall) const
     }
 
     return false;
-}
-
-void Board::side_nodes(int side, std::vector<Node> *nodes) const
-{
-    switch (side) {
-    case 0:
-        for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Node(0, i));
-        }
-        break;
-    case 1:
-        for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Node(i, 0));
-        }
-        break;
-    case 2:
-        for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Node(size_ - 1, i));
-        }
-        break;
-    case 3:
-        for (int i = 0; i < size_; ++i) {
-            nodes->push_back(Node(i, size_ - 1));
-        }
-        break;
-    default:
-        break;
-    }
 }
 
 }  /* namespace Quoridor */

@@ -20,7 +20,8 @@ public:
     explicit Board(int size);
     virtual ~Board();
 
-    int add_pawn(std::shared_ptr<Pawn> pawn);
+    int add_pawn(std::shared_ptr<Pawn> pawn, const Node &start_node,
+            const std::set<Node> &goal_nodes);
     bool is_occupied(const Node &node) const;
     Node pawn_node(std::shared_ptr<Pawn> pawn) const;
 
@@ -31,23 +32,18 @@ public:
     int try_add_wall(const Wall &wall,
             std::vector<std::pair<Node, Node>> *edges);
 
-    void pawn_goal_nodes(std::shared_ptr<Pawn> pawn,
-            std::vector<Node> *nodes) const;
     bool get_path(std::shared_ptr<Pawn> pawn, const Node &node,
             std::list<Node> *nodes) const;
 
 private:
-    int next_side() const;
     int row(int n) const { return n / size_; }
     int col(int n) const { return n % size_; }
     bool is_possible_move(const Node &cur_node, const Node &node) const;
     bool wall_intersects(const Wall &wall) const;
-    void side_nodes(int side, std::vector<Node> *nodes) const;
 
 private:
     int size_;
-    mutable std::vector<std::pair<int, int>> sides_;
-    std::map<std::shared_ptr<Pawn>, int> pawn_sides_;
+    std::map<std::shared_ptr<Pawn>, std::set<Node>> pawn_goal_nodes_;
     std::map<int, std::map<int, std::map<int, Wall>>> walls_;
 
     std::map<Node, std::shared_ptr<Pawn>> occ_nodes_;
