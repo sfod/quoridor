@@ -9,6 +9,7 @@
 #include "istate.hpp"
 #include "player_factory.hpp"
 #include "state_manager.hpp"
+#include "pos_utils.hpp"
 #include "cegui_ext/draggable_window.hpp"
 
 namespace Quoridor {
@@ -34,7 +35,9 @@ private:
     };
 
 private:
+    void init_gui_();
     void set_pawns_();
+    void init_walls_();
     void redraw_pawn_();
     void draw_wall_();
     void pre_process_move_();
@@ -47,8 +50,11 @@ private:
     void subscribe_for_events_();
     bool handle_back_(const CEGUI::EventArgs &e);
     bool handle_end_anim_(const CEGUI::EventArgs &e);
-    bool handle_pawn_dropped_(const CEGUI::EventArgs &e);
+    bool handle_window_dropped_(const CEGUI::EventArgs &e);
+    bool handle_pawn_dropped_(const CEGUI_Ext::DragEvent &de);
+    bool handle_wall_dropped_(const CEGUI_Ext::DragEvent &de);
     Node normalize_pawn_pos_(const CEGUI::Vector2f &rel_pos);
+    Wall normalize_wall_pos_(const CEGUI::Vector2f &rel_pos);
 
 private:
     static std::string name_;
@@ -63,10 +69,13 @@ private:
     std::vector<std::shared_ptr<Pawn>> pawn_list_;
     std::shared_ptr<Pawn> cur_pawn_;
     std::map<std::shared_ptr<Pawn>, CEGUI_Ext::DraggableWindow*> drag_list_;
+    std::map<CEGUI::Window*, std::shared_ptr<Pawn>> pawn_wins_;
+    std::map<CEGUI::Window*, int> wall_wins_;
     std::vector<Node> pawn_path_;
     Wall added_wall_;
     size_t wall_idx_;
     GameStatus status_;
+    PosUtils pos_utils_;
 };
 
 }  /* namespace Quoridor */
