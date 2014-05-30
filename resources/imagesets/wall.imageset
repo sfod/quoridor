@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<Imageset version="2" name="WallSet" imagefile="wall.png" nativeHorzRes="70" nativeVertRes="70" autoScaled="vertical">
+	<Image name="VerticalWall" xPos="2" yPos="2" width="4" height="52" />
+	<Image name="HorizontalWall" xPos="6" yPos="56" width="52" height="4" />
+</Imageset>

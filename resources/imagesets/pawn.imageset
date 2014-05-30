@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<Imageset version="2" name="PawnSet" imagefile="pawn.png" nativeHorzRes="128" nativeVertRes="128" autoScaled="vertical">
+	<Image name="Pawn" xPos="20" yPos="15" width="90" height="95" />
+</Imageset>
