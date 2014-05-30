@@ -1,8 +1,7 @@
 #include "board.hpp"
 
 #include <cstring>
-
-#include <boost/lexical_cast.hpp>
+#include <string>
 
 #include "exception.hpp"
 
@@ -14,8 +13,7 @@ Board::Board(int size)
     bg_(size_, size_)
 {
     if ((size <= 0) || (size % 2 == 0)) {
-        throw Exception("invalid board size: "
-                + boost::lexical_cast<std::string>(size));
+        throw Exception("invalid board size: " + std::to_string(size));
     }
 }
 
