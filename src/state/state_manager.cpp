@@ -104,7 +104,7 @@ void StateManager::init_sdl_()
     sdl_win_ = std::shared_ptr<SDL_Window>(
             SDL_CreateWindow("Quoridor",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_UNDEFINED,
-                1024, 768, SDL_WINDOW_RESIZABLE),
+                800, 600, SDL_WINDOW_RESIZABLE),
             [=](SDL_Window *w) {
                 SDL_DestroyWindow(w);
             }
