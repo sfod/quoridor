@@ -5,7 +5,6 @@
 #include <boost/lexical_cast.hpp>
 
 #include "exception.hpp"
-#include "walk_move.hpp"
 
 
 namespace Quoridor {
