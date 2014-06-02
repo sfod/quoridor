@@ -13,7 +13,7 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 namespace Quoridor {
 
 static std::vector<std::string> colors = {"red", "green", "blue", "yellow"};
-std::string GameState::name_("Game");
+std::string GameState::name_("Game State");
 
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
