@@ -17,9 +17,11 @@ std::string GameState::name_("Game");
 
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
-    board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
-    status_(kWaitingForMove), pos_utils_(9, 52, 50)
+    game_(new Game(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
+    drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(),
+    added_wall_(Wall::kInvalid, 0, 0, 0), wall_idx_(0),
+    status_(kWaitingForMove),
+    pos_utils_(9, 52, 50)
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
 
