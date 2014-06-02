@@ -217,10 +217,10 @@ void GameState::draw_wall_()
     Node node;
     CEGUI::UVector2 pos;
 
-    if (added_wall_.orientation() == 0) {
+    if (added_wall_.orientation() == Wall::kHorizontal) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            node.set_row(added_wall_.line());
-            node.set_col(added_wall_.start_pos() + i);
+            node.set_row(added_wall_.row());
+            node.set_col(added_wall_.col() + i);
             pos = pos_utils_.node_to_pos(node);
             pos.d_y.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("horizontal_wall.layout");
@@ -229,13 +229,13 @@ void GameState::draw_wall_()
             ++wall_idx_;
             board_win->addChild(wall_win);
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at "
-                << added_wall_.line() << ":" << added_wall_.start_pos() + i;
+                << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
-    else {
+    else if (added_wall_.orientation() == Wall::kVertical) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            node.set_row(added_wall_.start_pos() + i);
-            node.set_col(added_wall_.line() + 1);
+            node.set_row(added_wall_.row() + i);
+            node.set_col(added_wall_.col() + 1);
             pos = pos_utils_.node_to_pos(node);
             pos.d_x.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
@@ -244,7 +244,7 @@ void GameState::draw_wall_()
             ++wall_idx_;
             board_win->addChild(wall_win);
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at "
-                << added_wall_.line() << ":" << added_wall_.start_pos() + i;
+                << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
 }
@@ -300,10 +300,9 @@ void GameState::make_move_()
             }
         }
         else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
-            const Wall &wall = wall_move->wall();
-            rc = board_->add_wall(wall);
+            rc = game_->add_wall(wall_move->wall());
             if (rc == 0) {
-                added_wall_ = wall;
+                added_wall_ = wall_move->wall();
                 status_ = kNeedDrawWall;
             }
         }
@@ -390,9 +389,9 @@ bool GameState::handle_wall_dropped_(const CEGUI_Ext::DragEvent &de)
     );
     Wall wall = normalize_wall_pos_(rel_pos);
     BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "adding wall: "
-        << wall.orientation() << ", " << wall.line() << ", "
-        << wall.start_pos();
-    int rc = board_->add_wall(wall);
+        << wall.orientation() << ", " << wall.row() << ", "
+        << wall.col();
+    int rc = game_->add_wall(wall);
     if (rc == 0) {
         added_wall_ = wall;
         status_ = kNeedDrawWall;
