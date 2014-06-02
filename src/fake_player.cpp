@@ -46,9 +46,6 @@ IMove *FakePlayer::get_move()
 
         auto node_it = min_path.begin();
         Node next_node = *node_it;
-        if (board_->is_occupied(next_node)) {
-            // @todo
-        }
         return new WalkMove(next_node);
     }
     else {
