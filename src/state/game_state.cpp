@@ -312,7 +312,7 @@ void GameState::make_move_()
 
 bool GameState::is_finished_() const
 {
-    return board_->is_at_goal_node(cur_pawn_);
+    return game_->is_finished();
 }
 
 void GameState::subscribe_for_events_()
