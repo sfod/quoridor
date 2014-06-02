@@ -265,19 +265,8 @@ void GameState::post_process_move_()
 
 void GameState::switch_cur_pawn_()
 {
-    auto it = pawn_list_.begin();
-    for (;it != pawn_list_.end(); ++it) {
-        if (*it == cur_pawn_) {
-            break;
-        }
-    }
-
-    if ((it == pawn_list_.end()) || (++it == pawn_list_.end())) {
-        cur_pawn_ = pawn_list_[0];
-    }
-    else {
-        cur_pawn_ = *it;
-    }
+    game_->switch_pawn();
+    cur_pawn_ = game_->cur_pawn_data().pawn;
 }
 
 void GameState::make_move_()
