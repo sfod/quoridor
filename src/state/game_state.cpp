@@ -147,8 +147,11 @@ void GameState::set_pawns_()
             pawn_wins_[drag_win] = pawn;
         }
         else {
-            drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());
-            drag_win->subscribeEvent(CEGUI::AnimationInstance::EventAnimationEnded, CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
+            drag_win = CEGUI::WindowManager::getSingleton().
+                createWindow("DefaultWindow", pawn->color());
+            drag_win->subscribeEvent(
+                    CEGUI::AnimationInstance::EventAnimationEnded,
+                    CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
         }
 
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
