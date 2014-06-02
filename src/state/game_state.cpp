@@ -283,7 +283,7 @@ void GameState::make_move_()
     }
 
     if (move != NULL) {
-        Node cur_node = board_->pawn_node(cur_pawn_);
+        Node cur_node = game_->cur_pawn_data().node;
         int rc;
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
@@ -292,10 +292,10 @@ void GameState::make_move_()
                 << " -> " << walk_move->node().row() << ":"
                 << walk_move->node().col();
 
-            rc = board_->make_walking_move(cur_pawn_, walk_move->node());
+            rc = game_->move_pawn(walk_move->node());
             if (rc == 0) {
                 pawn_path_.push_back(cur_node);
-                pawn_path_.push_back(board_->pawn_node(cur_pawn_));
+                pawn_path_.push_back(game_->cur_pawn_data().node);
                 status_ = kNeedPawnRedraw;
             }
         }
@@ -366,13 +366,13 @@ bool GameState::handle_pawn_dropped_(const CEGUI_Ext::DragEvent &de)
         << node.row() << ":" << node.col();
 
     CEGUI::UVector2 pos;
-    int rc = board_->make_walking_move(cur_pawn_, node);
+    int rc = game_->move_pawn(node);
     if (rc == 0) {
         pos = pos_utils_.node_to_pos(node);
         status_ = kPerformedMove;
     }
     else {
-        Node cur_node = board_->pawn_node(cur_pawn_);
+        Node cur_node = game_->cur_pawn_data().node;
         pos = pos_utils_.node_to_pos(cur_node);
     }
 
