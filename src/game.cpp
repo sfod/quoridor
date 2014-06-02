@@ -29,24 +29,38 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         int pawn_idx = pawn_idx_list[i];
         switch (pawn_idx) {
         case 0:
-            pawn_data.start_node.set_row(0);
-            pawn_data.start_node.set_col(board_size_ / 2);
+            pawn_data.node.set_row(0);
+            pawn_data.node.set_col(board_size_ / 2);
+            for (size_t j = 0; j < board_size_; ++j) {
+                Node gn(board_size_ - 1, j);
+                pawn_data.goal_nodes.insert(gn);
+            }
             break;
         case 1:
-            pawn_data.start_node.set_row(board_size_ / 2);
-            pawn_data.start_node.set_col(0);
+            pawn_data.node.set_row(board_size_ / 2);
+            pawn_data.node.set_col(0);
+            for (size_t j = 0; j < board_size_; ++j) {
+                Node gn(j, board_size_ - 1);
+                pawn_data.goal_nodes.insert(gn);
+            }
             break;
         case 2:
-            pawn_data.start_node.set_row(board_size_ - 1);
-            pawn_data.start_node.set_col(board_size_ / 2);
+            pawn_data.node.set_row(board_size_ - 1);
+            pawn_data.node.set_col(board_size_ / 2);
+            for (size_t j = 0; j < board_size_; ++j) {
+                Node gn(0, j);
+                pawn_data.goal_nodes.insert(gn);
+            }
             break;
         case 3:
-            pawn_data.start_node.set_row(board_size_ / 2);
-            pawn_data.start_node.set_col(board_size_ - 1);
+            pawn_data.node.set_row(board_size_ / 2);
+            pawn_data.node.set_col(board_size_ - 1);
+            for (size_t j = 0; j < board_size_; ++j) {
+                Node gn(j, 0);
+                pawn_data.goal_nodes.insert(gn);
+            }
             break;
         }
-
-        // @todo add goal nodes
 
         pawn_data_list_[pawn_idx] = pawn_data;
     }
