@@ -66,19 +66,23 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
     }
 }
 
-std::shared_ptr<Pawn> Game::next_pawn()
+void Game::switch_pawn()
 {
     auto it = pawn_data_list_.upper_bound(cur_pawn_idx_);
     if (it == pawn_data_list_.end()) {
         it = pawn_data_list_.begin();
     }
-    return it->second.pawn;
+    cur_pawn_idx_ = it->first;
 }
 
-int Game::move_pawn(const WalkMove &move)
+const pawn_data_t &Game::cur_pawn_data() const
+{
+    return pawn_data_list_.at(cur_pawn_idx_);
+}
+
+int Game::move_pawn(const Node &node)
 {
     Node cur_node = pawn_data_list_[cur_pawn_idx_].node;
-    Node node = move.node();
 
     if (bg_.is_adjacent(cur_node, node)) {
         bg_.unblock_neighbours(cur_node);
@@ -91,9 +95,8 @@ int Game::move_pawn(const WalkMove &move)
     }
 }
 
-int Game::add_wall(const WallMove &move)
+int Game::add_wall(const Wall &wall)
 {
-    const Wall &wall = move.wall();
     std::vector<std::pair<Node, Node>> edges;
 
     if (try_add_wall(wall, &edges) < 0) {

@@ -27,10 +27,11 @@ public:
     virtual ~Game();
 
     void set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list);
-    std::shared_ptr<Pawn> next_pawn();
+    void switch_pawn();
+    const pawn_data_t &cur_pawn_data() const;
 
-    int move_pawn(const WalkMove &move);
-    int add_wall(const WallMove &move);
+    int move_pawn(const Node &node);
+    int add_wall(const Wall &wall);
 
     bool is_finished() const;
 
