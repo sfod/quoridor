@@ -148,24 +148,23 @@ void GameState::set_pawns_()
             CEGUI::Event::Subscriber(&GameState::handle_window_dropped_, this));
 
     CEGUI::Window *drag_win;
-    for (auto pawn : pawn_list_) {
-        if (players_[pawn]->is_interactive()) {
-            drag_win = new CEGUI_Ext::DraggableWindow("DefaultWindow", pawn->color());
-            drag_list_[pawn] = static_cast<CEGUI_Ext::DraggableWindow*>(drag_win);
-            drag_list_[pawn]->disable_drag();
-            pawn_wins_[drag_win] = pawn;
+    for (auto pawn_data : game_->pawn_data_list()) {
+        if (players_[pawn_data.pawn]->is_interactive()) {
+            drag_win = new CEGUI_Ext::DraggableWindow("DefaultWindow", pawn_data.pawn->color());
+            drag_list_[pawn_data.pawn] = static_cast<CEGUI_Ext::DraggableWindow*>(drag_win);
+            drag_list_[pawn_data.pawn]->disable_drag();
+            pawn_wins_[drag_win] = pawn_data.pawn;
         }
         else {
             drag_win = CEGUI::WindowManager::getSingleton().
-                createWindow("DefaultWindow", pawn->color());
+                createWindow("DefaultWindow", pawn_data.pawn->color());
             drag_win->subscribeEvent(
                     CEGUI::AnimationInstance::EventAnimationEnded,
                     CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
         }
 
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
-        Node node = board_->pawn_node(pawn);
-        CEGUI::UVector2 pos = pos_utils_.node_to_pos(node);
+        CEGUI::UVector2 pos = pos_utils_.node_to_pos(pawn_data.node);
         drag_win->setPosition(pos);
 
         auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
