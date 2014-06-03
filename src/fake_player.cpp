@@ -8,14 +8,13 @@
 #include "wall_move.hpp"
 #include "exception.hpp"
 
-
 namespace Quoridor {
 
-FakePlayer::FakePlayer(std::shared_ptr<Board> board,
+FakePlayer::FakePlayer(std::shared_ptr<Game> game,
         std::shared_ptr<Pawn> pawn)
-    : board_(board), pawn_(pawn), goal_nodes_(), gen_()
+    : game_(game), pawn_(pawn), goal_nodes_(), gen_()
 {
-    board_->pawn_goal_nodes(pawn_, &goal_nodes_);
+    goal_nodes_ = game_->pawn_data(pawn_).goal_nodes;
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));
 }
 
@@ -32,7 +31,7 @@ IMove *FakePlayer::get_move()
         std::list<Node> min_path;
         for (auto end_node : goal_nodes_) {
             std::list<Node> path;
-            if (board_->get_path(pawn_, end_node, &path)) {
+            if (game_->get_path(pawn_, end_node, &path)) {
                 if (min_path_len > path.size()) {
                     min_path_len = path.size();
                     min_path = path;

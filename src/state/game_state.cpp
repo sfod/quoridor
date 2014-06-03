@@ -36,7 +36,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     for (auto player_type : player_types) {
         BOOST_LOG_SEV(lg, boost::log::trivial::info) << "adding player " << player_type;
         std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
-        players_[pawn] = pf_.make_player(player_type, board_, pawn);
+        players_[pawn] = pf_.make_player(player_type, game_, pawn);
         pawn_list_.push_back(pawn);
         ++i;
     }
