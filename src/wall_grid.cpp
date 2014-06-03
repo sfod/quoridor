@@ -65,6 +65,9 @@ int WallGrid::add_tmp_wall(const Wall &wall)
         inc_node.set_row(1);
         occ_sides = vert_occ_sides_;
         break;
+    case Wall::kInvalid:
+    default:
+        return -1;
     }
 
     tmp_occupied_nodes_.clear();
