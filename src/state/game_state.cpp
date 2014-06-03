@@ -295,7 +295,7 @@ void GameState::make_move_()
         int rc;
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
+            BOOST_LOG_SEV(lg, boost::log::trivial::debug) << cur_pawn_->color()
                 << " move: " << cur_node.row() << ":" << cur_node.col()
                 << " -> " << walk_move->node().row() << ":"
                 << walk_move->node().col();
