@@ -248,4 +248,10 @@ bool Game::is_finished() const
     return false;
 }
 
+bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
+        std::list<Node> *path) const
+{
+    return bg_.find_path(pawn_data(pawn).node, node, path);
+}
+
 }  // namespace Quoridor

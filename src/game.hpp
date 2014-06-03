@@ -57,6 +57,9 @@ public:
 
     bool is_finished() const;
 
+    bool get_path(std::shared_ptr<Pawn> pawn, const Node &node,
+            std::list<Node> *path) const;
+
 private:
     int try_add_wall(const Wall &wall,
             std::vector<std::pair<Node, Node>> *edges);
