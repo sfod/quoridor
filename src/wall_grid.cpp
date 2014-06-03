@@ -45,13 +45,20 @@ int WallGrid::add_tmp_wall(const Wall &wall)
 {
     int rc = 0;
 
-    // check if wall is set on the border
-    if ((wall.orientation() == Wall::kHorizontal)
-            && ((wall.row() == 0) || (wall.row() == size_ - 1))) {
+    if ((wall.row() < 0) || (wall.row() >= size_)
+            || (wall.col() < 0) || (wall.col() >= size_)) {
+        return -1;
+    }
+    else if ((wall.orientation() == Wall::kHorizontal)
+            && ((wall.row() == 0)
+                || (wall.row() == size_ - 1)
+                || (wall.col() + wall.cnt() >= size_))) {
         return -1;
     }
     else if ((wall.orientation() == Wall::kVertical)
-            && ((wall.col() == 0) || (wall.col() == size_ - 1))) {
+            && ((wall.col() == 0)
+                || (wall.col() == size_ - 1)
+                || (wall.row() + wall.cnt() >= size_))) {
         return -1;
     }
 
@@ -77,12 +84,6 @@ int WallGrid::add_tmp_wall(const Wall &wall)
     Node node(wall.row(), wall.col());
     NodeOccupiedSide occ_side;
     for (int i = 0; i <= wall.cnt(); ++i) {
-        // wall extends outside the board
-        if ((node.row() > size_) || (node.col() > size_)) {
-            rc = -1;
-            break;
-        }
-
         if (i == 0) {
             occ_side = occ_sides[0];
         }
