@@ -22,9 +22,9 @@ StupidPlayer::StupidPlayer(std::shared_ptr<Game> game,
     goal_nodes_ = game_->pawn_data(pawn_).goal_nodes;
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));
 
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "created new StupidPlayer (" << pawn_->color() << ")";
+    BOOST_LOG_DEBUG(lg) << "created new StupidPlayer (" << pawn_->color() << ")";
     for (auto node : goal_nodes_) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "goal node: " << node.row() << ":" << node.col();
+        BOOST_LOG_DEBUG(lg) << "goal node: " << node.row() << ":" << node.col();
     }
 }
 

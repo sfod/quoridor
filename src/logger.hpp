@@ -23,4 +23,9 @@
 
 namespace blattrs = boost::log::attributes;
 
+#define BOOST_LOG_DEBUG(lg) BOOST_LOG_SEV((lg), boost::log::trivial::debug)
+#define BOOST_LOG_INFO(lg) BOOST_LOG_SEV((lg), boost::log::trivial::info)
+#define BOOST_LOG_ERROR(lg) BOOST_LOG_SEV((lg), boost::log::trivial::error)
+#define BOOST_LOG_FATAL(lg) BOOST_LOG_SEV((lg), boost::log::trivial::fatal)
+
 #endif  // QUORIDOR_LOGGER_HPP_

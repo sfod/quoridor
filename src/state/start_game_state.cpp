@@ -144,14 +144,13 @@ bool StartGameState::handle_start_game_(const CEGUI::EventArgs &/* e */)
     }
 
     try {
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "starting game...";
+        BOOST_LOG_INFO(lg) << "starting game...";
         auto state = std::shared_ptr<IState>(new GameState(stm_, ptypes));
         stm_->change_state(state);
     }
     catch (CEGUI::Exception &e) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::fatal)
-            << "failed to create GameState";
-        BOOST_LOG_SEV(lg, boost::log::trivial::fatal) << e.what();
+        BOOST_LOG_FATAL(lg) << "failed to create GameState";
+        BOOST_LOG_FATAL(lg) << e.what();
         stm_->stop();
     }
 
@@ -160,7 +159,7 @@ bool StartGameState::handle_start_game_(const CEGUI::EventArgs &/* e */)
 
 bool StartGameState::handle_return_(const CEGUI::EventArgs &/* e */)
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "returning to main menu";
+    BOOST_LOG_DEBUG(lg) << "returning to main menu";
     stm_->change_state(std::shared_ptr<IState>(new MainMenuState(stm_)));
     return true;
 }
@@ -180,7 +179,7 @@ bool StartGameState::handle_player_num_(const CEGUI::EventArgs &e)
 
 void StartGameState::set_player_list2_()
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "set player number to 2";
+    BOOST_LOG_INFO(lg) << "set player number to 2";
 
     plist2_win_->setVisible(true);
     plist4_win_->setVisible(false);
@@ -189,7 +188,7 @@ void StartGameState::set_player_list2_()
 
 void StartGameState::set_player_list4_()
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "set player number to 4";
+    BOOST_LOG_INFO(lg) << "set player number to 4";
 
     plist2_win_->setVisible(false);
     plist4_win_->setVisible(true);

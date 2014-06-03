@@ -41,13 +41,13 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         game_->set_pawns(pawn_list_);
     }
     catch (Exception &e) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::error) << "failed to create game: " << e.what();
+        BOOST_LOG_ERROR(lg) << "failed to create game: " << e.what();
         throw;
     }
 
     int i = 0;
     for (auto player_type : player_types) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "adding player " << player_type;
+        BOOST_LOG_INFO(lg) << "adding player " << player_type;
         players_[pawn_list_[i]] = pf_.make_player(player_type, game_, pawn_list_[i]);
         ++i;
     }
@@ -78,7 +78,7 @@ void GameState::update()
     case kPerformedMove:
         post_process_move_();
         if (is_finished_()) {
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color() << " win";
+            BOOST_LOG_INFO(lg) << cur_pawn_->color() << " win";
             status_ = kFinished;
         }
         else {
@@ -236,7 +236,7 @@ void GameState::draw_wall_()
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at "
+            BOOST_LOG_INFO(lg) << "added horizontal wall at "
                 << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
@@ -251,7 +251,7 @@ void GameState::draw_wall_()
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at "
+            BOOST_LOG_INFO(lg) << "added vertiacl wall at "
                 << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
@@ -295,7 +295,7 @@ void GameState::make_move_()
         int rc;
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-            BOOST_LOG_SEV(lg, boost::log::trivial::debug) << cur_pawn_->color()
+            BOOST_LOG_DEBUG(lg) << cur_pawn_->color()
                 << " move: " << cur_node.row() << ":" << cur_node.col()
                 << " -> " << walk_move->node().row() << ":"
                 << walk_move->node().col();
@@ -334,7 +334,7 @@ void GameState::subscribe_for_events_()
 
 bool GameState::handle_back_(const CEGUI::EventArgs &/* e */)
 {
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << "returning to start game menu";
+    BOOST_LOG_DEBUG(lg) << "returning to start game menu";
     stm_->change_state(std::shared_ptr<IState>(new StartGameState(stm_)));
     return true;
 }
@@ -349,15 +349,15 @@ bool GameState::handle_window_dropped_(const CEGUI::EventArgs &e)
 {
     auto de = static_cast<const CEGUI_Ext::DragEvent&>(e);
     if (pawn_wins_.count(de.window())) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "pawn was dropped!";
+        BOOST_LOG_DEBUG(lg) << "pawn was dropped!";
         return handle_pawn_dropped_(de);
     }
     else if (wall_wins_.count(de.window())) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "wall was dropped!";
+        BOOST_LOG_DEBUG(lg) << "wall was dropped!";
         return handle_wall_dropped_(de);
     }
     else {
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "unknown object was dropped!";
+        BOOST_LOG_DEBUG(lg) << "unknown object was dropped!";
         return false;
     }
 }
@@ -370,7 +370,7 @@ bool GameState::handle_pawn_dropped_(const CEGUI_Ext::DragEvent &de)
     );
     Node node = normalize_pawn_pos_(rel_pos);
 
-    BOOST_LOG_SEV(lg, boost::log::trivial::info) << de.window() << " position "
+    BOOST_LOG_INFO(lg) << de.window() << " position "
         << node.row() << ":" << node.col();
 
     CEGUI::UVector2 pos;
@@ -396,7 +396,7 @@ bool GameState::handle_wall_dropped_(const CEGUI_Ext::DragEvent &de)
             {568, 568}  // @fixme get parent size
     );
     Wall wall = normalize_wall_pos_(rel_pos);
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "adding wall: "
+    BOOST_LOG_DEBUG(lg) << "adding wall: "
         << wall.orientation() << ", " << wall.row() << ", "
         << wall.col();
     int rc = game_->add_wall(wall);
