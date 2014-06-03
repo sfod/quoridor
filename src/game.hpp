@@ -6,6 +6,10 @@
 #include <set>
 #include <vector>
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/member.hpp>
+
 #include "board_graph.hpp"
 #include "node.hpp"
 #include "pawn.hpp"
@@ -16,10 +20,18 @@
 namespace Quoridor {
 
 struct pawn_data_t {
+    int idx;
     std::shared_ptr<Pawn> pawn;
     Node node;
     std::set<Node> goal_nodes;
 };
+
+typedef boost::multi_index_container<
+    pawn_data_t,
+    boost::multi_index::indexed_by<
+        boost::multi_index::ordered_unique<boost::multi_index::member<pawn_data_t, int, &pawn_data_t::idx> >
+    >
+> pawn_data_list_t;
 
 class Game {
 public:
@@ -41,7 +53,7 @@ private:
 
 private:
     int board_size_;
-    std::map<int, pawn_data_t> pawn_data_list_;
+    pawn_data_list_t pawn_data_list_;
     int cur_pawn_idx_;
     BoardGraph bg_;
     WallGrid wg_;

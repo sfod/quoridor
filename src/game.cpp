@@ -26,8 +26,8 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
     for (size_t i = 0; i < pawn_list.size(); ++i) {
         pawn_data.pawn = pawn_list[i];
 
-        int pawn_idx = pawn_idx_list[i];
-        switch (pawn_idx) {
+        pawn_data.idx = pawn_idx_list[i];
+        switch (pawn_data.idx) {
         case 0:
             pawn_data.node.set_row(0);
             pawn_data.node.set_col(board_size_ / 2);
@@ -62,7 +62,7 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
             break;
         }
 
-        pawn_data_list_[pawn_idx] = pawn_data;
+        pawn_data_list_.insert(pawn_data);
     }
 }
 
@@ -72,21 +72,24 @@ void Game::switch_pawn()
     if (it == pawn_data_list_.end()) {
         it = pawn_data_list_.begin();
     }
-    cur_pawn_idx_ = it->first;
+    cur_pawn_idx_ = it->idx;
 }
 
 const pawn_data_t &Game::cur_pawn_data() const
 {
-    return pawn_data_list_.at(cur_pawn_idx_);
+    return *pawn_data_list_.find(cur_pawn_idx_);
 }
 
 int Game::move_pawn(const Node &node)
 {
-    Node cur_node = pawn_data_list_[cur_pawn_idx_].node;
+    Node cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
 
     if (bg_.is_adjacent(cur_node, node)) {
         bg_.unblock_neighbours(cur_node);
-        pawn_data_list_[cur_pawn_idx_].node = node;
+        pawn_data_list_t::iterator it = pawn_data_list_.find(cur_pawn_idx_);
+        pawn_data_t pawn_data = *it;
+        pawn_data.node = node;
+        pawn_data_list_.replace(it, pawn_data);
         bg_.block_neighbours(node);
         return 0;
     }
@@ -204,8 +207,8 @@ int Game::try_add_wall(const Wall &wall,
 
     for (auto pawn_data : pawn_data_list_) {
         path_blocked = true;
-        for (auto goal_node : pawn_data.second.goal_nodes) {
-            if (bg_.is_path_exists(pawn_data.second.node, goal_node)) {
+        for (auto goal_node : pawn_data.goal_nodes) {
+            if (bg_.is_path_exists(pawn_data.node, goal_node)) {
                 path_blocked = false;
                 break;
             }
@@ -226,8 +229,8 @@ int Game::try_add_wall(const Wall &wall,
 
 bool Game::is_finished() const
 {
-    Node cur_node = pawn_data_list_.at(cur_pawn_idx_).node;
-    if (pawn_data_list_.at(cur_pawn_idx_).goal_nodes.count(cur_node) != 0) {
+    Node cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
+    if (pawn_data_list_.find(cur_pawn_idx_)->goal_nodes.count(cur_node) != 0) {
         return true;
     }
     return false;
