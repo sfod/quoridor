@@ -7,9 +7,9 @@ enum NodeOccupiedSide {
     kLeft = 2,
     kRight = 4,
     kUp = 8,
-    kVertical = kBottom | kUp,
-    kHorizontal = kLeft | kRight,
-    kAll = 15
+    kMiddle = 16,
+    kVertical = kMiddle | kBottom | kUp,
+    kHorizontal = kMiddle | kLeft | kRight,
 };
 
 static const NodeOccupiedSide horiz_occ_sides_[] = {
@@ -94,15 +94,14 @@ int WallGrid::add_tmp_wall(const Wall &wall)
             occ_side = occ_sides[2];
         }
 
+        if ((occupied_nodes_.count(node) == 0)
+                || ((occupied_nodes_[node] & occ_side) == 0)) {
+            tmp_occupied_nodes_[node] = occ_side;
+        }
         // new wall intersects with earlier added wall
-        if ((occupied_nodes_.count(node) != 0)
-                && (((occupied_nodes_[node] & occ_side) != 0)
-                    || ((occupied_nodes_[node] | occ_side) == NodeOccupiedSide::kAll))) {
+        else {
             rc = -1;
             break;
-        }
-        else {
-            tmp_occupied_nodes_[node] = occ_side;
         }
 
         node += inc_node;
