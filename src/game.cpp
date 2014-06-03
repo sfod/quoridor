@@ -82,6 +82,16 @@ const pawn_data_t &Game::cur_pawn_data() const
     return *pawn_data_list_.find(cur_pawn_idx_);
 }
 
+const pawn_data_list_t &Game::pawn_data_list() const
+{
+    return pawn_data_list_;
+}
+
+const pawn_data_t &Game::pawn_data(std::shared_ptr<Pawn> &pawn) const
+{
+    return *pawn_data_list_.get<by_pawn>().find(pawn);
+}
+
 int Game::move_pawn(const Node &node)
 {
     Node cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
