@@ -1,11 +1,11 @@
 #include "exception.hpp"
 #include "player_factory.hpp"
 #include "player.hpp"
-#include "fake_player.hpp"
+#include "stupid_player.hpp"
 
 namespace Quoridor {
 
-static std::vector<std::string> player_types = {"fake", "human"};
+static std::vector<std::string> player_types = {"stupid", "human"};
 
 PlayerFactory::PlayerFactory()
 {
@@ -18,8 +18,8 @@ PlayerFactory::~PlayerFactory()
 std::shared_ptr<IPlayer> PlayerFactory::make_player(const std::string &type,
             std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn)
 {
-    if (type == "fake") {
-        return std::shared_ptr<IPlayer>(new FakePlayer(game, pawn));
+    if (type == "stupid") {
+        return std::shared_ptr<IPlayer>(new StupidPlayer(game, pawn));
     }
     else if (type == "human") {
         return std::shared_ptr<IPlayer>(new Player(game, pawn));

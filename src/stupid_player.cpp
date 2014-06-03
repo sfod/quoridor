@@ -1,4 +1,4 @@
-#include "fake_player.hpp"
+#include "stupid_player.hpp"
 
 #include <ctime>
 
@@ -13,7 +13,7 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 
 namespace Quoridor {
 
-FakePlayer::FakePlayer(std::shared_ptr<Game> game,
+StupidPlayer::StupidPlayer(std::shared_ptr<Game> game,
         std::shared_ptr<Pawn> pawn)
     : game_(game), pawn_(pawn), goal_nodes_(), gen_()
 {
@@ -22,17 +22,17 @@ FakePlayer::FakePlayer(std::shared_ptr<Game> game,
     goal_nodes_ = game_->pawn_data(pawn_).goal_nodes;
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));
 
-    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "created new FakePlayer (" << pawn_->color() << ")";
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "created new StupidPlayer (" << pawn_->color() << ")";
     for (auto node : goal_nodes_) {
         BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "goal node: " << node.row() << ":" << node.col();
     }
 }
 
-FakePlayer::~FakePlayer()
+StupidPlayer::~StupidPlayer()
 {
 }
 
-IMove *FakePlayer::get_move()
+IMove *StupidPlayer::get_move()
 {
     boost::random::discrete_distribution<> dist{0.6, 0.6};
 

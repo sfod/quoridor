@@ -12,7 +12,7 @@ set(CORE_SOURCES
     pawn
     player_factory
     player
-    fake_player
+    stupid_player
 )
 set(STATE_SOURCES
     main_menu_state

@@ -1,5 +1,5 @@
-#ifndef QUORIDOR_FAKE_PLAYER_HPP_
-#define QUORIDOR_FAKE_PLAYER_HPP_
+#ifndef QUORIDOR_STUPID_PLAYER_HPP_
+#define QUORIDOR_STUPID_PLAYER_HPP_
 
 #include <memory>
 #include <set>
@@ -13,10 +13,10 @@
 
 namespace Quoridor {
 
-class FakePlayer : public IPlayer {
+class StupidPlayer : public IPlayer {
 public:
-    FakePlayer(std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
-    virtual ~FakePlayer();
+    StupidPlayer(std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
+    virtual ~StupidPlayer();
 
     virtual IMove *get_move();
     virtual bool is_interactive() const { return false; };
@@ -30,4 +30,4 @@ private:
 
 }  /* namespace Quoridor */
 
-#endif  // QUORIDOR_FAKE_PLAYER_HPP_
+#endif  // QUORIDOR_STUPID_PLAYER_HPP_
