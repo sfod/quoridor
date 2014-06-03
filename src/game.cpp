@@ -19,8 +19,8 @@ Game::~Game()
 void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
 {
     size_t pawn_num = pawn_list.size();
-    if ((pawn_num != 2) || (pawn_num != 4)) {
-        throw Exception("Invalid number of players");
+    if ((pawn_num != 2) && (pawn_num != 4)) {
+        throw Exception("Invalid number of players: " + std::to_string(pawn_num));
     }
 
     pawn_data_t pawn_data;
