@@ -23,9 +23,9 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         throw Exception("Invalid number of players: " + std::to_string(pawn_num));
     }
 
-    pawn_data_t pawn_data;
 
     for (size_t i = 0; i < pawn_list.size(); ++i) {
+        pawn_data_t pawn_data;
         pawn_data.pawn = pawn_list[i];
 
         pawn_data.idx = pawn_idx_list[i];
