@@ -9,6 +9,7 @@
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/member.hpp>
+#include <boost/multi_index/tag.hpp>
 
 #include "board_graph.hpp"
 #include "node.hpp"
@@ -26,10 +27,17 @@ struct pawn_data_t {
     std::set<Node> goal_nodes;
 };
 
+struct by_pawn {};
+
 typedef boost::multi_index_container<
     pawn_data_t,
     boost::multi_index::indexed_by<
-        boost::multi_index::ordered_unique<boost::multi_index::member<pawn_data_t, int, &pawn_data_t::idx> >
+        boost::multi_index::ordered_unique<boost::multi_index::member<
+            pawn_data_t, int, &pawn_data_t::idx>>,
+        boost::multi_index::ordered_unique<
+            boost::multi_index::tag<by_pawn>,
+            boost::multi_index::member<
+                pawn_data_t, std::shared_ptr<Pawn>, &pawn_data_t::pawn>>
     >
 > pawn_data_list_t;
 
