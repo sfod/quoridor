@@ -89,6 +89,29 @@ TEST(pos_to_node_test, handle_positions_outside_window)
     EXPECT_EQ(8, n.col());
 }
 
+/*
+ 0 1 2 3 4 5 6 7 8 9
+9 - - - - - - - - - 9
+ | | | | | | | | | |
+8 - - - - - - - - - 8
+ | | | | | | | | | |
+7 - - - - - - - - - 7
+ | | | | | | | | | |
+6 - - - - - - - - - 6
+ | | | | | | | | | |
+5 - - - - - - - - - 5
+ | | | | |.| | | | |
+4 - - - - - - - - - 4
+ | | | | | | | | | |
+3 - - - - - - - - - 3
+ | | | | | | | | | |
+2 - - - - - - - - - 2
+ | | | | | | | | | |
+1 - - - - - - - - - 1
+ | | | | | | | | | |
+0 - - - - - - - - - 0
+ 0 1 2 3 4 5 6 7 8 9
+*/
 TEST(pos_to_wall_test, hendle_positions_within_board)
 {
     Quoridor::PosUtils pu(9, 52, 50);
@@ -98,7 +121,7 @@ TEST(pos_to_wall_test, hendle_positions_within_board)
     p.d_x.d_scale = 0.5;
     p.d_y.d_scale = 0.5;
     w = pu.pos_to_wall(p, 2);
-    EXPECT_EQ(4, w.line());
+    EXPECT_EQ(4, w.row());
 }
 
 int main(int argc, char **argv)
