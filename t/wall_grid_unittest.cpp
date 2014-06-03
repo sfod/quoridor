@@ -53,6 +53,13 @@ TEST_F(WallGridTest, add_vertical_walls_ending_on_border)
 
 TEST_F(WallGridTest, add_adjacent_walls)
 {
+    EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kHorizontal, 5, 4, 2)));
+    EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kVertical, 4, 6, 2)));
+    EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kVertical, 4, 4, 2)));
+    EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kHorizontal, 6, 3, 2)));
+    EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kHorizontal, 4, 5, 2)));
+    EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kHorizontal, 5, 2, 2)));
+    EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kHorizontal, 5, 6, 2)));
 }
 
 TEST_F(WallGridTest, add_walls_on_border)
