@@ -2,7 +2,7 @@
 
 #include "game_state.hpp"
 #include "main_menu_state.hpp"
-#include "player_factory.hpp"
+#include "player/player_factory.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
 

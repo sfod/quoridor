@@ -10,6 +10,8 @@ set(CORE_SOURCES
     node
     board_graph
     pawn
+)
+set(PLAYER_SOURCES
     player_factory
     player
     stupid_player
@@ -33,6 +35,10 @@ foreach (source ${MAIN_SOURCES})
 endforeach()
 foreach (source ${CORE_SOURCES})
     add_library(${source}_cxx_obj OBJECT ${source}.cpp)
+    LIST(APPEND SOURCES $<TARGET_OBJECTS:${source}_cxx_obj>)
+endforeach()
+foreach (source ${PLAYER_SOURCES})
+    add_library(${source}_cxx_obj OBJECT player/${source}.cpp)
     LIST(APPEND SOURCES $<TARGET_OBJECTS:${source}_cxx_obj>)
 endforeach()
 foreach (source ${STATE_SOURCES})

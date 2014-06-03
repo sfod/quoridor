@@ -5,7 +5,7 @@
 
 #include <boost/program_options.hpp>
 
-#include "player_factory.hpp"
+#include "player/player_factory.hpp"
 #include "exception.hpp"
 #include "logger.hpp"
 

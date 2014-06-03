@@ -17,7 +17,7 @@ StupidPlayer::StupidPlayer(std::shared_ptr<Game> game,
         std::shared_ptr<Pawn> pawn)
     : game_(game), pawn_(pawn), goal_nodes_(), gen_()
 {
-    lg.add_attribute("Tag", blattrs::constant<std::string>("fake player"));
+    lg.add_attribute("Tag", blattrs::constant<std::string>("stupid player"));
 
     goal_nodes_ = game_->pawn_data(pawn_).goal_nodes;
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));

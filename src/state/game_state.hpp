@@ -4,10 +4,10 @@
 #include <memory>
 #include <vector>
 
-#include "game.hpp"
-#include "iplayer.hpp"
 #include "istate.hpp"
-#include "player_factory.hpp"
+#include "game.hpp"
+#include "player/iplayer.hpp"
+#include "player/player_factory.hpp"
 #include "pos_utils.hpp"
 #include "state_manager.hpp"
 
