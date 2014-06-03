@@ -227,7 +227,7 @@ void GameState::draw_wall_()
 
     if (added_wall_.orientation() == Wall::kHorizontal) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            node.set_row(added_wall_.row());
+            node.set_row(added_wall_.row() - 1);
             node.set_col(added_wall_.col() + i);
             pos = pos_utils_.node_to_pos(node);
             pos.d_y.d_offset = -2.0;
@@ -243,7 +243,7 @@ void GameState::draw_wall_()
     else if (added_wall_.orientation() == Wall::kVertical) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
             node.set_row(added_wall_.row() + i);
-            node.set_col(added_wall_.col() + 1);
+            node.set_col(added_wall_.col());
             pos = pos_utils_.node_to_pos(node);
             pos.d_x.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
