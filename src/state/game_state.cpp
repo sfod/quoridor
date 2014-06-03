@@ -32,16 +32,25 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         throw Exception("Invalid number of players");
     }
 
+    for (size_t i = 0; i < player_types.size(); ++i) {
+        std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
+        pawn_list_.push_back(pawn);
+    }
+
+    try {
+        game_->set_pawns(pawn_list_);
+    }
+    catch (Exception &e) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::error) << "failed to create game: " << e.what();
+        throw;
+    }
+
     int i = 0;
     for (auto player_type : player_types) {
         BOOST_LOG_SEV(lg, boost::log::trivial::info) << "adding player " << player_type;
-        std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
-        players_[pawn] = pf_.make_player(player_type, game_, pawn);
-        pawn_list_.push_back(pawn);
+        players_[pawn_list_[i]] = pf_.make_player(player_type, game_, pawn_list_[i]);
         ++i;
     }
-
-    game_->set_pawns(pawn_list_);
 
     set_pawns_();
     init_walls_();
