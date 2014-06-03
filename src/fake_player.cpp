@@ -4,9 +4,12 @@
 
 #include <boost/random/discrete_distribution.hpp>
 
+#include "logger.hpp"
 #include "walk_move.hpp"
 #include "wall_move.hpp"
 #include "exception.hpp"
+
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 namespace Quoridor {
 
@@ -14,8 +17,15 @@ FakePlayer::FakePlayer(std::shared_ptr<Game> game,
         std::shared_ptr<Pawn> pawn)
     : game_(game), pawn_(pawn), goal_nodes_(), gen_()
 {
+    lg.add_attribute("Tag", blattrs::constant<std::string>("fake player"));
+
     goal_nodes_ = game_->pawn_data(pawn_).goal_nodes;
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));
+
+    BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "created new FakePlayer (" << pawn_->color() << ")";
+    for (auto node : goal_nodes_) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "goal node: " << node.row() << ":" << node.col();
+    }
 }
 
 FakePlayer::~FakePlayer()
