@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "iplayer.hpp"
-#include "board.hpp"
+#include "game.hpp"
 #include "pawn.hpp"
 
 namespace Quoridor {
@@ -17,7 +17,7 @@ public:
     ~PlayerFactory();
 
     std::shared_ptr<IPlayer> make_player(const std::string &type,
-            std::shared_ptr<Board> board, std::shared_ptr<Pawn> pawn);
+            std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
 
     static const std::vector<std::string> &types();
 };

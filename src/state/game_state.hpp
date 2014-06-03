@@ -4,12 +4,13 @@
 #include <memory>
 #include <vector>
 
-#include "board.hpp"
+#include "game.hpp"
 #include "iplayer.hpp"
 #include "istate.hpp"
 #include "player_factory.hpp"
-#include "state_manager.hpp"
 #include "pos_utils.hpp"
+#include "state_manager.hpp"
+
 #include "cegui_ext/draggable_window.hpp"
 
 namespace Quoridor {
@@ -63,7 +64,7 @@ private:
     std::shared_ptr<StateManager> stm_;
     std::shared_ptr<CEGUI::Window> win_;
     std::shared_ptr<CEGUI::Animation> anim_;
-    std::shared_ptr<Board> board_;
+    std::shared_ptr<Game> game_;
     PlayerFactory pf_;
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<IPlayer>> players_;
     std::vector<std::shared_ptr<Pawn>> pawn_list_;

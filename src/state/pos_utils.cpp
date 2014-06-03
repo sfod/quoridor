@@ -67,15 +67,15 @@ Wall PosUtils::pos_to_wall(const CEGUI::UVector2 &pos, int wall_size) const
 
     // make horizontal wall
     if (diff_y < diff_x) {
-        wall.set_orientation(0);
-        wall.set_line(node_cnt_ - 1 - round_y);
-        wall.set_start_pos(int_x);
+        wall.set_orientation(Wall::kHorizontal);
+        wall.set_row(node_cnt_ - 1 - round_y);
+        wall.set_col(int_x);
     }
     // make vertical wall
     else {
-        wall.set_orientation(1);
-        wall.set_line(round_x - 1);
-        wall.set_start_pos(node_cnt_ - 1 - int_y);
+        wall.set_orientation(Wall::kVertical);
+        wall.set_row(round_x - 1);
+        wall.set_col(node_cnt_ - 1 - int_y);
     }
 
     return wall;

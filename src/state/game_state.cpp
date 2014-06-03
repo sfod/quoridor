@@ -13,15 +13,17 @@ static boost::log::sources::severity_logger<boost::log::trivial::severity_level>
 namespace Quoridor {
 
 static std::vector<std::string> colors = {"red", "green", "blue", "yellow"};
-std::string GameState::name_("Game");
+std::string GameState::name_("Game State");
 
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
-    board_(new Board(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
-    drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(), added_wall_(0, 0, 0, 0), wall_idx_(0),
-    status_(kWaitingForMove), pos_utils_(9, 52, 50)
+    game_(new Game(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
+    drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(),
+    added_wall_(Wall::kInvalid, 0, 0, 0), wall_idx_(0),
+    status_(kWaitingForMove),
+    pos_utils_(9, 52, 50)
 {
-    lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
+    lg.add_attribute("Tag", blattrs::constant<std::string>("game state"));
 
     init_gui_();
     subscribe_for_events_();
@@ -30,14 +32,23 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
         throw Exception("Invalid number of players");
     }
 
+    for (size_t i = 0; i < player_types.size(); ++i) {
+        std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
+        pawn_list_.push_back(pawn);
+    }
+
+    try {
+        game_->set_pawns(pawn_list_);
+    }
+    catch (Exception &e) {
+        BOOST_LOG_SEV(lg, boost::log::trivial::error) << "failed to create game: " << e.what();
+        throw;
+    }
+
     int i = 0;
     for (auto player_type : player_types) {
-        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "adding player "
-            << player_type;
-        std::shared_ptr<Pawn> pawn(new Pawn(colors[i]));
-        board_->add_pawn(pawn);
-        players_[pawn] = pf_.make_player(player_type, board_, pawn);
-        pawn_list_.push_back(pawn);
+        BOOST_LOG_SEV(lg, boost::log::trivial::info) << "adding player " << player_type;
+        players_[pawn_list_[i]] = pf_.make_player(player_type, game_, pawn_list_[i]);
         ++i;
     }
 
@@ -137,21 +148,23 @@ void GameState::set_pawns_()
             CEGUI::Event::Subscriber(&GameState::handle_window_dropped_, this));
 
     CEGUI::Window *drag_win;
-    for (auto pawn : pawn_list_) {
-        if (players_[pawn]->is_interactive()) {
-            drag_win = new CEGUI_Ext::DraggableWindow("DefaultWindow", pawn->color());
-            drag_list_[pawn] = static_cast<CEGUI_Ext::DraggableWindow*>(drag_win);
-            drag_list_[pawn]->disable_drag();
-            pawn_wins_[drag_win] = pawn;
+    for (auto pawn_data : game_->pawn_data_list()) {
+        if (players_[pawn_data.pawn]->is_interactive()) {
+            drag_win = new CEGUI_Ext::DraggableWindow("DefaultWindow", pawn_data.pawn->color());
+            drag_list_[pawn_data.pawn] = static_cast<CEGUI_Ext::DraggableWindow*>(drag_win);
+            drag_list_[pawn_data.pawn]->disable_drag();
+            pawn_wins_[drag_win] = pawn_data.pawn;
         }
         else {
-            drag_win = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", pawn->color());
-            drag_win->subscribeEvent(CEGUI::AnimationInstance::EventAnimationEnded, CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
+            drag_win = CEGUI::WindowManager::getSingleton().
+                createWindow("DefaultWindow", pawn_data.pawn->color());
+            drag_win->subscribeEvent(
+                    CEGUI::AnimationInstance::EventAnimationEnded,
+                    CEGUI::Event::Subscriber(&GameState::handle_end_anim_, this));
         }
 
         drag_win->setSize(CEGUI::USize({0.1, 0}, {0.1, 0}));
-        Node node = board_->pawn_node(pawn);
-        CEGUI::UVector2 pos = pos_utils_.node_to_pos(node);
+        CEGUI::UVector2 pos = pos_utils_.node_to_pos(pawn_data.node);
         drag_win->setPosition(pos);
 
         auto pawn_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("pawn_anim.layout");
@@ -212,10 +225,10 @@ void GameState::draw_wall_()
     Node node;
     CEGUI::UVector2 pos;
 
-    if (added_wall_.orientation() == 0) {
+    if (added_wall_.orientation() == Wall::kHorizontal) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            node.set_row(added_wall_.line());
-            node.set_col(added_wall_.start_pos() + i);
+            node.set_row(added_wall_.row());
+            node.set_col(added_wall_.col() + i);
             pos = pos_utils_.node_to_pos(node);
             pos.d_y.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("horizontal_wall.layout");
@@ -224,13 +237,13 @@ void GameState::draw_wall_()
             ++wall_idx_;
             board_win->addChild(wall_win);
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added horizontal wall at "
-                << added_wall_.line() << ":" << added_wall_.start_pos() + i;
+                << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
-    else {
+    else if (added_wall_.orientation() == Wall::kVertical) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
-            node.set_row(added_wall_.start_pos() + i);
-            node.set_col(added_wall_.line() + 1);
+            node.set_row(added_wall_.row() + i);
+            node.set_col(added_wall_.col() + 1);
             pos = pos_utils_.node_to_pos(node);
             pos.d_x.d_offset = -2.0;
             auto wall_win = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("vertical_wall.layout");
@@ -239,7 +252,7 @@ void GameState::draw_wall_()
             ++wall_idx_;
             board_win->addChild(wall_win);
             BOOST_LOG_SEV(lg, boost::log::trivial::info) << "added vertiacl wall at "
-                << added_wall_.line() << ":" << added_wall_.start_pos() + i;
+                << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
 }
@@ -260,19 +273,8 @@ void GameState::post_process_move_()
 
 void GameState::switch_cur_pawn_()
 {
-    auto it = pawn_list_.begin();
-    for (;it != pawn_list_.end(); ++it) {
-        if (*it == cur_pawn_) {
-            break;
-        }
-    }
-
-    if ((it == pawn_list_.end()) || (++it == pawn_list_.end())) {
-        cur_pawn_ = pawn_list_[0];
-    }
-    else {
-        cur_pawn_ = *it;
-    }
+    game_->switch_pawn();
+    cur_pawn_ = game_->cur_pawn_data().pawn;
 }
 
 void GameState::make_move_()
@@ -289,27 +291,26 @@ void GameState::make_move_()
     }
 
     if (move != NULL) {
-        Node cur_node = board_->pawn_node(cur_pawn_);
+        Node cur_node = game_->cur_pawn_data().node;
         int rc;
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-            BOOST_LOG_SEV(lg, boost::log::trivial::info) << cur_pawn_->color()
+            BOOST_LOG_SEV(lg, boost::log::trivial::debug) << cur_pawn_->color()
                 << " move: " << cur_node.row() << ":" << cur_node.col()
                 << " -> " << walk_move->node().row() << ":"
                 << walk_move->node().col();
 
-            rc = board_->make_walking_move(cur_pawn_, walk_move->node());
+            rc = game_->move_pawn(walk_move->node());
             if (rc == 0) {
                 pawn_path_.push_back(cur_node);
-                pawn_path_.push_back(board_->pawn_node(cur_pawn_));
+                pawn_path_.push_back(game_->cur_pawn_data().node);
                 status_ = kNeedPawnRedraw;
             }
         }
         else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
-            const Wall &wall = wall_move->wall();
-            rc = board_->add_wall(wall);
+            rc = game_->add_wall(wall_move->wall());
             if (rc == 0) {
-                added_wall_ = wall;
+                added_wall_ = wall_move->wall();
                 status_ = kNeedDrawWall;
             }
         }
@@ -318,7 +319,7 @@ void GameState::make_move_()
 
 bool GameState::is_finished_() const
 {
-    return board_->is_at_goal_node(cur_pawn_);
+    return game_->is_finished();
 }
 
 void GameState::subscribe_for_events_()
@@ -373,13 +374,13 @@ bool GameState::handle_pawn_dropped_(const CEGUI_Ext::DragEvent &de)
         << node.row() << ":" << node.col();
 
     CEGUI::UVector2 pos;
-    int rc = board_->make_walking_move(cur_pawn_, node);
+    int rc = game_->move_pawn(node);
     if (rc == 0) {
         pos = pos_utils_.node_to_pos(node);
         status_ = kPerformedMove;
     }
     else {
-        Node cur_node = board_->pawn_node(cur_pawn_);
+        Node cur_node = game_->cur_pawn_data().node;
         pos = pos_utils_.node_to_pos(cur_node);
     }
 
@@ -396,9 +397,9 @@ bool GameState::handle_wall_dropped_(const CEGUI_Ext::DragEvent &de)
     );
     Wall wall = normalize_wall_pos_(rel_pos);
     BOOST_LOG_SEV(lg, boost::log::trivial::debug) << "adding wall: "
-        << wall.orientation() << ", " << wall.line() << ", "
-        << wall.start_pos();
-    int rc = board_->add_wall(wall);
+        << wall.orientation() << ", " << wall.row() << ", "
+        << wall.col();
+    int rc = game_->add_wall(wall);
     if (rc == 0) {
         added_wall_ = wall;
         status_ = kNeedDrawWall;

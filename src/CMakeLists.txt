@@ -2,11 +2,12 @@ set(MAIN_SOURCES
     main
 )
 set(CORE_SOURCES
+    game
     wall
+    wall_grid
     wall_move
     walk_move
     node
-    board
     board_graph
     pawn
     player_factory
