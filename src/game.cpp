@@ -176,7 +176,7 @@ int Game::try_add_wall(const Wall &wall,
             }
         }
     }
-    else {
+    else if (wall.orientation() == Wall::kVertical) {
         for (int i = 0; i < wall.cnt(); ++i) {
             node1 = Node(wall.row() + i, wall.col() - 1);
             node2 = Node(wall.row() + i, wall.col());
@@ -213,6 +213,9 @@ int Game::try_add_wall(const Wall &wall,
                 }
             }
         }
+    }
+    else {
+        return -1;
     }
 
     bool path_blocked = false;
