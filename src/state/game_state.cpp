@@ -23,7 +23,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     status_(kWaitingForMove),
     pos_utils_(9, 52, 50)
 {
-    lg.add_attribute("Tag", blattrs::constant<std::string>("game"));
+    lg.add_attribute("Tag", blattrs::constant<std::string>("game state"));
 
     init_gui_();
     subscribe_for_events_();
