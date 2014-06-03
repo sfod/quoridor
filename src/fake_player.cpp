@@ -51,7 +51,8 @@ IMove *FakePlayer::get_move()
         boost::random::discrete_distribution<> dist_2{8, 2};
         boost::random::uniform_int_distribution<> dist_9(0, 8);
         boost::random::discrete_distribution<> dist_8{1, 1, 2, 3, 3, 2, 1, 1};
-        return new WallMove(Wall(dist_2(gen_), dist_9(gen_), dist_8(gen_), 2));
+        Wall::Orientation wall_orient = dist_2(gen_) == 0 ? Wall::kHorizontal : Wall::kVertical;
+        return new WallMove(Wall(wall_orient, dist_9(gen_), dist_8(gen_), 2));
     }
 }
 
