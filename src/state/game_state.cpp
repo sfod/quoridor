@@ -225,6 +225,7 @@ void GameState::draw_wall_()
     Node node;
     CEGUI::UVector2 pos;
 
+    BOOST_LOG_INFO(lg) << "adding " << added_wall_;
     if (added_wall_.orientation() == Wall::kHorizontal) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
             node.set_row(added_wall_.row() - 1);
@@ -236,8 +237,6 @@ void GameState::draw_wall_()
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_INFO(lg) << "added horizontal wall at "
-                << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
     else if (added_wall_.orientation() == Wall::kVertical) {
@@ -251,8 +250,6 @@ void GameState::draw_wall_()
             wall_win->setName("wallWindow" + std::to_string(wall_idx_));
             ++wall_idx_;
             board_win->addChild(wall_win);
-            BOOST_LOG_INFO(lg) << "added vertiacl wall at "
-                << added_wall_.row() << ":" << added_wall_.col() + i;
         }
     }
 }
