@@ -1,6 +1,8 @@
 #ifndef QUORIDOR_WALL_HPP_
 #define QUORIDOR_WALL_HPP_
 
+#include <iostream>
+
 namespace Quoridor {
 
 class Wall {
@@ -32,6 +34,8 @@ private:
     int col_;
     int cnt_;
 };
+
+std::ostream &operator<<(std::ostream &os, const Quoridor::Wall &wall);
 
 }  /* namespace Quoridor */
 
