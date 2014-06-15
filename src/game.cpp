@@ -126,6 +126,21 @@ int Game::add_wall(const Wall &wall)
     return 0;
 }
 
+bool Game::is_finished() const
+{
+    Node cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
+    if (pawn_data_list_.find(cur_pawn_idx_)->goal_nodes.count(cur_node) != 0) {
+        return true;
+    }
+    return false;
+}
+
+bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
+        std::list<Node> *path) const
+{
+    return bg_.find_path(pawn_data(pawn).node, node, path);
+}
+
 int Game::try_add_wall(const Wall &wall,
         std::vector<std::pair<Node, Node>> *edges)
 {
@@ -240,21 +255,6 @@ int Game::try_add_wall(const Wall &wall,
     }
 
     return 0;
-}
-
-bool Game::is_finished() const
-{
-    Node cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
-    if (pawn_data_list_.find(cur_pawn_idx_)->goal_nodes.count(cur_node) != 0) {
-        return true;
-    }
-    return false;
-}
-
-bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
-        std::list<Node> *path) const
-{
-    return bg_.find_path(pawn_data(pawn).node, node, path);
 }
 
 }  // namespace Quoridor
