@@ -99,9 +99,7 @@ int Game::move_pawn(const Node &node)
     if (bg_.is_adjacent(cur_node, node)) {
         bg_.unblock_neighbours(cur_node);
         pawn_data_list_t::iterator it = pawn_data_list_.find(cur_pawn_idx_);
-        pawn_data_t pawn_data = *it;
-        pawn_data.node = node;
-        pawn_data_list_.replace(it, pawn_data);
+        pawn_data_list_.modify(it, [=](pawn_data_t &e){ e.node = node; });
         bg_.block_neighbours(node);
         return 0;
     }
