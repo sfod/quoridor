@@ -94,7 +94,7 @@ const pawn_data_t &Game::pawn_data(std::shared_ptr<Pawn> &pawn) const
 
 int Game::move_pawn(const Node &node)
 {
-    Node cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
+    const Node &cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
 
     if (bg_.is_adjacent(cur_node, node)) {
         bg_.unblock_neighbours(cur_node);
