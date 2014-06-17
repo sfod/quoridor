@@ -139,6 +139,13 @@ bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
     return bg_.find_path(pawn_data(pawn).node, node, path);
 }
 
+void Game::possible_moves(std::shared_ptr<Pawn> pawn, std::set<Node> *nodes,
+        std::vector<Wall> *walls) const
+{
+    bg_.get_neighbours(pawn_data_list_.get<by_pawn>().find(pawn)->node, nodes);
+    wg_.possible_walls(walls);
+}
+
 int Game::try_add_wall(const Wall &wall,
         std::vector<std::pair<Node, Node>> *edges)
 {

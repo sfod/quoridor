@@ -60,6 +60,9 @@ public:
     bool get_path(std::shared_ptr<Pawn> pawn, const Node &node,
             std::list<Node> *path) const;
 
+    void possible_moves(std::shared_ptr<Pawn> pawn, std::set<Node> *nodes,
+            std::vector<Wall> *walls) const;
+
 private:
     int try_add_wall(const Wall &wall,
             std::vector<std::pair<Node, Node>> *edges);
