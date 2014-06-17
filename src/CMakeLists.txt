@@ -15,6 +15,7 @@ set(PLAYER_SOURCES
     player_factory
     player
     stupid_player
+    middling_player
 )
 set(STATE_SOURCES
     main_menu_state
