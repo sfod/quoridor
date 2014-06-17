@@ -2,6 +2,7 @@
 #define QUORIDOR_WALL_GRID_HPP_
 
 #include <map>
+#include <vector>
 #include "node.hpp"
 #include "wall.hpp"
 
@@ -15,6 +16,8 @@ public:
     int add_wall(const Wall &wall);
     int add_tmp_wall(const Wall &wall);
     void apply_tmp_wall();
+
+    void possible_walls(std::vector<Wall> *walls) const;
 
 private:
     std::map<Node, int> occupied_nodes_;

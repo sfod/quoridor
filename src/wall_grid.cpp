@@ -118,4 +118,9 @@ void WallGrid::apply_tmp_wall()
     tmp_occupied_nodes_.clear();
 }
 
+void WallGrid::possible_walls(std::vector<Wall> *walls) const
+{
+    (void) walls;
+}
+
 }  // namespace Quoridor
