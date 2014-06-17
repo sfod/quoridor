@@ -204,6 +204,22 @@ void BoardGraph::unblock_neighbours(const Node &node)
     }
 }
 
+void BoardGraph::get_neighbours(const Node &node,
+        std::set<Node> *node_list) const
+{
+    IndexMap index = get(boost::vertex_index, g_);
+    int inode = node.row() * col_num_ + node.col();
+    Node neighbour_node;
+
+    std::pair<adjacency_iterator, adjacency_iterator> neighbours =
+        boost::adjacent_vertices(boost::vertex(inode, g_), g_);
+    for (; neighbours.first != neighbours.second; ++ neighbours.first) {
+        neighbour_node.set_row((int) index[*neighbours.first] / row_num_);
+        neighbour_node.set_col((int) index[*neighbours.first] % col_num_);
+        node_list->insert(neighbour_node);
+    }
+}
+
 bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
         std::list<Node> *path) const
 {
