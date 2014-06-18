@@ -92,7 +92,8 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
         Game game_cp = game;
         game_cp.move_pawn(node);
         if (game_cp.is_finished()) {
-            return -1.0f;
+            b = -1.0f;
+            return b;
         }
         else if (depth < kLookForward) {
             game_cp.switch_pawn();
