@@ -139,11 +139,20 @@ bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
     return bg_.find_path(pawn_data(pawn).node, node, path);
 }
 
-void Game::possible_moves(std::shared_ptr<Pawn> pawn, std::set<Node> *nodes,
-        std::vector<Wall> *walls) const
+void Game::possible_moves(std::shared_ptr<Pawn> pawn,
+        std::vector<IMove*> *moves) const
 {
-    bg_.get_neighbours(pawn_data_list_.get<by_pawn>().find(pawn)->node, nodes);
-    wg_.possible_walls(walls);
+    std::set<Node> nodes;
+    bg_.get_neighbours(pawn_data_list_.get<by_pawn>().find(pawn)->node, &nodes);
+    for (auto node : nodes) {
+        moves->push_back(new WalkMove(node));
+    }
+
+    std::vector<Wall> walls;
+    wg_.possible_walls(&walls);
+    for (auto wall : walls) {
+        moves->push_back(new WallMove(wall));
+    }
 }
 
 int Game::try_add_wall(const Wall &wall,
