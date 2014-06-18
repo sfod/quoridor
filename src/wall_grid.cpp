@@ -41,7 +41,7 @@ int WallGrid::add_wall(const Wall &wall)
     return -1;
 }
 
-int WallGrid::add_tmp_wall(const Wall &wall)
+int WallGrid::add_tmp_wall(const Wall &wall) const
 {
     int rc = 0;
 
@@ -95,7 +95,7 @@ int WallGrid::add_tmp_wall(const Wall &wall)
         }
 
         if ((occupied_nodes_.count(node) == 0)
-                || ((occupied_nodes_[node] & occ_side) == 0)) {
+                || ((occupied_nodes_.at(node) & occ_side) == 0)) {
             tmp_occupied_nodes_[node] = occ_side;
         }
         // new wall intersects with earlier added wall
@@ -120,7 +120,23 @@ void WallGrid::apply_tmp_wall()
 
 void WallGrid::possible_walls(std::vector<Wall> *walls) const
 {
-    (void) walls;
+    Wall w;
+    for (int i = 0; i < size_; ++i) {
+        for (int j = 0; j < size_; ++j) {
+            w.set_orientation(Wall::kHorizontal);
+            w.set_row(i);
+            w.set_col(j);
+            w.set_cnt(2);
+            if (add_tmp_wall(w) == 0) {
+                walls->push_back(w);
+            }
+
+            w.set_orientation(Wall::kVertical);
+            if (add_tmp_wall(w) == 0) {
+                walls->push_back(w);
+            }
+        }
+    }
 }
 
 }  // namespace Quoridor

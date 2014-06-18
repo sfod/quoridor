@@ -14,14 +14,14 @@ public:
     virtual ~WallGrid();
 
     int add_wall(const Wall &wall);
-    int add_tmp_wall(const Wall &wall);
+    int add_tmp_wall(const Wall &wall) const;
     void apply_tmp_wall();
 
     void possible_walls(std::vector<Wall> *walls) const;
 
 private:
     std::map<Node, int> occupied_nodes_;
-    std::map<Node, int> tmp_occupied_nodes_;
+    mutable std::map<Node, int> tmp_occupied_nodes_;
     int size_;
 };
 
