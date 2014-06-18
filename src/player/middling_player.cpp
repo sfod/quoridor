@@ -35,38 +35,56 @@ MiddlingPlayer::~MiddlingPlayer()
 
 IMove *MiddlingPlayer::get_move()
 {
-    Node n(-1, -1);
+    IMove *move = NULL;
     kMinimaxNodes = 0;
-    double v = get_max_move(*game_, 0, -100, 100, &n);
-    BOOST_LOG_DEBUG(lg) << "best move is " << n.row() << ":" << n.col()
-        << " (" << v << ") in " << kMinimaxNodes << " moves";
-    return new WalkMove(n);
+    double v = get_max_move(*game_, 0, -100, 100, &move);
+    BOOST_LOG_DEBUG(lg) << "got k " << v << " (analyzed " << kMinimaxNodes
+        << " nodes)";
+    if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
+        BOOST_LOG_DEBUG(lg) << "best move is " << m->node().row() << ":"
+            << m->node().col();
+    }
+    else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
+        BOOST_LOG_DEBUG(lg) << "best move is " << m->wall();
+    }
+    return move;
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth,
-        double a, double b, Node *n)
+        double a, double b, IMove **best_move)
 {
     ++kMinimaxNodes;
 
-    std::set<Node> moves;
-    game.possible_moves(pawn_, &moves, NULL);
-    for (auto node : moves) {
+    std::vector<IMove*> moves;
+    game.possible_moves(pawn_, &moves);
+    for (auto move : moves) {
         Game game_cp = game;
-        game_cp.move_pawn(node);
-        if (game_cp.is_finished()) {
-            if (n != NULL) {
-                *n = node;
+        if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
+            game_cp.move_pawn(m->node());
+            if (game_cp.is_finished()) {
+                if (best_move != NULL) {
+                    *best_move = new WalkMove(*m);
+                }
+                a = 1.0f;
+                return a;
             }
-            a = 1.0f;
-            return a;
         }
-        else if (depth < kLookForward) {
+        else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
+            game_cp.add_wall(m->wall());
+        }
+
+        if (depth < kLookForward) {
             game_cp.switch_pawn();
             double val = get_min_move(game_cp, depth + 1, a, b);
             if (val > a) {
                 a = val;
-                if (n != NULL) {
-                    *n = node;
+                if (best_move != NULL) {
+                    if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
+                        *best_move = new WalkMove(*m);
+                    }
+                    else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
+                        *best_move = new WallMove(*m);
+                    }
                 }
             }
             if (b <= a) {
@@ -86,16 +104,22 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 {
     ++kMinimaxNodes;
 
-    std::set<Node> moves;
-    game.possible_moves(game.cur_pawn_data().pawn, &moves, NULL);
-    for (auto node : moves) {
+    std::vector<IMove*> moves;
+    game.possible_moves(pawn_, &moves);
+    for (auto move : moves) {
         Game game_cp = game;
-        game_cp.move_pawn(node);
-        if (game_cp.is_finished()) {
-            b = -1.0f;
-            return b;
+        if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
+            game_cp.move_pawn(m->node());
+            if (game_cp.is_finished()) {
+                b = -1.0f;
+                return b;
+            }
         }
-        else if (depth < kLookForward) {
+        else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
+            game_cp.add_wall(m->wall());
+        }
+
+        if (depth < kLookForward) {
             game_cp.switch_pawn();
             b = std::min(b, get_max_move(game_cp, depth + 1, a, b, NULL));
             if (b <= a) {

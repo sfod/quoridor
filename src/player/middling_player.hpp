@@ -20,7 +20,7 @@ public:
 
 private:
     double get_max_move(const Game &game, int depth, double a, double b,
-            Node *n);
+            IMove **best_move);
     double get_min_move(const Game &game, int depth, double a, double b);
     double evaluate(const Game &game) const;
 
