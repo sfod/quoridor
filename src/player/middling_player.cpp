@@ -70,7 +70,9 @@ double MiddlingPlayer::get_max_move(const Game &game, int depth,
             }
         }
         else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-            game_cp.add_wall(m->wall());
+            if (game_cp.add_wall(m->wall()) < 0) {
+                continue;
+            }
         }
 
         if (depth < kLookForward) {
@@ -116,7 +118,9 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
             }
         }
         else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-            game_cp.add_wall(m->wall());
+            if (game_cp.add_wall(m->wall()) < 0) {
+                continue;
+            }
         }
 
         if (depth < kLookForward) {
