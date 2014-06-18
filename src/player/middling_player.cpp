@@ -34,37 +34,40 @@ MiddlingPlayer::~MiddlingPlayer()
 
 IMove *MiddlingPlayer::get_move()
 {
-    double v = get_max_move(*game_, 0);
-    BOOST_LOG_DEBUG(lg) << "max move val is " << v;
-    IMove *move;
-    for (auto goal_node : goal_nodes_) {
-        std::list<Node> path;
-        game_->get_path(pawn_, goal_node, &path);
-        auto node_it = path.begin();
-        Node next_node = *node_it;
-        move = new WalkMove(next_node);
-    }
-    return move;
+    Node n(-1, -1);
+    double v = get_max_move(*game_, 0, &n);
+    BOOST_LOG_DEBUG(lg) << "best move is " << n.row() << ":" << n.col()
+        << " (" << v << ")";
+    return new WalkMove(n);
 }
 
-double MiddlingPlayer::get_max_move(const Game &game, int lvl)
+double MiddlingPlayer::get_max_move(const Game &game, int lvl, Node *n)
 {
     double best_val = -100;
 
     std::set<Node> moves;
     game.possible_moves(pawn_, &moves, NULL);
     for (auto node : moves) {
-        Game game = *game_;
-        game.move_pawn(node);
-        if (game.is_finished()) {
+        Game game_cp = game;
+        game_cp.move_pawn(node);
+        if (game_cp.is_finished()) {
+            if (n != NULL) {
+                *n = node;
+            }
             return 1.0f;
         }
         else if (lvl < kMaxLevel) {
-            game.switch_pawn();
-            best_val = std::max(best_val, get_min_move(game, lvl + 1));
+            game_cp.switch_pawn();
+            double val = get_min_move(game_cp, lvl + 1);
+            if (val > best_val) {
+                best_val = val;
+                if (n != NULL) {
+                    *n = node;
+                }
+            }
         }
         else {
-            return evaluate(game);
+            return evaluate(game_cp);
         }
     }
 
@@ -76,19 +79,19 @@ double MiddlingPlayer::get_min_move(const Game &game, int lvl)
     double best_val = 100;
 
     std::set<Node> moves;
-    game.possible_moves(pawn_, &moves, NULL);
+    game.possible_moves(game.cur_pawn_data().pawn, &moves, NULL);
     for (auto node : moves) {
-        Game game = *game_;
-        game.move_pawn(node);
-        if (game.is_finished()) {
+        Game game_cp = game;
+        game_cp.move_pawn(node);
+        if (game_cp.is_finished()) {
             return -1.0f;
         }
         else if (lvl < kMaxLevel) {
-            game.switch_pawn();
-            best_val = std::min(best_val, get_max_move(game, lvl + 1));
+            game_cp.switch_pawn();
+            best_val = std::min(best_val, get_max_move(game_cp, lvl + 1, NULL));
         }
         else {
-            return evaluate(game);
+            return evaluate(game_cp);
         }
     }
 
