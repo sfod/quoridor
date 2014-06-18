@@ -47,45 +47,48 @@ IMove *MiddlingPlayer::get_move()
     return move;
 }
 
-move_val_t MiddlingPlayer::get_max_move(const Game &game, int lvl)
+double MiddlingPlayer::get_max_move(const Game &game, int lvl)
 {
-    move_val_t mv;
-    mv.v = -1000;
+    double best_val = -100;
 
     std::set<Node> moves;
     game.possible_moves(pawn_, &moves, NULL);
     for (auto node : moves) {
         Game game = *game_;
-        mv.n = node;
-        game.switch_pawn();
         game.move_pawn(node);
-        if (lvl < kMaxLevel) {
-            mv.v = std::max(mv.v, get_min_move(game, lvl + 1).v);
+        if (game.is_finished()) {
+            return 1.0f;
+        }
+        else if (lvl < kMaxLevel) {
+            game.switch_pawn();
+            best_val = std::max(best_val, get_min_move(game, lvl + 1));
         }
         else {
             return evaluate(game);
         }
     }
 
-    return mv;
+    return best_val;
 }
 
-move_val_t MiddlingPlayer::get_min_move(const Game &game, int lvl)
+double MiddlingPlayer::get_min_move(const Game &game, int lvl)
 {
-    double best_val = 1000;
+    double best_val = 100;
 
     std::set<Node> moves;
     game.possible_moves(pawn_, &moves, NULL);
     for (auto node : moves) {
         Game game = *game_;
-        game.switch_pawn();
         game.move_pawn(node);
-        evaluate(game);
-        if (lvl < kMaxLevel) {
+        if (game.is_finished()) {
+            return -1.0f;
+        }
+        else if (lvl < kMaxLevel) {
+            game.switch_pawn();
             best_val = std::min(best_val, get_max_move(game, lvl + 1));
         }
         else {
-            return -evaluate(game);
+            return evaluate(game);
         }
     }
 
@@ -94,17 +97,29 @@ move_val_t MiddlingPlayer::get_min_move(const Game &game, int lvl)
 
 double MiddlingPlayer::evaluate(const Game &game) const
 {
-    double val = 73;
+    double max_k = 0;
 
     for (auto goal_node : goal_nodes_) {
         std::list<Node> path;
-        game.get_path(game.cur_pawn_data().pawn, goal_node, &path);
+        game.get_path(pawn_, goal_node, &path);
         double k = 1 / static_cast<double>(path.size());
-        if (k < val) {
-            val = k;
+        max_k = std::max(k, max_k);
+    }
+
+    double rival_max_k = 0;
+    for (auto pawn_data : game.pawn_data_list()) {
+        if (pawn_data.pawn == pawn_) {
+            continue;
+        }
+        for (auto goal_node : pawn_data.goal_nodes) {
+            std::list<Node> path;
+            game.get_path(pawn_data.pawn, goal_node, &path);
+            double k = 1 / static_cast<double>(path.size());
+            rival_max_k = std::max(k, rival_max_k);
         }
     }
-    return val;
+
+    return max_k - rival_max_k;
 }
 
 }  /* namespace Quoridor */

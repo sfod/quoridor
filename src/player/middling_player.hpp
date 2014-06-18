@@ -10,11 +10,6 @@
 
 namespace Quoridor {
 
-struct move_val_t {
-    Node n;
-    double v;
-};
-
 class MiddlingPlayer : public IPlayer {
 public:
     MiddlingPlayer(std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
@@ -24,8 +19,8 @@ public:
     virtual bool is_interactive() const { return false; };
 
 private:
-    move_val_t get_max_move(const Game &game, int lvl);
-    move_val_t get_min_move(const Game &game, int lvl);
+    double get_max_move(const Game &game, int lvl);
+    double get_min_move(const Game &game, int lvl);
     double evaluate(const Game &game) const;
 
 private:
