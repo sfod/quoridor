@@ -10,7 +10,7 @@
 #include "exception.hpp"
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
-static int kMaxLevel = 3;
+static int kLookForward = 3;
 
 namespace Quoridor {
 
@@ -41,7 +41,7 @@ IMove *MiddlingPlayer::get_move()
     return new WalkMove(n);
 }
 
-double MiddlingPlayer::get_max_move(const Game &game, int lvl, Node *n)
+double MiddlingPlayer::get_max_move(const Game &game, int depth, Node *n)
 {
     double best_val = -100;
 
@@ -56,9 +56,9 @@ double MiddlingPlayer::get_max_move(const Game &game, int lvl, Node *n)
             }
             return 1.0f;
         }
-        else if (lvl < kMaxLevel) {
+        else if (depth < kLookForward) {
             game_cp.switch_pawn();
-            double val = get_min_move(game_cp, lvl + 1);
+            double val = get_min_move(game_cp, depth + 1);
             if (val > best_val) {
                 best_val = val;
                 if (n != NULL) {
@@ -74,7 +74,7 @@ double MiddlingPlayer::get_max_move(const Game &game, int lvl, Node *n)
     return best_val;
 }
 
-double MiddlingPlayer::get_min_move(const Game &game, int lvl)
+double MiddlingPlayer::get_min_move(const Game &game, int depth)
 {
     double best_val = 100;
 
@@ -86,9 +86,9 @@ double MiddlingPlayer::get_min_move(const Game &game, int lvl)
         if (game_cp.is_finished()) {
             return -1.0f;
         }
-        else if (lvl < kMaxLevel) {
+        else if (depth < kLookForward) {
             game_cp.switch_pawn();
-            best_val = std::min(best_val, get_max_move(game_cp, lvl + 1, NULL));
+            best_val = std::min(best_val, get_max_move(game_cp, depth + 1, NULL));
         }
         else {
             return evaluate(game_cp);
