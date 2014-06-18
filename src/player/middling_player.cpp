@@ -37,17 +37,16 @@ IMove *MiddlingPlayer::get_move()
 {
     Node n(-1, -1);
     kMinimaxNodes = 0;
-    double v = get_max_move(*game_, 0, &n);
+    double v = get_max_move(*game_, 0, -100, 100, &n);
     BOOST_LOG_DEBUG(lg) << "best move is " << n.row() << ":" << n.col()
-        << " (" << v << "), analyzed " << kMinimaxNodes << " nodes";
+        << " (" << v << ") in " << kMinimaxNodes << " moves";
     return new WalkMove(n);
 }
 
-double MiddlingPlayer::get_max_move(const Game &game, int depth, Node *n)
+double MiddlingPlayer::get_max_move(const Game &game, int depth,
+        double a, double b, Node *n)
 {
     ++kMinimaxNodes;
-
-    double best_val = -100;
 
     std::set<Node> moves;
     game.possible_moves(pawn_, &moves, NULL);
@@ -58,16 +57,20 @@ double MiddlingPlayer::get_max_move(const Game &game, int depth, Node *n)
             if (n != NULL) {
                 *n = node;
             }
-            return 1.0f;
+            a = 1.0f;
+            return a;
         }
         else if (depth < kLookForward) {
             game_cp.switch_pawn();
-            double val = get_min_move(game_cp, depth + 1);
-            if (val > best_val) {
-                best_val = val;
+            double val = get_min_move(game_cp, depth + 1, a, b);
+            if (val > a) {
+                a = val;
                 if (n != NULL) {
                     *n = node;
                 }
+            }
+            if (b <= a) {
+                return a;
             }
         }
         else {
@@ -75,14 +78,13 @@ double MiddlingPlayer::get_max_move(const Game &game, int depth, Node *n)
         }
     }
 
-    return best_val;
+    return a;
 }
 
-double MiddlingPlayer::get_min_move(const Game &game, int depth)
+double MiddlingPlayer::get_min_move(const Game &game, int depth,
+        double a, double b)
 {
     ++kMinimaxNodes;
-
-    double best_val = 100;
 
     std::set<Node> moves;
     game.possible_moves(game.cur_pawn_data().pawn, &moves, NULL);
@@ -94,14 +96,17 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth)
         }
         else if (depth < kLookForward) {
             game_cp.switch_pawn();
-            best_val = std::min(best_val, get_max_move(game_cp, depth + 1, NULL));
+            b = std::min(b, get_max_move(game_cp, depth + 1, a, b, NULL));
+            if (b <= a) {
+                return b;
+            }
         }
         else {
             return evaluate(game_cp);
         }
     }
 
-    return best_val;
+    return b;
 }
 
 double MiddlingPlayer::evaluate(const Game &game) const

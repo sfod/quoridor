@@ -19,8 +19,9 @@ public:
     virtual bool is_interactive() const { return false; };
 
 private:
-    double get_max_move(const Game &game, int depth, Node *n);
-    double get_min_move(const Game &game, int depth);
+    double get_max_move(const Game &game, int depth, double a, double b,
+            Node *n);
+    double get_min_move(const Game &game, int depth, double a, double b);
     double evaluate(const Game &game) const;
 
 private:
