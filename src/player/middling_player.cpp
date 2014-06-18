@@ -11,6 +11,7 @@
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 static int kLookForward = 3;
+static int kMinimaxNodes = 0;
 
 namespace Quoridor {
 
@@ -35,14 +36,17 @@ MiddlingPlayer::~MiddlingPlayer()
 IMove *MiddlingPlayer::get_move()
 {
     Node n(-1, -1);
+    kMinimaxNodes = 0;
     double v = get_max_move(*game_, 0, &n);
     BOOST_LOG_DEBUG(lg) << "best move is " << n.row() << ":" << n.col()
-        << " (" << v << ")";
+        << " (" << v << "), analyzed " << kMinimaxNodes << " nodes";
     return new WalkMove(n);
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth, Node *n)
 {
+    ++kMinimaxNodes;
+
     double best_val = -100;
 
     std::set<Node> moves;
@@ -76,6 +80,8 @@ double MiddlingPlayer::get_max_move(const Game &game, int depth, Node *n)
 
 double MiddlingPlayer::get_min_move(const Game &game, int depth)
 {
+    ++kMinimaxNodes;
+
     double best_val = 100;
 
     std::set<Node> moves;
