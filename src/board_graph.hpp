@@ -17,7 +17,7 @@ typedef boost::adjacency_list< boost::listS, boost::vecS,
         boost::undirectedS, boost::no_property,
         boost::property<boost::edge_weight_t, int> > graph_t;
 typedef boost::property_map<graph_t, boost::edge_weight_t>::type WeightMap;
-typedef graph_t::vertex_descriptor vertex;
+typedef graph_t::vertex_descriptor vertex_descriptor;
 typedef graph_t::edge_descriptor edge_descriptor;
 typedef std::pair<int, int> edge;
 
