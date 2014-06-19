@@ -3,6 +3,27 @@ include_directories(${${PROJECT}_SOURCE_DIR}/src)
 include_directories(${${PROJECT}_SOURCE_DIR}/src/state)
 include_directories(/usr/local/cegui/include/cegui-0/)
 
+# game test
+set(TEST_TARGET game_test)
+set(TEST_TARGET_ADDITIONAL_LIBS boost_log boost_log_setup boost_thread boost_system pthread)
+add_executable(${TEST_TARGET}
+    $<TARGET_OBJECTS:game_cxx_obj>
+    $<TARGET_OBJECTS:wall_cxx_obj>
+    $<TARGET_OBJECTS:wall_grid_cxx_obj>
+    $<TARGET_OBJECTS:wall_move_cxx_obj>
+    $<TARGET_OBJECTS:walk_move_cxx_obj>
+    $<TARGET_OBJECTS:node_cxx_obj>
+    $<TARGET_OBJECTS:board_graph_cxx_obj>
+    $<TARGET_OBJECTS:pawn_cxx_obj>
+    mock_player.cpp
+    game_test.cpp)
+target_link_libraries(${TEST_TARGET} ${TEST_TARGET_ADDITIONAL_LIBS})
+set_target_properties(${TEST_TARGET} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+add_test(NAME game_test
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    COMMAND ./game_test)
+
 # wall grid unittests
 set(TEST_TARGET wall_grid_unittest)
 set(TEST_TARGET_ADDITIONAL_LIBS gtest)
