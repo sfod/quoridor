@@ -256,18 +256,10 @@ bool BoardGraph::is_adjacent(const Node &node1, const Node &node2) const
 {
     int inode1 = node1.row() * col_num_ + node1.col();
     int inode2 = node2.row() * col_num_ + node2.col();
-
-    IndexMap index = get(boost::vertex_index, g_);
-    std::pair<adjacency_iterator, adjacency_iterator> neighbours =
-        boost::adjacent_vertices(boost::vertex(inode1, g_), g_);
-
-    for (; neighbours.first != neighbours.second; ++ neighbours.first) {
-        if ((int) index[*neighbours.first] == inode2) {
-            return true;
-        }
-    }
-
-    return false;
+    edge_descriptor e;
+    bool b;
+    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
+    return b;
 }
 
 void BoardGraph::filter_edges(const Node &node1, const Node &node2)
