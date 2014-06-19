@@ -78,7 +78,6 @@ private:
     int row_num_;
     int col_num_;
     graph_t g_;
-    std::vector<int> nodes_;
     std::set<edge> edges_;
     FilterEdges fe_;
 };

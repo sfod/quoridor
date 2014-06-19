@@ -42,7 +42,7 @@ void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
 }
 
 BoardGraph::BoardGraph(int row_num, int col_num)
-    : row_num_(row_num), col_num_(col_num), g_(), nodes_(), edges_(), fe_()
+    : row_num_(row_num), col_num_(col_num), g_(), edges_(), fe_()
 {
     if ((row_num <= 0) || (col_num <= 0)) {
         throw Exception("invalid size");
@@ -50,8 +50,9 @@ BoardGraph::BoardGraph(int row_num, int col_num)
 
     g_ = graph_t(row_num * col_num);
 
+    std::vector<int> nodes;
     for (int i = 0; i < row_num * col_num; ++i) {
-        nodes_.push_back(i);
+        nodes.push_back(i);
     }
 
     int nidx;
@@ -59,19 +60,19 @@ BoardGraph::BoardGraph(int row_num, int col_num)
         for (int j = 0; j < col_num; ++j) {
             if (j != 0) {
                 nidx = i * col_num + j - 1;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
             }
             if (j != col_num - 1) {
                 nidx = i * col_num + j + 1;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
             }
             if (i != 0) {
                 nidx = (i - 1) * col_num + j;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
             }
             if (i != row_num - 1) {
                 nidx = (i + 1) * col_num + j;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
             }
         }
     }
