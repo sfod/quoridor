@@ -66,16 +66,16 @@ public:
 
     bool find_path(const Node &start_node, const Node &end_node,
             std::list<Node> *path) const;
-    bool is_adjacent(const Node &node1, const Node &node2) const;
+    bool is_adjacent(const Node &from_node, const Node &to_node) const;
 
     void filter_edges(const Node &node1, const Node &node2);
     void reset_filters();
     bool is_path_exists(const Node &node1, const Node &node2) const;
 
 private:
-    bool is_neighbours(int inode1, int inode2) const;
-    void block_edge(int inode1, int inode2);
-    void unblock_edge(int inode1, int inode2);
+    bool is_adjacent(int from_inode, int to_inode) const;
+    bool block_edge(int from_inode, int to_inode);
+    bool unblock_edge(int from_inode, int to_inode);
 
 private:
     int row_num_;

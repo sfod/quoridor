@@ -112,23 +112,19 @@ void BoardGraph::block_neighbours(const Node &node)
     int nf = 0;
     std::map<int, int> neighbours;
 
-    if (is_neighbours(inode, inode - 1)) {
-        block_edge(inode - 1, inode);
+    if (block_edge(inode - 1, inode)) {
         nf |= 1;
         neighbours[0] = inode - 1;
     }
-    if (is_neighbours(inode, inode + 1)) {
-        block_edge(inode + 1, inode);
+    if (block_edge(inode + 1, inode)) {
         nf |= 4;
         neighbours[2] = inode + 1;
     }
-    if (is_neighbours(inode, inode - col_num_)) {
-        block_edge(inode - col_num_, inode);
+    if (block_edge(inode - col_num_, inode)) {
         nf |= 2;
         neighbours[1] = inode - col_num_;
     }
-    if (is_neighbours(inode, inode + col_num_)) {
-        block_edge(inode + col_num_, inode);
+    if (block_edge(inode + col_num_, inode)) {
         nf |= 8;
         neighbours[3] = inode + col_num_;
     }
@@ -159,23 +155,19 @@ void BoardGraph::unblock_neighbours(const Node &node)
     int nf = 0;
     std::map<int, int> neighbours;
 
-    if (is_neighbours(inode, inode - 1)) {
-        unblock_edge(inode - 1, inode);
+    if (unblock_edge(inode - 1, inode)) {
         nf |= 1;
         neighbours[0] = inode - 1;
     }
-    if (is_neighbours(inode, inode + 1)) {
-        unblock_edge(inode + 1, inode);
+    if (unblock_edge(inode + 1, inode)) {
         nf |= 4;
         neighbours[2] = inode + 1;
     }
-    if (is_neighbours(inode, inode - col_num_)) {
-        unblock_edge(inode - col_num_, inode);
+    if (unblock_edge(inode - col_num_, inode)) {
         nf |= 2;
         neighbours[1] = inode - col_num_;
     }
-    if (is_neighbours(inode, inode + col_num_)) {
-        unblock_edge(inode + col_num_, inode);
+    if (unblock_edge(inode + col_num_, inode)) {
         nf |= 8;
         neighbours[3] = inode + col_num_;
     }
@@ -249,14 +241,11 @@ bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
     return false;
 }
 
-bool BoardGraph::is_adjacent(const Node &node1, const Node &node2) const
+bool BoardGraph::is_adjacent(const Node &from_node, const Node &to_node) const
 {
-    int inode1 = node1.row() * col_num_ + node1.col();
-    int inode2 = node2.row() * col_num_ + node2.col();
-    edge_descriptor e;
-    bool b;
-    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
-    return b;
+    int from_inode = from_node.row() * col_num_ + from_node.col();
+    int to_inode = to_node.row() * col_num_ + to_node.col();
+    return is_adjacent(from_inode, to_inode);
 }
 
 void BoardGraph::filter_edges(const Node &node1, const Node &node2)
@@ -306,33 +295,35 @@ bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node) co
     return false;
 }
 
-bool BoardGraph::is_neighbours(int inode1, int inode2) const
+bool BoardGraph::is_adjacent(int from_inode, int to_inode) const
 {
     edge_descriptor e;
     bool b;
-    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
+    boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
     return b;
 }
 
-void BoardGraph::block_edge(int inode1, int inode2)
+bool BoardGraph::block_edge(int from_inode, int to_inode)
 {
     edge_descriptor ed;
     bool b;
 
-    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
+    boost::tie(ed, b) = boost::edge(from_inode, to_inode, g_);
     if (b) {
         g_.remove_edge(ed);
     }
+
+    return b;
 }
 
-void BoardGraph::unblock_edge(int inode1, int inode2)
+bool BoardGraph::unblock_edge(int from_inode, int to_inode)
 {
     WeightMap weightmap = boost::get(boost::edge_weight, g_);
     edge_descriptor e;
     bool b;
-
-    boost::tie(e, b) = boost::add_edge(inode1, inode2, g_);
+    boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
     weightmap[e] = 1;
+    return b;
 }
 
 }  /* namespace Quoridor */
