@@ -205,13 +205,15 @@ void BoardGraph::get_neighbours(const Node &node,
 {
     IndexMap index = get(boost::vertex_index, g_);
     int inode = node.row() * col_num_ + node.col();
+    vertex_descriptor v = boost::vertex(inode, g_);
     Node neighbour_node;
 
-    std::pair<adjacency_iterator, adjacency_iterator> neighbours =
-        boost::adjacent_vertices(boost::vertex(inode, g_), g_);
-    for (; neighbours.first != neighbours.second; ++ neighbours.first) {
-        neighbour_node.set_row((int) index[*neighbours.first] / row_num_);
-        neighbour_node.set_col((int) index[*neighbours.first] % col_num_);
+    adjacency_iterator it;
+    adjacency_iterator it_end;
+    for (boost::tie(it, it_end) = boost::adjacent_vertices(v, g_);
+            it != it_end; ++ it) {
+        neighbour_node.set_row(index[*it] / row_num_);
+        neighbour_node.set_col(index[*it] % col_num_);
         node_list->insert(neighbour_node);
     }
 }
