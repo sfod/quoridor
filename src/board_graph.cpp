@@ -106,7 +106,7 @@ void BoardGraph::remove_edges(const Node &node1, const Node &node2)
     }
 }
 
-void BoardGraph::block_neighbours(const Node &node)
+void BoardGraph::block_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
     int nf = 0;
@@ -149,7 +149,7 @@ void BoardGraph::block_neighbours(const Node &node)
     }
 }
 
-void BoardGraph::unblock_neighbours(const Node &node)
+void BoardGraph::unblock_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
     int nf = 0;
@@ -192,8 +192,8 @@ void BoardGraph::unblock_neighbours(const Node &node)
     }
 }
 
-void BoardGraph::get_neighbours(const Node &node,
-        std::set<Node> *node_list) const
+void BoardGraph::get_out_node_list(const Node &node,
+        std::vector<Node> *node_list) const
 {
     IndexMap index = get(boost::vertex_index, g_);
     int inode = node.row() * col_num_ + node.col();
@@ -206,7 +206,7 @@ void BoardGraph::get_neighbours(const Node &node,
             it != it_end; ++ it) {
         neighbour_node.set_row(index[*it] / row_num_);
         neighbour_node.set_col(index[*it] % col_num_);
-        node_list->insert(neighbour_node);
+        node_list->push_back(neighbour_node);
     }
 }
 

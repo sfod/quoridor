@@ -60,9 +60,10 @@ public:
     ~BoardGraph();
 
     void remove_edges(const Node &node1, const Node &node2);
-    void block_neighbours(const Node &node);
-    void unblock_neighbours(const Node &node);
-    void get_neighbours(const Node &node, std::set<Node> *node_list) const;
+
+    void block_node(const Node &node);
+    void unblock_node(const Node &node);
+    void get_out_node_list(const Node &node, std::vector<Node> *node_list) const;
 
     bool find_path(const Node &start_node, const Node &end_node,
             std::list<Node> *path) const;

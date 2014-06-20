@@ -33,7 +33,7 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         case 0:
             pawn_data.node.set_row(0);
             pawn_data.node.set_col(board_size_ / 2);
-            bg_.block_neighbours(pawn_data.node);
+            bg_.block_node(pawn_data.node);
             for (int j = 0; j < board_size_; ++j) {
                 Node gn(board_size_ - 1, j);
                 pawn_data.goal_nodes.insert(gn);
@@ -42,7 +42,7 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         case 1:
             pawn_data.node.set_row(board_size_ / 2);
             pawn_data.node.set_col(0);
-            bg_.block_neighbours(pawn_data.node);
+            bg_.block_node(pawn_data.node);
             for (int j = 0; j < board_size_; ++j) {
                 Node gn(j, board_size_ - 1);
                 pawn_data.goal_nodes.insert(gn);
@@ -51,7 +51,7 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         case 2:
             pawn_data.node.set_row(board_size_ - 1);
             pawn_data.node.set_col(board_size_ / 2);
-            bg_.block_neighbours(pawn_data.node);
+            bg_.block_node(pawn_data.node);
             for (int j = 0; j < board_size_; ++j) {
                 Node gn(0, j);
                 pawn_data.goal_nodes.insert(gn);
@@ -60,7 +60,7 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         case 3:
             pawn_data.node.set_row(board_size_ / 2);
             pawn_data.node.set_col(board_size_ - 1);
-            bg_.block_neighbours(pawn_data.node);
+            bg_.block_node(pawn_data.node);
             for (int j = 0; j < board_size_; ++j) {
                 Node gn(j, 0);
                 pawn_data.goal_nodes.insert(gn);
@@ -101,10 +101,10 @@ int Game::move_pawn(const Node &node)
     const Node &cur_node = pawn_data_list_.find(cur_pawn_idx_)->node;
 
     if (bg_.is_adjacent(cur_node, node)) {
-        bg_.unblock_neighbours(cur_node);
+        bg_.unblock_node(cur_node);
         pawn_data_list_t::iterator it = pawn_data_list_.find(cur_pawn_idx_);
         pawn_data_list_.modify(it, [=](pawn_data_t &e){ e.node = node; });
-        bg_.block_neighbours(node);
+        bg_.block_node(node);
         return 0;
     }
     else {
