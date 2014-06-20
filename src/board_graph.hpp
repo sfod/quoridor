@@ -79,9 +79,9 @@ private:
     bool unblock_edge(int from_inode, int to_inode);
 
 private:
+    graph_t g_;
     int row_num_;
     int col_num_;
-    graph_t g_;
     FilterEdges fe_;
 };
 
