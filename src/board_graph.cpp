@@ -248,35 +248,23 @@ bool BoardGraph::is_adjacent(const Node &from_node, const Node &to_node) const
     return is_adjacent(from_inode, to_inode);
 }
 
-void BoardGraph::filter_edges(const Node &node1, const Node &node2)
-{
-    int inode1 = node1.row() * col_num_ + node1.col();
-    int inode2 = node2.row() * col_num_ + node2.col();
-    edge_descriptor ed;
-    bool b;
-
-    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
-    if (b) {
-        fe_.add_edge(ed);
-    }
-
-    boost::tie(ed, b) = boost::edge(inode2, inode1, g_);
-    if (b) {
-        fe_.add_edge(ed);
-    }
-}
-
 void BoardGraph::reset_filters()
 {
     fe_.clear();
 }
 
-bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node) const
+bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node,
+        const std::vector<std::pair<Node, Node>> blocked_edge_list) const
 {
+    FilterEdges fe;
+    for (auto blocked_edge : blocked_edge_list) {
+        filter_edges(&fe, blocked_edge.first, blocked_edge.second);
+    }
+
     int start_inode = start_node.row() * col_num_ + start_node.col();
     int end_inode = end_node.row() * col_num_ + end_node.col();
 
-    boost::filtered_graph<graph_t, FilterEdges> fg(g_, fe_);
+    boost::filtered_graph<graph_t, FilterEdges> fg(g_, fe);
 
     std::vector<boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor> p(boost::num_vertices(fg));
     std::vector<int> d(boost::num_vertices(fg));
@@ -324,6 +312,25 @@ bool BoardGraph::unblock_edge(int from_inode, int to_inode)
     boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
     weightmap[e] = 1;
     return b;
+}
+
+void BoardGraph::filter_edges(FilterEdges *fe, const Node &node1,
+        const Node &node2) const
+{
+    int inode1 = node1.row() * col_num_ + node1.col();
+    int inode2 = node2.row() * col_num_ + node2.col();
+    edge_descriptor ed;
+    bool b;
+
+    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
+    if (b) {
+        fe->add_edge(ed);
+    }
+
+    boost::tie(ed, b) = boost::edge(inode2, inode1, g_);
+    if (b) {
+        fe->add_edge(ed);
+    }
 }
 
 }  /* namespace Quoridor */
