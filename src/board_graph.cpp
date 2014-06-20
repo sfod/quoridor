@@ -288,7 +288,7 @@ bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node) co
         astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
                 boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(astar_goal_visitor<vertex_descriptor>(end)));
     }
-    catch (found_goal fg) {
+    catch (found_goal &fg) {
         return true;
     }
 
