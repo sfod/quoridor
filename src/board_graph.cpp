@@ -48,12 +48,7 @@ BoardGraph::BoardGraph(int row_num, int col_num)
         throw Exception("invalid size");
     }
 
-    g_ = graph_t(row_num * col_num);
-
-    std::vector<int> nodes;
-    for (int i = 0; i < row_num * col_num; ++i) {
-        nodes.push_back(i);
-    }
+    g_ = graph_t(row_num_ * col_num_);
 
     std::vector<std::pair<int, int>> edges;
     int idx;
