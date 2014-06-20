@@ -42,7 +42,7 @@ void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
 }
 
 BoardGraph::BoardGraph(int row_num, int col_num)
-    : row_num_(row_num), col_num_(col_num), g_(), edges_(), fe_()
+    : g_(), row_num_(row_num), col_num_(col_num), fe_()
 {
     if ((row_num <= 0) || (col_num <= 0)) {
         throw Exception("invalid size");
@@ -55,24 +55,27 @@ BoardGraph::BoardGraph(int row_num, int col_num)
         nodes.push_back(i);
     }
 
+    std::vector<std::pair<int, int>> edges;
+    int idx;
     int nidx;
     for (int i = 0; i < row_num; ++i) {
         for (int j = 0; j < col_num; ++j) {
+            idx = i * col_num + j;
             if (j != 0) {
                 nidx = i * col_num + j - 1;
-                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
             if (j != col_num - 1) {
                 nidx = i * col_num + j + 1;
-                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
             if (i != 0) {
                 nidx = (i - 1) * col_num + j;
-                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
             if (i != row_num - 1) {
                 nidx = (i + 1) * col_num + j;
-                edges_.insert(edge(nodes[i * col_num + j], nodes[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
         }
     }
@@ -80,7 +83,7 @@ BoardGraph::BoardGraph(int row_num, int col_num)
     WeightMap weightmap = boost::get(boost::edge_weight, g_);
     edge_descriptor e;
     bool b;
-    for (auto &it : edges_) {
+    for (auto &it : edges) {
         boost::tie(e, b) = boost::add_edge(it.first, it.second, g_);
         weightmap[e] = 1;
     }
@@ -106,9 +109,6 @@ void BoardGraph::remove_edges(const Node &node1, const Node &node2)
     if (b) {
         g_.remove_edge(ed);
     }
-
-    edges_.erase(edge(inode1, inode2));
-    edges_.erase(edge(inode2, inode1));
 }
 
 void BoardGraph::block_neighbours(const Node &node)
@@ -311,7 +311,10 @@ bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node) co
 
 bool BoardGraph::is_neighbours(int inode1, int inode2) const
 {
-    return (edges_.count(edge(inode1, inode2)) > 0);
+    edge_descriptor e;
+    bool b;
+    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
+    return b;
 }
 
 void BoardGraph::block_edge(int inode1, int inode2)

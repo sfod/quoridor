@@ -23,7 +23,6 @@ typedef boost::adjacency_list<
 typedef boost::property_map<graph_t, boost::edge_weight_t>::type WeightMap;
 typedef graph_t::vertex_descriptor vertex_descriptor;
 typedef graph_t::edge_descriptor edge_descriptor;
-typedef std::pair<int, int> edge;
 
 typedef boost::property_map<graph_t, boost::vertex_index_t>::type IndexMap;
 typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator;
@@ -82,7 +81,6 @@ private:
     int row_num_;
     int col_num_;
     graph_t g_;
-    std::set<edge> edges_;
     FilterEdges fe_;
 };
 
