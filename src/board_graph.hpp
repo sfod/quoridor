@@ -10,7 +10,6 @@
 
 #include "node.hpp"
 
-
 namespace Quoridor {
 
 typedef boost::adjacency_list<
