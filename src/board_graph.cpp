@@ -92,17 +92,17 @@ void BoardGraph::remove_edges(const Node &node1, const Node &node2)
 {
     int inode1 = node1.row() * col_num_ + node1.col();
     int inode2 = node2.row() * col_num_ + node2.col();
-    edge_descriptor ed;
+    edge_descriptor e;
     bool b;
 
-    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
+    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
     if (b) {
-        g_.remove_edge(ed);
+        g_.remove_edge(e);
     }
 
-    boost::tie(ed, b) = boost::edge(inode2, inode1, g_);
+    boost::tie(e, b) = boost::edge(inode2, inode1, g_);
     if (b) {
-        g_.remove_edge(ed);
+        g_.remove_edge(e);
     }
 }
 
@@ -319,17 +319,17 @@ void BoardGraph::filter_edges(FilterEdges *fe, const Node &node1,
 {
     int inode1 = node1.row() * col_num_ + node1.col();
     int inode2 = node2.row() * col_num_ + node2.col();
-    edge_descriptor ed;
+    edge_descriptor e;
     bool b;
 
-    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
+    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
     if (b) {
-        fe->add_edge(ed);
+        fe->add_edge(e);
     }
 
-    boost::tie(ed, b) = boost::edge(inode2, inode1, g_);
+    boost::tie(e, b) = boost::edge(inode2, inode1, g_);
     if (b) {
-        fe->add_edge(ed);
+        fe->add_edge(e);
     }
 }
 

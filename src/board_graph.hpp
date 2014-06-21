@@ -32,7 +32,7 @@ public:
     FilterEdges();
     ~FilterEdges();
 
-    void add_edge(const edge_descriptor &ed);
+    void add_edge(const edge_descriptor &e);
     void clear();
     template <typename EdgeDesc>
     bool operator()(const EdgeDesc &e) const;
