@@ -221,16 +221,18 @@ bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
     int start_inode = start_node.row() * col_num_ + start_node.col();
     int end_inode = end_node.row() * col_num_ + end_node.col();
 
-    std::vector<vertex_descriptor> p(boost::num_vertices(g_));
-    std::vector<int> d(boost::num_vertices(g_));
+    boost::filtered_graph<graph_t, FilterEdges> fg(g_, fe_);
 
-    vertex_descriptor start = boost::vertex(start_inode, g_);
-    vertex_descriptor end = boost::vertex(end_inode, g_);
+    std::vector<boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor> p(boost::num_vertices(fg));
+    std::vector<int> d(boost::num_vertices(fg));
+
+    boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor start = boost::vertex(start_inode, g_);
+    boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor end = boost::vertex(end_inode, g_);
 
     Node node;
 
     try {
-        astar_search(g_, start, boost::astar_heuristic<graph_t, int>(),
+        astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
                 boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(astar_goal_visitor<vertex_descriptor>(end)));
     }
     catch (found_goal fg) {
