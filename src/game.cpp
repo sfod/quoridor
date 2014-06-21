@@ -150,7 +150,7 @@ int Game::try_add_wall(const Wall &wall,
         return -1;
     }
 
-    bg_.reset_filters();
+    std::vector<std::pair<Node, Node>> edge_list;
 
     Node node1;
     Node node2;
@@ -159,20 +159,20 @@ int Game::try_add_wall(const Wall &wall,
         for (int i = 0; i < wall.cnt(); ++i) {
             node1 = Node(wall.row() - 1, wall.col() + i);
             node2 = Node(wall.row(), wall.col() + i);
-            bg_.filter_edges(node1, node2);
+            edge_list.push_back(std::make_pair(node1, node2));
             edges->push_back(std::make_pair(node1, node2));
 
             node_tmp = Node(wall.row() + 1, wall.col() + i);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                bg_.filter_edges(node1, node_tmp);
+                edge_list.push_back(std::make_pair(node1, node_tmp));
                 edges->push_back(std::make_pair(node1, node_tmp));
             }
 
             node_tmp = Node(wall.row() - 2, wall.col() + i);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                bg_.filter_edges(node_tmp, node2);
+                edge_list.push_back(std::make_pair(node_tmp, node2));
                 edges->push_back(std::make_pair(node_tmp, node2));
             }
 
@@ -180,14 +180,14 @@ int Game::try_add_wall(const Wall &wall,
                 node_tmp = Node(wall.row(), wall.col() + j);
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    bg_.filter_edges(node1, node_tmp);
+                    edge_list.push_back(std::make_pair(node1, node_tmp));
                     edges->push_back(std::make_pair(node1, node_tmp));
                 }
 
                 node_tmp = Node(wall.row() - 1, wall.col() + j);
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    bg_.filter_edges(node_tmp, node2);
+                    edge_list.push_back(std::make_pair(node_tmp, node2));
                     edges->push_back(std::make_pair(node_tmp, node2));
                 }
             }
@@ -197,20 +197,20 @@ int Game::try_add_wall(const Wall &wall,
         for (int i = 0; i < wall.cnt(); ++i) {
             node1 = Node(wall.row() + i, wall.col() - 1);
             node2 = Node(wall.row() + i, wall.col());
-            bg_.filter_edges(node1, node2);
+            edge_list.push_back(std::make_pair(node1, node2));
             edges->push_back(std::make_pair(node1, node2));
 
             node_tmp = Node(wall.row() + i, wall.col() + 1);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                bg_.filter_edges(node1, node_tmp);
+                edge_list.push_back(std::make_pair(node1, node_tmp));
                 edges->push_back(std::make_pair(node1, node_tmp));
             }
 
             node_tmp = Node(wall.row() + i, wall.col() - 2);
             if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                     && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                bg_.filter_edges(node_tmp, node2);
+                edge_list.push_back(std::make_pair(node_tmp, node2));
                 edges->push_back(std::make_pair(node_tmp, node2));
             }
 
@@ -218,14 +218,14 @@ int Game::try_add_wall(const Wall &wall,
                 node_tmp = Node(wall.row() + j, wall.col());
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    bg_.filter_edges(node1, node_tmp);
+                    edge_list.push_back(std::make_pair(node1, node_tmp));
                     edges->push_back(std::make_pair(node1, node_tmp));
                 }
 
                 node_tmp = Node(wall.row() + j, wall.col() - 1);
                 if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
                         && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    bg_.filter_edges(node_tmp, node2);
+                    edge_list.push_back(std::make_pair(node_tmp, node2));
                     edges->push_back(std::make_pair(node_tmp, node2));
                 }
             }
@@ -240,7 +240,7 @@ int Game::try_add_wall(const Wall &wall,
     for (auto pawn_data : pawn_data_list_) {
         path_blocked = true;
         for (auto goal_node : pawn_data.goal_nodes) {
-            if (bg_.is_path_exists(pawn_data.node, goal_node)) {
+            if (bg_.is_path_exists(pawn_data.node, goal_node, edge_list)) {
                 path_blocked = false;
                 break;
             }
