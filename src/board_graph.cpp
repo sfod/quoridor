@@ -16,6 +16,11 @@ void FilterEdges::add_edge(const edge_descriptor &e)
     edges_.insert(e);
 }
 
+void FilterEdges::rm_edge(const edge_descriptor &e)
+{
+    edges_.erase(e);
+}
+
 void FilterEdges::clear()
 {
     edges_.clear();
@@ -293,24 +298,23 @@ bool BoardGraph::is_adjacent(int from_inode, int to_inode) const
 
 bool BoardGraph::block_edge(int from_inode, int to_inode)
 {
-    edge_descriptor ed;
+    edge_descriptor e;
     bool b;
-
-    boost::tie(ed, b) = boost::edge(from_inode, to_inode, g_);
+    boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
     if (b) {
-        g_.remove_edge(ed);
+        fe_.add_edge(e);
     }
-
     return b;
 }
 
 bool BoardGraph::unblock_edge(int from_inode, int to_inode)
 {
-    WeightMap weightmap = boost::get(boost::edge_weight, g_);
     edge_descriptor e;
     bool b;
-    boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
-    weightmap[e] = 1;
+    boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
+    if (b) {
+        fe_.rm_edge(e);
+    }
     return b;
 }
 
