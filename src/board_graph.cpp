@@ -298,6 +298,10 @@ bool BoardGraph::is_adjacent(int from_inode, int to_inode) const
 
 bool BoardGraph::block_edge(int from_inode, int to_inode)
 {
+    if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
+        return false;
+    }
+
     edge_descriptor e;
     bool b;
     boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
@@ -309,6 +313,10 @@ bool BoardGraph::block_edge(int from_inode, int to_inode)
 
 bool BoardGraph::unblock_edge(int from_inode, int to_inode)
 {
+    if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
+        return false;
+    }
+
     edge_descriptor e;
     bool b;
     boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
@@ -335,6 +343,15 @@ void BoardGraph::filter_edges(FilterEdges *fe, const Node &node1,
     if (b) {
         fe->add_edge(e);
     }
+}
+
+bool BoardGraph::is_inode_valid(int inode) const
+{
+    if ((inode < 0)
+            || (static_cast<size_t>(inode) >= boost::num_vertices(g_))) {
+        return false;
+    }
+    return true;
 }
 
 }  /* namespace Quoridor */

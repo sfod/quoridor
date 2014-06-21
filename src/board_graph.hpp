@@ -80,6 +80,7 @@ private:
     bool unblock_edge(int from_inode, int to_inode);
     void filter_edges(FilterEdges *fe, const Node &node1,
             const Node &node2) const;
+    bool is_inode_valid(int inode) const;
 
 private:
     graph_t g_;
