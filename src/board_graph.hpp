@@ -12,14 +12,20 @@
 
 namespace Quoridor {
 
+struct edge_info_t {
+    int weight;
+    bool is_tmp;
+};
+
 typedef boost::adjacency_list<
         boost::listS,
         boost::vecS,
         boost::directedS,
         boost::no_property,
-        boost::property<boost::edge_weight_t, int>
+        edge_info_t
 > graph_t;
-typedef boost::property_map<graph_t, boost::edge_weight_t>::type WeightMap;
+typedef boost::property_map<graph_t, int edge_info_t::*>::type edge_info_map_t;
+typedef boost::property_map<graph_t, int edge_info_t::*>::const_type const_edge_info_map_t;
 typedef graph_t::vertex_descriptor vertex_descriptor;
 typedef graph_t::edge_descriptor edge_descriptor;
 

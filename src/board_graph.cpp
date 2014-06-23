@@ -80,12 +80,12 @@ BoardGraph::BoardGraph(int row_num, int col_num)
         }
     }
 
-    WeightMap weightmap = boost::get(boost::edge_weight, g_);
     edge_descriptor e;
     bool b;
     for (auto &it : edges) {
         boost::tie(e, b) = boost::add_edge(it.first, it.second, g_);
-        weightmap[e] = 1;
+        g_[e].weight = 1;
+        g_[e].is_tmp = false;
     }
 }
 
@@ -231,9 +231,13 @@ bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
 
     Node node;
 
+    const_edge_info_map_t edge_info_map = boost::get(&edge_info_t::weight, g_);
     try {
         astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
-                boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(astar_goal_visitor<vertex_descriptor>(end)));
+                boost::predecessor_map(&p[0])
+                    .distance_map(&d[0])
+                    .weight_map(edge_info_map)
+                    .visitor(astar_goal_visitor<vertex_descriptor>(end)));
     }
     catch (found_goal fg) {
         for (vertex_descriptor v = end_inode;; v = p[v]) {
@@ -279,9 +283,13 @@ bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node,
     boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor start = boost::vertex(start_inode, g_);
     boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor end = boost::vertex(end_inode, g_);
 
+    const_edge_info_map_t edge_info_map = boost::get(&edge_info_t::weight, g_);
     try {
         astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
-                boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(astar_goal_visitor<vertex_descriptor>(end)));
+                boost::predecessor_map(&p[0])
+                    .distance_map(&d[0])
+                    .weight_map(edge_info_map)
+                    .visitor(astar_goal_visitor<vertex_descriptor>(end)));
     }
     catch (found_goal &fg) {
         return true;
