@@ -50,6 +50,19 @@ private:
 
 struct found_goal {}; // exception for termination
 
+template <class Graph, class CostType>
+class astar_heuristic : public boost::astar_heuristic<Graph, CostType> {
+public:
+    typedef typename boost::graph_traits<Graph>::vertex_descriptor vertex;
+
+    astar_heuristic(int col_num, Node goal_node);
+    CostType operator()(vertex u);
+
+private:
+    int col_num_;
+    Node goal_node_;
+};
+
 // visitor that terminates when we find the goal
 template <class Vertex>
 class astar_goal_visitor : public boost::default_astar_visitor

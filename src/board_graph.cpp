@@ -51,6 +51,22 @@ void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
     }
 }
 
+template <class Graph, class CostType>
+astar_heuristic<Graph, CostType>::astar_heuristic(int col_num, Node goal_node)
+    : col_num_(col_num), goal_node_(goal_node)
+{
+}
+
+template <class Graph, class CostType>
+CostType astar_heuristic<Graph, CostType>::operator()(typename boost::graph_traits<Graph>::vertex_descriptor u)
+{
+    Node n(u / col_num_, u % col_num_);
+
+    CostType dx = goal_node_.col() - n.col();
+    CostType dy = goal_node_.row() - n.row();
+    return std::sqrt(dx * dx + dy * dy);
+}
+
 BoardGraph::BoardGraph(int row_num, int col_num)
     : g_(), row_num_(row_num), col_num_(col_num), fe_()
 {
@@ -249,7 +265,8 @@ bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
 
     const_edge_info_map_t edge_info_map = boost::get(&edge_info_t::weight, g_);
     try {
-        astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
+        astar_search(fg, start,
+                astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(col_num_, end_node),
                 boost::predecessor_map(&p[0])
                     .distance_map(&d[0])
                     .weight_map(edge_info_map)
@@ -301,7 +318,8 @@ bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node,
 
     const_edge_info_map_t edge_info_map = boost::get(&edge_info_t::weight, g_);
     try {
-        astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
+        astar_search(fg, start,
+                astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(col_num_, end_node),
                 boost::predecessor_map(&p[0])
                     .distance_map(&d[0])
                     .weight_map(edge_info_map)
