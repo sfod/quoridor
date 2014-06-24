@@ -39,6 +39,7 @@ public:
 
     void add_edge(const edge_descriptor &e);
     void rm_edge(const edge_descriptor &e);
+    bool exists(const edge_descriptor &e) const;
     void clear();
     template <typename EdgeDesc>
     bool operator()(const EdgeDesc &e) const;
@@ -81,8 +82,8 @@ public:
 
 private:
     bool is_adjacent(int from_inode, int to_inode) const;
-    bool block_edge(int from_inode, int to_inode);
-    bool unblock_edge(int from_inode, int to_inode);
+    bool block_edge(int from_inode, int to_inode, bool is_tmp);
+    bool unblock_edge(int from_inode, int to_inode, bool is_tmp);
     void filter_edges(FilterEdges *fe, const Node &node1,
             const Node &node2) const;
     bool is_inode_valid(int inode) const;

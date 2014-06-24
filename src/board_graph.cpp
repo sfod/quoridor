@@ -21,6 +21,11 @@ void FilterEdges::rm_edge(const edge_descriptor &e)
     edges_.erase(e);
 }
 
+bool FilterEdges::exists(const edge_descriptor &e) const
+{
+    return edges_.count(e) > 0;
+}
+
 void FilterEdges::clear()
 {
     edges_.clear();
@@ -117,19 +122,25 @@ void BoardGraph::block_node(const Node &node)
     int nf = 0;
     std::map<int, int> neighbours;
 
-    if (block_edge(inode - 1, inode)) {
+    // block all edges to the blocked node
+    block_edge(inode - 1, inode, false);
+    block_edge(inode + 1, inode, false);
+    block_edge(inode - col_num_, inode, false);
+    block_edge(inode + col_num_, inode, false);
+
+    if (is_adjacent(inode, inode - 1)) {
         nf |= 1;
         neighbours[0] = inode - 1;
     }
-    if (block_edge(inode + 1, inode)) {
+    if (is_adjacent(inode, inode + 1)) {
         nf |= 4;
         neighbours[2] = inode + 1;
     }
-    if (block_edge(inode - col_num_, inode)) {
+    if (is_adjacent(inode, inode - col_num_)) {
         nf |= 2;
         neighbours[1] = inode - col_num_;
     }
-    if (block_edge(inode + col_num_, inode)) {
+    if (is_adjacent(inode, inode + col_num_)) {
         nf |= 8;
         neighbours[3] = inode + col_num_;
     }
@@ -139,15 +150,15 @@ void BoardGraph::block_node(const Node &node)
         if (nf & (1 << i)) {
             // path to the opposite node is open
             if (nf & (1 << ((i + 2) % 4))) {
-                unblock_edge(neighbours[i], neighbours[(i + 2) % 4]);
+                unblock_edge(neighbours[i], neighbours[(i + 2) % 4], true);
             }
             // path to the opposite node is blocked, open pathes to diagonal nodes
             else {
                 if (nf & (1 << ((i + 1) % 4))) {
-                    unblock_edge(neighbours[i], neighbours[(i + 1) % 4]);
+                    unblock_edge(neighbours[i], neighbours[(i + 1) % 4], true);
                 }
                 if (nf & (1 << ((i + 3) % 4))) {
-                    unblock_edge(neighbours[i], neighbours[(i + 3) % 4]);
+                    unblock_edge(neighbours[i], neighbours[(i + 3) % 4], true);
                 }
             }
         }
@@ -160,19 +171,24 @@ void BoardGraph::unblock_node(const Node &node)
     int nf = 0;
     std::map<int, int> neighbours;
 
-    if (unblock_edge(inode - 1, inode)) {
+    unblock_edge(inode - 1, inode, false);
+    unblock_edge(inode + 1, inode, false);
+    unblock_edge(inode - col_num_, inode, false);
+    unblock_edge(inode + col_num_, inode, false);
+
+    if (is_adjacent(inode, inode - 1)) {
         nf |= 1;
         neighbours[0] = inode - 1;
     }
-    if (unblock_edge(inode + 1, inode)) {
+    if (is_adjacent(inode, inode + 1)) {
         nf |= 4;
         neighbours[2] = inode + 1;
     }
-    if (unblock_edge(inode - col_num_, inode)) {
+    if (is_adjacent(inode, inode - col_num_)) {
         nf |= 2;
         neighbours[1] = inode - col_num_;
     }
-    if (unblock_edge(inode + col_num_, inode)) {
+    if (is_adjacent(inode, inode + col_num_)) {
         nf |= 8;
         neighbours[3] = inode + col_num_;
     }
@@ -182,15 +198,15 @@ void BoardGraph::unblock_node(const Node &node)
         if (nf & (1 << i)) {
             // path to the opposite node is open
             if (nf & (1 << ((i + 2) % 4))) {
-                block_edge(neighbours[i], neighbours[(i + 2) % 4]);
+                block_edge(neighbours[i], neighbours[(i + 2) % 4], true);
             }
             // path to the opposite node is blocked, open pathes to diagonal nodes
             else {
                 if (nf & (1 << ((i + 1) % 4))) {
-                    block_edge(neighbours[i], neighbours[(i + 1) % 4]);
+                    block_edge(neighbours[i], neighbours[(i + 1) % 4], true);
                 }
                 if (nf & (1 << ((i + 3) % 4))) {
-                    block_edge(neighbours[i], neighbours[(i + 3) % 4]);
+                    block_edge(neighbours[i], neighbours[(i + 3) % 4], true);
                 }
             }
         }
@@ -303,10 +319,13 @@ bool BoardGraph::is_adjacent(int from_inode, int to_inode) const
     edge_descriptor e;
     bool b;
     boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
+    if (b && fe_.exists(e)) {
+        b = false;
+    }
     return b;
 }
 
-bool BoardGraph::block_edge(int from_inode, int to_inode)
+bool BoardGraph::block_edge(int from_inode, int to_inode, bool is_tmp)
 {
     if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
         return false;
@@ -316,12 +335,22 @@ bool BoardGraph::block_edge(int from_inode, int to_inode)
     bool b;
     boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
     if (b) {
-        fe_.add_edge(e);
+        // edge is permanent, block it temporarily via adding to filtered graph
+        if (!is_tmp) {
+            fe_.add_edge(e);
+        }
+        // edge is temporary, remove it from the graph
+        else if (g_[e].is_tmp) {
+            boost::remove_edge(e, g_);
+        }
+        // @todo handle this situation
+        else {
+        }
     }
     return b;
 }
 
-bool BoardGraph::unblock_edge(int from_inode, int to_inode)
+bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp)
 {
     if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
         return false;
@@ -329,10 +358,24 @@ bool BoardGraph::unblock_edge(int from_inode, int to_inode)
 
     edge_descriptor e;
     bool b;
-    boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
-    if (b) {
-        fe_.rm_edge(e);
+
+    if (is_tmp) {
+        boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
+        if (b) {
+            g_[e].weight = 1;
+            g_[e].is_tmp = true;
+        }
+        // @todo handle
+        else {
+        }
     }
+    else {
+        boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
+        if (b) {
+            fe_.rm_edge(e);
+        }
+    }
+
     return b;
 }
 
