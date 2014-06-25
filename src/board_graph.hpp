@@ -10,26 +10,38 @@
 
 #include "node.hpp"
 
-
 namespace Quoridor {
 
-typedef boost::adjacency_list< boost::listS, boost::vecS,
-        boost::undirectedS, boost::no_property,
-        boost::property<boost::edge_weight_t, int> > graph_t;
-typedef boost::property_map<graph_t, boost::edge_weight_t>::type WeightMap;
-typedef graph_t::vertex_descriptor vertex;
+struct edge_info_t {
+    int weight;
+    bool is_tmp;
+    int interm_inode;
+};
+
+typedef boost::adjacency_list<
+        boost::listS,
+        boost::vecS,
+        boost::bidirectionalS,
+        boost::no_property,
+        edge_info_t
+> graph_t;
+typedef boost::property_map<graph_t, int edge_info_t::*>::type edge_info_map_t;
+typedef boost::property_map<graph_t, int edge_info_t::*>::const_type const_edge_info_map_t;
+typedef graph_t::vertex_descriptor vertex_descriptor;
 typedef graph_t::edge_descriptor edge_descriptor;
-typedef std::pair<int, int> edge;
 
 typedef boost::property_map<graph_t, boost::vertex_index_t>::type IndexMap;
 typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator;
+typedef boost::graph_traits<graph_t>::in_edge_iterator in_edge_iterator;
 
 class FilterEdges {
 public:
     FilterEdges();
     ~FilterEdges();
 
-    void add_edge(const edge_descriptor &ed);
+    void add_edge(const edge_descriptor &e);
+    void rm_edge(const edge_descriptor &e);
+    bool exists(const edge_descriptor &e) const;
     void clear();
     template <typename EdgeDesc>
     bool operator()(const EdgeDesc &e) const;
@@ -39,6 +51,19 @@ private:
 };
 
 struct found_goal {}; // exception for termination
+
+template <class Graph, class CostType>
+class astar_heuristic : public boost::astar_heuristic<Graph, CostType> {
+public:
+    typedef typename boost::graph_traits<Graph>::vertex_descriptor vertex;
+
+    astar_heuristic(int col_num, Node goal_node);
+    CostType operator()(vertex u);
+
+private:
+    int col_num_;
+    Node goal_node_;
+};
 
 // visitor that terminates when we find the goal
 template <class Vertex>
@@ -57,29 +82,33 @@ public:
     ~BoardGraph();
 
     void remove_edges(const Node &node1, const Node &node2);
-    void block_neighbours(const Node &node);
-    void unblock_neighbours(const Node &node);
-    void get_neighbours(const Node &node, std::set<Node> *node_list) const;
+
+    void block_node(const Node &node);
+    void unblock_node(const Node &node);
+    void get_out_node_list(const Node &node, std::vector<Node> *node_list) const;
 
     bool find_path(const Node &start_node, const Node &end_node,
             std::list<Node> *path) const;
-    bool is_adjacent(const Node &node1, const Node &node2) const;
+    bool is_adjacent(const Node &from_node, const Node &to_node) const;
 
-    void filter_edges(const Node &node1, const Node &node2);
     void reset_filters();
-    bool is_path_exists(const Node &node1, const Node &node2) const;
+    bool is_path_exists(const Node &start_node, const Node &end_node,
+            const std::vector<std::pair<Node, Node>> blocked_edge_list) const;
 
 private:
-    bool is_neighbours(int inode1, int inode2) const;
-    void block_edge(int inode1, int inode2);
-    void unblock_edge(int inode1, int inode2);
+    bool is_adjacent(int from_inode, int to_inode, bool check_tmp_edges) const;
+    void block_inode(int inode);
+    void unblock_inode(int inode);
+    bool block_edge(int from_inode, int to_inode, bool is_tmp);
+    bool unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode = -1);
+    void filter_edges(FilterEdges *fe, const Node &node1,
+            const Node &node2) const;
+    bool is_inode_valid(int inode) const;
 
 private:
+    graph_t g_;
     int row_num_;
     int col_num_;
-    graph_t g_;
-    std::vector<int> nodes_;
-    std::set<edge> edges_;
     FilterEdges fe_;
 };
 

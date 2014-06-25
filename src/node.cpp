@@ -44,4 +44,9 @@ const Node Node::operator+(const Node &node) {
     return n;
 }
 
+std::ostream &operator<<(std::ostream &os, const Node &node)
+{
+    return os << node.row() << ":" << node.col();
+}
+
 }  // namespace Quoridor

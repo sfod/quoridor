@@ -24,6 +24,20 @@ add_test(NAME game_test
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
     COMMAND ./game_test)
 
+# board graph unittests
+set(TEST_TARGET board_graph_unittest)
+set(TEST_TARGET_ADDITIONAL_LIBS gtest)
+add_executable(${TEST_TARGET}
+    $<TARGET_OBJECTS:node_cxx_obj>
+    $<TARGET_OBJECTS:board_graph_cxx_obj>
+    ${TEST_TARGET}.cpp)
+target_link_libraries(${TEST_TARGET} ${TEST_TARGET_ADDITIONAL_LIBS})
+set_target_properties(${TEST_TARGET} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+add_test(NAME ${TEST_TARGET}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    COMMAND ./${TEST_TARGET})
+
 # wall grid unittests
 set(TEST_TARGET wall_grid_unittest)
 set(TEST_TARGET_ADDITIONAL_LIBS gtest)

@@ -1,6 +1,8 @@
 #ifndef QUORIDOR_POS_HPP_
 #define QUORIDOR_POS_HPP_
 
+#include <iostream>
+
 namespace Quoridor {
 
 class Node {
@@ -25,6 +27,8 @@ private:
     int row_;
     int col_;
 };
+
+std::ostream &operator<<(std::ostream &os, const Node &node);
 
 }  // namespace Quoridor
 
