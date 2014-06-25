@@ -15,6 +15,7 @@ namespace Quoridor {
 struct edge_info_t {
     int weight;
     bool is_tmp;
+    int interm_inode;
 };
 
 typedef boost::adjacency_list<
@@ -98,7 +99,7 @@ private:
     void block_inode(int inode);
     void unblock_inode(int inode);
     bool block_edge(int from_inode, int to_inode, bool is_tmp);
-    bool unblock_edge(int from_inode, int to_inode, bool is_tmp);
+    bool unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode = -1);
     void filter_edges(FilterEdges *fe, const Node &node1,
             const Node &node2) const;
     bool is_inode_valid(int inode) const;

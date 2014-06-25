@@ -295,7 +295,7 @@ void BoardGraph::block_inode(int inode)
         if (nf & (1 << i)) {
             // path to the opposite node is open
             if (nf & (1 << ((i + 2) % 4))) {
-                unblock_edge(neighbours[i], neighbours[(i + 2) % 4], true);
+                unblock_edge(neighbours[i], neighbours[(i + 2) % 4], true, inode);
             }
             // path to the opposite node is blocked, open pathes to diagonal nodes
             else {
@@ -382,7 +382,7 @@ bool BoardGraph::block_edge(int from_inode, int to_inode, bool is_tmp)
     return b;
 }
 
-bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp)
+bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode)
 {
     if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
         return false;
@@ -396,6 +396,7 @@ bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp)
         if (b) {
             g_[e].weight = 1;
             g_[e].is_tmp = true;
+            g_[e].interm_inode = interm_inode;
         }
         // @todo handle
         else {
