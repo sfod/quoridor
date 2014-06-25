@@ -26,11 +26,6 @@ bool FilterEdges::exists(const edge_descriptor &e) const
     return edges_.count(e) > 0;
 }
 
-void FilterEdges::clear()
-{
-    edges_.clear();
-}
-
 template <typename EdgeDesc>
 bool FilterEdges::operator()(const EdgeDesc &e) const
 {
@@ -238,11 +233,6 @@ bool BoardGraph::is_adjacent(const Node &from_node, const Node &to_node) const
     int from_inode = from_node.row() * col_num_ + from_node.col();
     int to_inode = to_node.row() * col_num_ + to_node.col();
     return is_adjacent(from_inode, to_inode, true);
-}
-
-void BoardGraph::reset_filters()
-{
-    fe_.clear();
 }
 
 bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node,

@@ -43,7 +43,6 @@ public:
     void add_edge(const edge_descriptor &e);
     void rm_edge(const edge_descriptor &e);
     bool exists(const edge_descriptor &e) const;
-    void clear();
     template <typename EdgeDesc>
     bool operator()(const EdgeDesc &e) const;
 
@@ -92,7 +91,6 @@ public:
             std::list<Node> *path) const;
     bool is_adjacent(const Node &from_node, const Node &to_node) const;
 
-    void reset_filters();
     bool is_path_exists(const Node &start_node, const Node &end_node,
             const std::vector<std::pair<Node, Node>> blocked_edge_list) const;
 
