@@ -135,98 +135,13 @@ void BoardGraph::remove_edges(const Node &node1, const Node &node2)
 void BoardGraph::block_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
-    int nf = 0;
-    std::map<int, int> neighbours;
-
-    // block all edges to the blocked node
-    block_edge(inode - 1, inode, false);
-    block_edge(inode + 1, inode, false);
-    block_edge(inode - col_num_, inode, false);
-    block_edge(inode + col_num_, inode, false);
-
-    if (is_adjacent(inode, inode - 1)) {
-        nf |= 1;
-        neighbours[0] = inode - 1;
-    }
-    if (is_adjacent(inode, inode + 1)) {
-        nf |= 4;
-        neighbours[2] = inode + 1;
-    }
-    if (is_adjacent(inode, inode - col_num_)) {
-        nf |= 2;
-        neighbours[1] = inode - col_num_;
-    }
-    if (is_adjacent(inode, inode + col_num_)) {
-        nf |= 8;
-        neighbours[3] = inode + col_num_;
-    }
-
-    // link neighbours with each other
-    for (int i = 0; i < 4; ++i) {
-        if (nf & (1 << i)) {
-            // path to the opposite node is open
-            if (nf & (1 << ((i + 2) % 4))) {
-                unblock_edge(neighbours[i], neighbours[(i + 2) % 4], true);
-            }
-            // path to the opposite node is blocked, open pathes to diagonal nodes
-            else {
-                if (nf & (1 << ((i + 1) % 4))) {
-                    unblock_edge(neighbours[i], neighbours[(i + 1) % 4], true);
-                }
-                if (nf & (1 << ((i + 3) % 4))) {
-                    unblock_edge(neighbours[i], neighbours[(i + 3) % 4], true);
-                }
-            }
-        }
-    }
+    block_inode(inode);
 }
 
 void BoardGraph::unblock_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
-    int nf = 0;
-    std::map<int, int> neighbours;
-
-    unblock_edge(inode - 1, inode, false);
-    unblock_edge(inode + 1, inode, false);
-    unblock_edge(inode - col_num_, inode, false);
-    unblock_edge(inode + col_num_, inode, false);
-
-    if (is_adjacent(inode, inode - 1)) {
-        nf |= 1;
-        neighbours[0] = inode - 1;
-    }
-    if (is_adjacent(inode, inode + 1)) {
-        nf |= 4;
-        neighbours[2] = inode + 1;
-    }
-    if (is_adjacent(inode, inode - col_num_)) {
-        nf |= 2;
-        neighbours[1] = inode - col_num_;
-    }
-    if (is_adjacent(inode, inode + col_num_)) {
-        nf |= 8;
-        neighbours[3] = inode + col_num_;
-    }
-
-    // close links between node's neighbours
-    for (int i = 0; i < 4; ++i) {
-        if (nf & (1 << i)) {
-            // path to the opposite node is open
-            if (nf & (1 << ((i + 2) % 4))) {
-                block_edge(neighbours[i], neighbours[(i + 2) % 4], true);
-            }
-            // path to the opposite node is blocked, open pathes to diagonal nodes
-            else {
-                if (nf & (1 << ((i + 1) % 4))) {
-                    block_edge(neighbours[i], neighbours[(i + 1) % 4], true);
-                }
-                if (nf & (1 << ((i + 3) % 4))) {
-                    block_edge(neighbours[i], neighbours[(i + 3) % 4], true);
-                }
-            }
-        }
-    }
+    unblock_inode(inode);
 }
 
 void BoardGraph::get_out_node_list(const Node &node,
@@ -341,6 +256,101 @@ bool BoardGraph::is_adjacent(int from_inode, int to_inode) const
         b = false;
     }
     return b;
+}
+
+void BoardGraph::block_inode(int inode)
+{
+    int nf = 0;
+    std::map<int, int> neighbours;
+
+    // block all edges to the blocked node
+    block_edge(inode - 1, inode, false);
+    block_edge(inode + 1, inode, false);
+    block_edge(inode - col_num_, inode, false);
+    block_edge(inode + col_num_, inode, false);
+
+    if (is_adjacent(inode, inode - 1)) {
+        nf |= 1;
+        neighbours[0] = inode - 1;
+    }
+    if (is_adjacent(inode, inode + 1)) {
+        nf |= 4;
+        neighbours[2] = inode + 1;
+    }
+    if (is_adjacent(inode, inode - col_num_)) {
+        nf |= 2;
+        neighbours[1] = inode - col_num_;
+    }
+    if (is_adjacent(inode, inode + col_num_)) {
+        nf |= 8;
+        neighbours[3] = inode + col_num_;
+    }
+
+    // link neighbours with each other
+    for (int i = 0; i < 4; ++i) {
+        if (nf & (1 << i)) {
+            // path to the opposite node is open
+            if (nf & (1 << ((i + 2) % 4))) {
+                unblock_edge(neighbours[i], neighbours[(i + 2) % 4], true);
+            }
+            // path to the opposite node is blocked, open pathes to diagonal nodes
+            else {
+                if (nf & (1 << ((i + 1) % 4))) {
+                    unblock_edge(neighbours[i], neighbours[(i + 1) % 4], true, inode);
+                }
+                if (nf & (1 << ((i + 3) % 4))) {
+                    unblock_edge(neighbours[i], neighbours[(i + 3) % 4], true, inode);
+                }
+            }
+        }
+    }
+}
+
+void BoardGraph::unblock_inode(int inode)
+{
+    int nf = 0;
+    std::map<int, int> neighbours;
+
+    unblock_edge(inode - 1, inode, false);
+    unblock_edge(inode + 1, inode, false);
+    unblock_edge(inode - col_num_, inode, false);
+    unblock_edge(inode + col_num_, inode, false);
+
+    if (is_adjacent(inode, inode - 1)) {
+        nf |= 1;
+        neighbours[0] = inode - 1;
+    }
+    if (is_adjacent(inode, inode + 1)) {
+        nf |= 4;
+        neighbours[2] = inode + 1;
+    }
+    if (is_adjacent(inode, inode - col_num_)) {
+        nf |= 2;
+        neighbours[1] = inode - col_num_;
+    }
+    if (is_adjacent(inode, inode + col_num_)) {
+        nf |= 8;
+        neighbours[3] = inode + col_num_;
+    }
+
+    // close links between node's neighbours
+    for (int i = 0; i < 4; ++i) {
+        if (nf & (1 << i)) {
+            // path to the opposite node is open
+            if (nf & (1 << ((i + 2) % 4))) {
+                block_edge(neighbours[i], neighbours[(i + 2) % 4], true);
+            }
+            // path to the opposite node is blocked, open pathes to diagonal nodes
+            else {
+                if (nf & (1 << ((i + 1) % 4))) {
+                    block_edge(neighbours[i], neighbours[(i + 1) % 4], true);
+                }
+                if (nf & (1 << ((i + 3) % 4))) {
+                    block_edge(neighbours[i], neighbours[(i + 3) % 4], true);
+                }
+            }
+        }
+    }
 }
 
 bool BoardGraph::block_edge(int from_inode, int to_inode, bool is_tmp)
