@@ -136,6 +136,34 @@ void BoardGraph::block_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
     block_inode(inode);
+
+    IndexMap index = get(boost::vertex_index, g_);
+    std::set<int> neighbours;
+    std::set<std::pair<int, int>> tmp_edges;
+    vertex_descriptor v = boost::vertex(inode, g_);
+    edge_descriptor e;
+    vertex_descriptor source_v;
+    vertex_descriptor target_v;
+    in_edge_iterator it;
+    in_edge_iterator it_end;
+    for (tie(it, it_end) = boost::in_edges(v, g_); it != it_end; ++it) {
+        e = *it;
+        if (!g_[e].is_tmp) {
+            continue;
+        }
+        source_v = boost::source(e, g_);
+        target_v = boost::target(e, g_);
+        tmp_edges.insert(std::make_pair(source_v, target_v));
+        neighbours.insert(g_[e].interm_inode);
+    }
+
+    for (auto tmp_edge : tmp_edges) {
+        block_edge(index[tmp_edge.first], index[tmp_edge.second], true);
+    }
+
+    for (int neighbour_inode : neighbours) {
+        block_inode(neighbour_inode);
+    }
 }
 
 void BoardGraph::unblock_node(const Node &node)

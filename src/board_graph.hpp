@@ -32,6 +32,7 @@ typedef graph_t::edge_descriptor edge_descriptor;
 
 typedef boost::property_map<graph_t, boost::vertex_index_t>::type IndexMap;
 typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator;
+typedef boost::graph_traits<graph_t>::in_edge_iterator in_edge_iterator;
 
 class FilterEdges {
 public:
