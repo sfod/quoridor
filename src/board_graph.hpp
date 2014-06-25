@@ -32,6 +32,7 @@ typedef graph_t::edge_descriptor edge_descriptor;
 
 typedef boost::property_map<graph_t, boost::vertex_index_t>::type IndexMap;
 typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator;
+typedef boost::graph_traits<graph_t>::out_edge_iterator out_edge_iterator;
 typedef boost::graph_traits<graph_t>::in_edge_iterator in_edge_iterator;
 
 class FilterEdges {
@@ -96,7 +97,7 @@ public:
             const std::vector<std::pair<Node, Node>> blocked_edge_list) const;
 
 private:
-    bool is_adjacent(int from_inode, int to_inode) const;
+    bool is_adjacent(int from_inode, int to_inode, bool check_tmp_edges) const;
     void block_inode(int inode);
     void unblock_inode(int inode);
     bool block_edge(int from_inode, int to_inode, bool is_tmp);

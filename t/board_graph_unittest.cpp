@@ -159,7 +159,7 @@ TEST_F(BoardGraphTest, block_node_near_blocked_node)
     EXPECT_TRUE(bg_.is_adjacent(Node(1, 2), Node(3, 2)));
     EXPECT_FALSE(bg_.is_adjacent(Node(2, 1), Node(2, 3)));
     EXPECT_TRUE(bg_.is_adjacent(Node(3, 2), Node(1, 2)));
-    EXPECT_FALSE(bg_.is_adjacent(Node(2, 3), Node(2, 1)));
+    EXPECT_TRUE(bg_.is_adjacent(Node(2, 3), Node(2, 1)));
 
     // diagonal nodes
     EXPECT_FALSE(bg_.is_adjacent(Node(1, 2), Node(2, 1)));
