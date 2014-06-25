@@ -144,9 +144,10 @@ double MiddlingPlayer::evaluate(const Game &game) const
 
     for (auto goal_node : goal_nodes_) {
         std::list<Node> path;
-        game.get_path(pawn_, goal_node, &path);
-        double k = 1 / static_cast<double>(path.size());
-        max_k = std::max(k, max_k);
+        if (game.get_path(pawn_, goal_node, &path)) {
+            double k = 1 / static_cast<double>(path.size());
+            max_k = std::max(k, max_k);
+        }
     }
 
     double rival_max_k = 0;
@@ -156,9 +157,10 @@ double MiddlingPlayer::evaluate(const Game &game) const
         }
         for (auto goal_node : pawn_data.goal_nodes) {
             std::list<Node> path;
-            game.get_path(pawn_data.pawn, goal_node, &path);
-            double k = 1 / static_cast<double>(path.size());
-            rival_max_k = std::max(k, rival_max_k);
+            if (game.get_path(pawn_data.pawn, goal_node, &path)) {
+                double k = 1 / static_cast<double>(path.size());
+                rival_max_k = std::max(k, rival_max_k);
+            }
         }
     }
 
