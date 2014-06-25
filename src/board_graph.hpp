@@ -21,7 +21,7 @@ struct edge_info_t {
 typedef boost::adjacency_list<
         boost::listS,
         boost::vecS,
-        boost::directedS,
+        boost::bidirectionalS,
         boost::no_property,
         edge_info_t
 > graph_t;
