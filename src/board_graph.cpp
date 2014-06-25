@@ -178,14 +178,19 @@ void BoardGraph::get_out_node_list(const Node &node,
     IndexMap index = get(boost::vertex_index, g_);
     int inode = node.row() * col_num_ + node.col();
     vertex_descriptor v = boost::vertex(inode, g_);
+    vertex_descriptor target_v;
     Node neighbour_node;
 
-    adjacency_iterator it;
-    adjacency_iterator it_end;
-    for (boost::tie(it, it_end) = boost::adjacent_vertices(v, g_);
+    out_edge_iterator it;
+    out_edge_iterator it_end;
+    for (boost::tie(it, it_end) = boost::out_edges(v, g_);
             it != it_end; ++ it) {
-        neighbour_node.set_row(index[*it] / row_num_);
-        neighbour_node.set_col(index[*it] % col_num_);
+        if (fe_.exists(*it)) {
+            continue;
+        }
+        target_v = boost::target(*it, g_);
+        neighbour_node.set_row(index[target_v] / row_num_);
+        neighbour_node.set_col(index[target_v] % col_num_);
         node_list->push_back(neighbour_node);
     }
 }
