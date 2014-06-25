@@ -146,8 +146,8 @@ bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
 void Game::possible_moves(std::shared_ptr<Pawn> pawn,
         std::vector<IMove*> *moves) const
 {
-    std::set<Node> nodes;
-    bg_.get_neighbours(pawn_data_list_.get<by_pawn>().find(pawn)->node, &nodes);
+    std::vector<Node> nodes;
+    bg_.get_out_node_list(pawn_data_list_.get<by_pawn>().find(pawn)->node, &nodes);
     for (auto node : nodes) {
         moves->push_back(new WalkMove(node));
     }
