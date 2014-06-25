@@ -16,6 +16,16 @@ void FilterEdges::add_edge(const edge_descriptor &e)
     edges_.insert(e);
 }
 
+void FilterEdges::rm_edge(const edge_descriptor &e)
+{
+    edges_.erase(e);
+}
+
+bool FilterEdges::exists(const edge_descriptor &e) const
+{
+    return edges_.count(e) > 0;
+}
+
 void FilterEdges::clear()
 {
     edges_.clear();
@@ -41,47 +51,62 @@ void astar_goal_visitor<Vertex>::examine_vertex(Vertex u, Graph & /* g */)
     }
 }
 
+template <class Graph, class CostType>
+astar_heuristic<Graph, CostType>::astar_heuristic(int col_num, Node goal_node)
+    : col_num_(col_num), goal_node_(goal_node)
+{
+}
+
+template <class Graph, class CostType>
+CostType astar_heuristic<Graph, CostType>::operator()(typename boost::graph_traits<Graph>::vertex_descriptor u)
+{
+    Node n(u / col_num_, u % col_num_);
+
+    CostType dx = goal_node_.col() - n.col();
+    CostType dy = goal_node_.row() - n.row();
+    return std::sqrt(dx * dx + dy * dy);
+}
+
 BoardGraph::BoardGraph(int row_num, int col_num)
-    : row_num_(row_num), col_num_(col_num), g_(), nodes_(), edges_(), fe_()
+    : g_(), row_num_(row_num), col_num_(col_num), fe_()
 {
     if ((row_num <= 0) || (col_num <= 0)) {
         throw Exception("invalid size");
     }
 
-    g_ = graph_t(row_num * col_num);
+    g_ = graph_t(row_num_ * col_num_);
 
-    for (int i = 0; i < row_num * col_num; ++i) {
-        nodes_.push_back(i);
-    }
-
+    std::vector<std::pair<int, int>> edges;
+    int idx;
     int nidx;
     for (int i = 0; i < row_num; ++i) {
         for (int j = 0; j < col_num; ++j) {
+            idx = i * col_num + j;
             if (j != 0) {
                 nidx = i * col_num + j - 1;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
             if (j != col_num - 1) {
                 nidx = i * col_num + j + 1;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
             if (i != 0) {
                 nidx = (i - 1) * col_num + j;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
             if (i != row_num - 1) {
                 nidx = (i + 1) * col_num + j;
-                edges_.insert(edge(nodes_[i * col_num + j], nodes_[nidx]));
+                edges.push_back(std::pair<int, int>(idx, nidx));
             }
         }
     }
 
-    WeightMap weightmap = boost::get(boost::edge_weight, g_);
     edge_descriptor e;
     bool b;
-    for (auto &it : edges_) {
+    for (auto &it : edges) {
         boost::tie(e, b) = boost::add_edge(it.first, it.second, g_);
-        weightmap[e] = 1;
+        g_[e].weight = 1;
+        g_[e].is_tmp = false;
     }
 }
 
@@ -93,206 +118,80 @@ void BoardGraph::remove_edges(const Node &node1, const Node &node2)
 {
     int inode1 = node1.row() * col_num_ + node1.col();
     int inode2 = node2.row() * col_num_ + node2.col();
-    edge_descriptor ed;
+    edge_descriptor e;
     bool b;
 
-    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
+    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
     if (b) {
-        g_.remove_edge(ed);
+        g_.remove_edge(e);
     }
 
-    boost::tie(ed, b) = boost::edge(inode2, inode1, g_);
+    boost::tie(e, b) = boost::edge(inode2, inode1, g_);
     if (b) {
-        g_.remove_edge(ed);
+        g_.remove_edge(e);
     }
-
-    edges_.erase(edge(inode1, inode2));
-    edges_.erase(edge(inode2, inode1));
 }
 
-void BoardGraph::block_neighbours(const Node &node)
+void BoardGraph::block_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
-    int nf = 0;
-    std::map<int, int> neighbours;
+    block_inode(inode);
 
-    if (is_neighbours(inode, inode - 1)) {
-        block_edge(inode - 1, inode);
-        nf |= 1;
-        neighbours[0] = inode - 1;
-    }
-    if (is_neighbours(inode, inode + 1)) {
-        block_edge(inode + 1, inode);
-        nf |= 4;
-        neighbours[2] = inode + 1;
-    }
-    if (is_neighbours(inode, inode - col_num_)) {
-        block_edge(inode - col_num_, inode);
-        nf |= 2;
-        neighbours[1] = inode - col_num_;
-    }
-    if (is_neighbours(inode, inode + col_num_)) {
-        block_edge(inode + col_num_, inode);
-        nf |= 8;
-        neighbours[3] = inode + col_num_;
-    }
-
-    // link neighbours with each other
-    for (int i = 0; i < 4; ++i) {
-        if (nf & (1 << i)) {
-            // path to the opposite node is open
-            if (nf & (1 << ((i + 2) % 4))) {
-                unblock_edge(neighbours[i], neighbours[(i + 2) % 4]);
-            }
-            // path to the opposite node is blocked, open pathes to diagonal nodes
-            else {
-                if (nf & (1 << ((i + 1) % 4))) {
-                    unblock_edge(neighbours[i], neighbours[(i + 1) % 4]);
-                }
-                if (nf & (1 << ((i + 3) % 4))) {
-                    unblock_edge(neighbours[i], neighbours[(i + 3) % 4]);
-                }
-            }
+    IndexMap index = get(boost::vertex_index, g_);
+    std::set<int> neighbours;
+    std::set<std::pair<int, int>> tmp_edges;
+    vertex_descriptor v = boost::vertex(inode, g_);
+    edge_descriptor e;
+    vertex_descriptor source_v;
+    vertex_descriptor target_v;
+    in_edge_iterator it;
+    in_edge_iterator it_end;
+    for (tie(it, it_end) = boost::in_edges(v, g_); it != it_end; ++it) {
+        e = *it;
+        if (!g_[e].is_tmp) {
+            continue;
         }
+        source_v = boost::source(e, g_);
+        target_v = boost::target(e, g_);
+        tmp_edges.insert(std::make_pair(source_v, target_v));
+        neighbours.insert(g_[e].interm_inode);
+    }
+
+    for (auto tmp_edge : tmp_edges) {
+        block_edge(index[tmp_edge.first], index[tmp_edge.second], true);
+    }
+
+    for (int neighbour_inode : neighbours) {
+        block_inode(neighbour_inode);
     }
 }
 
-void BoardGraph::unblock_neighbours(const Node &node)
+void BoardGraph::unblock_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
-    int nf = 0;
-    std::map<int, int> neighbours;
-
-    if (is_neighbours(inode, inode - 1)) {
-        unblock_edge(inode - 1, inode);
-        nf |= 1;
-        neighbours[0] = inode - 1;
-    }
-    if (is_neighbours(inode, inode + 1)) {
-        unblock_edge(inode + 1, inode);
-        nf |= 4;
-        neighbours[2] = inode + 1;
-    }
-    if (is_neighbours(inode, inode - col_num_)) {
-        unblock_edge(inode - col_num_, inode);
-        nf |= 2;
-        neighbours[1] = inode - col_num_;
-    }
-    if (is_neighbours(inode, inode + col_num_)) {
-        unblock_edge(inode + col_num_, inode);
-        nf |= 8;
-        neighbours[3] = inode + col_num_;
-    }
-
-    // close links between node's neighbours
-    for (int i = 0; i < 4; ++i) {
-        if (nf & (1 << i)) {
-            // path to the opposite node is open
-            if (nf & (1 << ((i + 2) % 4))) {
-                block_edge(neighbours[i], neighbours[(i + 2) % 4]);
-            }
-            // path to the opposite node is blocked, open pathes to diagonal nodes
-            else {
-                if (nf & (1 << ((i + 1) % 4))) {
-                    block_edge(neighbours[i], neighbours[(i + 1) % 4]);
-                }
-                if (nf & (1 << ((i + 3) % 4))) {
-                    block_edge(neighbours[i], neighbours[(i + 3) % 4]);
-                }
-            }
-        }
-    }
+    unblock_inode(inode);
 }
 
-void BoardGraph::get_neighbours(const Node &node,
-        std::set<Node> *node_list) const
+void BoardGraph::get_out_node_list(const Node &node,
+        std::vector<Node> *node_list) const
 {
     IndexMap index = get(boost::vertex_index, g_);
     int inode = node.row() * col_num_ + node.col();
+    vertex_descriptor v = boost::vertex(inode, g_);
     Node neighbour_node;
 
-    std::pair<adjacency_iterator, adjacency_iterator> neighbours =
-        boost::adjacent_vertices(boost::vertex(inode, g_), g_);
-    for (; neighbours.first != neighbours.second; ++ neighbours.first) {
-        neighbour_node.set_row((int) index[*neighbours.first] / row_num_);
-        neighbour_node.set_col((int) index[*neighbours.first] % col_num_);
-        node_list->insert(neighbour_node);
+    adjacency_iterator it;
+    adjacency_iterator it_end;
+    for (boost::tie(it, it_end) = boost::adjacent_vertices(v, g_);
+            it != it_end; ++ it) {
+        neighbour_node.set_row(index[*it] / row_num_);
+        neighbour_node.set_col(index[*it] % col_num_);
+        node_list->push_back(neighbour_node);
     }
 }
 
 bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
         std::list<Node> *path) const
-{
-    int start_inode = start_node.row() * col_num_ + start_node.col();
-    int end_inode = end_node.row() * col_num_ + end_node.col();
-
-    std::vector<vertex> p(boost::num_vertices(g_));
-    std::vector<int> d(boost::num_vertices(g_));
-
-    vertex start = boost::vertex(start_inode, g_);
-    vertex end = boost::vertex(end_inode, g_);
-
-    Node node;
-
-    try {
-        astar_search(g_, start, boost::astar_heuristic<graph_t, int>(),
-                boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(astar_goal_visitor<vertex>(end)));
-    }
-    catch (found_goal fg) {
-        for (vertex v = end_inode;; v = p[v]) {
-            if (p[v] == v)
-                break;
-            node = Node(v / col_num_, v % col_num_);
-            path->push_front(node);
-        }
-        return true;
-    }
-
-    return false;
-}
-
-bool BoardGraph::is_adjacent(const Node &node1, const Node &node2) const
-{
-    int inode1 = node1.row() * col_num_ + node1.col();
-    int inode2 = node2.row() * col_num_ + node2.col();
-
-    IndexMap index = get(boost::vertex_index, g_);
-    std::pair<adjacency_iterator, adjacency_iterator> neighbours =
-        boost::adjacent_vertices(boost::vertex(inode1, g_), g_);
-
-    for (; neighbours.first != neighbours.second; ++ neighbours.first) {
-        if ((int) index[*neighbours.first] == inode2) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void BoardGraph::filter_edges(const Node &node1, const Node &node2)
-{
-    int inode1 = node1.row() * col_num_ + node1.col();
-    int inode2 = node2.row() * col_num_ + node2.col();
-    edge_descriptor ed;
-    bool b;
-
-    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
-    if (b) {
-        fe_.add_edge(ed);
-    }
-
-    boost::tie(ed, b) = boost::edge(inode2, inode1, g_);
-    if (b) {
-        fe_.add_edge(ed);
-    }
-}
-
-void BoardGraph::reset_filters()
-{
-    fe_.clear();
-}
-
-bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node) const
 {
     int start_inode = start_node.row() * col_num_ + start_node.col();
     int end_inode = end_node.row() * col_num_ + end_node.col();
@@ -305,41 +204,268 @@ bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node) co
     boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor start = boost::vertex(start_inode, g_);
     boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor end = boost::vertex(end_inode, g_);
 
+    Node node;
+
+    const_edge_info_map_t edge_info_map = boost::get(&edge_info_t::weight, g_);
     try {
-        astar_search(fg, start, boost::astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(),
-                boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(astar_goal_visitor<vertex>(end)));
+        astar_search(fg, start,
+                astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(col_num_, end_node),
+                boost::predecessor_map(&p[0])
+                    .distance_map(&d[0])
+                    .weight_map(edge_info_map)
+                    .visitor(astar_goal_visitor<vertex_descriptor>(end)));
     }
     catch (found_goal fg) {
+        for (vertex_descriptor v = end_inode;; v = p[v]) {
+            if (p[v] == v)
+                break;
+            node = Node(v / col_num_, v % col_num_);
+            path->push_front(node);
+        }
         return true;
     }
 
     return false;
 }
 
-bool BoardGraph::is_neighbours(int inode1, int inode2) const
+bool BoardGraph::is_adjacent(const Node &from_node, const Node &to_node) const
 {
-    return (edges_.count(edge(inode1, inode2)) > 0);
+    int from_inode = from_node.row() * col_num_ + from_node.col();
+    int to_inode = to_node.row() * col_num_ + to_node.col();
+    return is_adjacent(from_inode, to_inode);
 }
 
-void BoardGraph::block_edge(int inode1, int inode2)
+void BoardGraph::reset_filters()
 {
-    edge_descriptor ed;
-    bool b;
+    fe_.clear();
+}
 
-    boost::tie(ed, b) = boost::edge(inode1, inode2, g_);
-    if (b) {
-        g_.remove_edge(ed);
+bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node,
+        const std::vector<std::pair<Node, Node>> blocked_edge_list) const
+{
+    FilterEdges fe;
+    for (auto blocked_edge : blocked_edge_list) {
+        filter_edges(&fe, blocked_edge.first, blocked_edge.second);
+    }
+
+    int start_inode = start_node.row() * col_num_ + start_node.col();
+    int end_inode = end_node.row() * col_num_ + end_node.col();
+
+    boost::filtered_graph<graph_t, FilterEdges> fg(g_, fe);
+
+    std::vector<boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor> p(boost::num_vertices(fg));
+    std::vector<int> d(boost::num_vertices(fg));
+
+    boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor start = boost::vertex(start_inode, g_);
+    boost::filtered_graph<graph_t, FilterEdges>::vertex_descriptor end = boost::vertex(end_inode, g_);
+
+    const_edge_info_map_t edge_info_map = boost::get(&edge_info_t::weight, g_);
+    try {
+        astar_search(fg, start,
+                astar_heuristic<boost::filtered_graph<graph_t, FilterEdges>, int>(col_num_, end_node),
+                boost::predecessor_map(&p[0])
+                    .distance_map(&d[0])
+                    .weight_map(edge_info_map)
+                    .visitor(astar_goal_visitor<vertex_descriptor>(end)));
+    }
+    catch (found_goal &fg) {
+        return true;
+    }
+
+    return false;
+}
+
+bool BoardGraph::is_adjacent(int from_inode, int to_inode) const
+{
+    if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
+        return false;
+    }
+
+    edge_descriptor e;
+    bool b;
+    boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
+    if (b && fe_.exists(e)) {
+        b = false;
+    }
+    return b;
+}
+
+void BoardGraph::block_inode(int inode)
+{
+    int nf = 0;
+    std::map<int, int> neighbours;
+
+    // block all edges to the blocked node
+    block_edge(inode - 1, inode, false);
+    block_edge(inode + 1, inode, false);
+    block_edge(inode - col_num_, inode, false);
+    block_edge(inode + col_num_, inode, false);
+
+    if (is_adjacent(inode, inode - 1)) {
+        nf |= 1;
+        neighbours[0] = inode - 1;
+    }
+    if (is_adjacent(inode, inode + 1)) {
+        nf |= 4;
+        neighbours[2] = inode + 1;
+    }
+    if (is_adjacent(inode, inode - col_num_)) {
+        nf |= 2;
+        neighbours[1] = inode - col_num_;
+    }
+    if (is_adjacent(inode, inode + col_num_)) {
+        nf |= 8;
+        neighbours[3] = inode + col_num_;
+    }
+
+    // link neighbours with each other
+    for (int i = 0; i < 4; ++i) {
+        if (nf & (1 << i)) {
+            // path to the opposite node is open
+            if (nf & (1 << ((i + 2) % 4))) {
+                unblock_edge(neighbours[i], neighbours[(i + 2) % 4], true, inode);
+            }
+            // path to the opposite node is blocked, open pathes to diagonal nodes
+            else {
+                if (nf & (1 << ((i + 1) % 4))) {
+                    unblock_edge(neighbours[i], neighbours[(i + 1) % 4], true, inode);
+                }
+                if (nf & (1 << ((i + 3) % 4))) {
+                    unblock_edge(neighbours[i], neighbours[(i + 3) % 4], true, inode);
+                }
+            }
+        }
     }
 }
 
-void BoardGraph::unblock_edge(int inode1, int inode2)
+void BoardGraph::unblock_inode(int inode)
 {
-    WeightMap weightmap = boost::get(boost::edge_weight, g_);
+    int nf = 0;
+    std::map<int, int> neighbours;
+
+    unblock_edge(inode - 1, inode, false);
+    unblock_edge(inode + 1, inode, false);
+    unblock_edge(inode - col_num_, inode, false);
+    unblock_edge(inode + col_num_, inode, false);
+
+    if (is_adjacent(inode, inode - 1)) {
+        nf |= 1;
+        neighbours[0] = inode - 1;
+    }
+    if (is_adjacent(inode, inode + 1)) {
+        nf |= 4;
+        neighbours[2] = inode + 1;
+    }
+    if (is_adjacent(inode, inode - col_num_)) {
+        nf |= 2;
+        neighbours[1] = inode - col_num_;
+    }
+    if (is_adjacent(inode, inode + col_num_)) {
+        nf |= 8;
+        neighbours[3] = inode + col_num_;
+    }
+
+    // close links between node's neighbours
+    for (int i = 0; i < 4; ++i) {
+        if (nf & (1 << i)) {
+            // path to the opposite node is open
+            if (nf & (1 << ((i + 2) % 4))) {
+                block_edge(neighbours[i], neighbours[(i + 2) % 4], true);
+            }
+            // path to the opposite node is blocked, open pathes to diagonal nodes
+            else {
+                if (nf & (1 << ((i + 1) % 4))) {
+                    block_edge(neighbours[i], neighbours[(i + 1) % 4], true);
+                }
+                if (nf & (1 << ((i + 3) % 4))) {
+                    block_edge(neighbours[i], neighbours[(i + 3) % 4], true);
+                }
+            }
+        }
+    }
+}
+
+bool BoardGraph::block_edge(int from_inode, int to_inode, bool is_tmp)
+{
+    if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
+        return false;
+    }
+
+    edge_descriptor e;
+    bool b;
+    boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
+    if (b) {
+        // edge is permanent, block it temporarily via adding to filtered graph
+        if (!is_tmp) {
+            fe_.add_edge(e);
+        }
+        // edge is temporary, remove it from the graph
+        else if (g_[e].is_tmp) {
+            boost::remove_edge(e, g_);
+        }
+        // @todo handle this situation
+        else {
+        }
+    }
+    return b;
+}
+
+bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode)
+{
+    if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
+        return false;
+    }
+
     edge_descriptor e;
     bool b;
 
-    boost::tie(e, b) = boost::add_edge(inode1, inode2, g_);
-    weightmap[e] = 1;
+    if (is_tmp) {
+        boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
+        if (b) {
+            g_[e].weight = 1;
+            g_[e].is_tmp = true;
+            g_[e].interm_inode = interm_inode;
+        }
+        // @todo handle
+        else {
+        }
+    }
+    else {
+        boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
+        if (b) {
+            fe_.rm_edge(e);
+        }
+    }
+
+    return b;
+}
+
+void BoardGraph::filter_edges(FilterEdges *fe, const Node &node1,
+        const Node &node2) const
+{
+    int inode1 = node1.row() * col_num_ + node1.col();
+    int inode2 = node2.row() * col_num_ + node2.col();
+    edge_descriptor e;
+    bool b;
+
+    boost::tie(e, b) = boost::edge(inode1, inode2, g_);
+    if (b) {
+        fe->add_edge(e);
+    }
+
+    boost::tie(e, b) = boost::edge(inode2, inode1, g_);
+    if (b) {
+        fe->add_edge(e);
+    }
+}
+
+bool BoardGraph::is_inode_valid(int inode) const
+{
+    if ((inode < 0)
+            || (static_cast<size_t>(inode) >= boost::num_vertices(g_))) {
+        return false;
+    }
+    return true;
 }
 
 }  /* namespace Quoridor */
