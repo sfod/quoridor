@@ -96,7 +96,7 @@ public:
             const std::vector<std::pair<Node, Node>> blocked_edge_list) const;
 
 private:
-    bool is_adjacent(int from_inode, int to_inode) const;
+    bool is_adjacent(int from_inode, int to_inode, bool check_tmp_edges) const;
     void block_inode(int inode);
     void unblock_inode(int inode);
     bool block_edge(int from_inode, int to_inode, bool is_tmp);
