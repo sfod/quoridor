@@ -419,22 +419,23 @@ bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp, int int
     edge_descriptor e;
     bool b;
 
+    boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
+
     if (is_tmp) {
-        boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
-        if (b) {
-            g_[e].weight = 1;
-            g_[e].is_tmp = true;
-            g_[e].interm_inode = interm_inode;
-        }
-        // @todo handle
-        else {
+        if (!b) {
+            boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
+            if (b) {
+                g_[e].weight = 1;
+                g_[e].is_tmp = true;
+                g_[e].interm_inode = interm_inode;
+            }
+            // @todo handle
+            else {
+            }
         }
     }
-    else {
-        boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
-        if (b) {
-            fe_.rm_edge(e);
-        }
+    else if (b) {
+        fe_.rm_edge(e);
     }
 
     return b;
