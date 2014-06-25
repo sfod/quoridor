@@ -249,6 +249,10 @@ bool BoardGraph::is_path_exists(const Node &start_node, const Node &end_node,
 
 bool BoardGraph::is_adjacent(int from_inode, int to_inode) const
 {
+    if (!is_inode_valid(from_inode) || !is_inode_valid(to_inode)) {
+        return false;
+    }
+
     edge_descriptor e;
     bool b;
     boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
