@@ -141,27 +141,20 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 double MiddlingPlayer::evaluate(const Game &game) const
 {
     double max_k = 0;
-
-    for (auto goal_node : goal_nodes_) {
-        std::list<Node> path;
-        if (game.get_path(pawn_, goal_node, &path)) {
-            double k = 1 / static_cast<double>(path.size());
-            max_k = std::max(k, max_k);
-        }
-    }
+    std::list<Node> path;
+    game.shortest_path(game_->pawn_data(pawn_).node, goal_nodes_, &path);
+    double k = 1 / static_cast<double>(path.size());
+    max_k = std::max(k, max_k);
 
     double rival_max_k = 0;
     for (auto pawn_data : game.pawn_data_list()) {
         if (pawn_data.pawn == pawn_) {
             continue;
         }
-        for (auto goal_node : pawn_data.goal_nodes) {
-            std::list<Node> path;
-            if (game.get_path(pawn_data.pawn, goal_node, &path)) {
-                double k = 1 / static_cast<double>(path.size());
-                rival_max_k = std::max(k, rival_max_k);
-            }
-        }
+        std::list<Node> path;
+        game.shortest_path(pawn_data.node, pawn_data.goal_nodes, &path);
+        double k = 1 / static_cast<double>(path.size());
+        rival_max_k = std::max(k, rival_max_k);
     }
 
     return max_k - rival_max_k;
