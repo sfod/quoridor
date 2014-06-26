@@ -152,10 +152,22 @@ bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
 void Game::possible_moves(std::shared_ptr<Pawn> pawn,
         std::vector<IMove*> *moves) const
 {
+    const pawn_data_t &pawn_data = *pawn_data_list_.get<by_pawn>().find(pawn);
     std::vector<Node> nodes;
-    bg_.get_out_node_list(pawn_data_list_.get<by_pawn>().find(pawn)->node, &nodes);
+    bg_.get_out_node_list(pawn_data.node, &nodes);
+    std::vector<std::pair<Node, size_t>> node_pathes;
     for (auto node : nodes) {
-        moves->push_back(new WalkMove(node));
+        node_pathes.push_back(std::make_pair(node, shortest_path(node, pawn_data.goal_nodes, NULL)));
+    }
+
+    std::sort(node_pathes.begin(), node_pathes.end(),
+            [](std::pair<Node, size_t> a, std::pair<Node, size_t> b) {
+                return a.second < b.second;
+            }
+    );
+
+    for (auto p : node_pathes) {
+        moves->push_back(new WalkMove(p.first));
     }
 
     std::vector<Wall> walls;
