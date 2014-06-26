@@ -50,7 +50,7 @@ public:
     void switch_pawn();
     const pawn_data_t &cur_pawn_data() const;
     const pawn_data_list_t &pawn_data_list() const;
-    const pawn_data_t &pawn_data(std::shared_ptr<Pawn> &pawn) const;
+    const pawn_data_t &pawn_data(const std::shared_ptr<Pawn> &pawn) const;
 
     int move_pawn(const Node &node);
     int add_wall(const Wall &wall);

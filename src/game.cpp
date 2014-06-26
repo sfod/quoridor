@@ -91,7 +91,7 @@ const pawn_data_list_t &Game::pawn_data_list() const
     return pawn_data_list_;
 }
 
-const pawn_data_t &Game::pawn_data(std::shared_ptr<Pawn> &pawn) const
+const pawn_data_t &Game::pawn_data(const std::shared_ptr<Pawn> &pawn) const
 {
     return *pawn_data_list_.get<by_pawn>().find(pawn);
 }
