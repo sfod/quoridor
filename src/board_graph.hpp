@@ -87,6 +87,8 @@ public:
     void unblock_node(const Node &node);
     void get_out_node_list(const Node &node, std::vector<Node> *node_list) const;
 
+    size_t shortest_path(const Node &start_node,
+            const std::set<Node> &goal_nodes, std::list<Node> *path) const;
     bool find_path(const Node &start_node, const Node &end_node,
             std::list<Node> *path) const;
     bool is_adjacent(const Node &from_node, const Node &to_node) const;

@@ -137,6 +137,12 @@ bool Game::is_finished() const
     return false;
 }
 
+size_t Game::shortest_path(const Node &start_node,
+        const std::set<Node> &goal_nodes, std::list<Node> *path) const
+{
+    return bg_.shortest_path(start_node, goal_nodes, path);
+}
+
 bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
         std::list<Node> *path) const
 {
