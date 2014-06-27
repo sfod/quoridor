@@ -495,7 +495,9 @@ size_t BoardGraph::cached_shortest_path(const Node &start_node,
         return 0;
     }
 
-    std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
+    if (path != NULL) {
+        std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
+    }
     return it->len;
 }
 
