@@ -103,8 +103,8 @@ struct path_data_t {
     bool is_exists;
 };
 
-struct by_node_len{};
-struct by_node_node{};
+struct by_node_len {};
+struct by_node_node {};
 typedef boost::multi_index_container<
     path_data_t,
     boost::multi_index::indexed_by<
