@@ -1,5 +1,8 @@
 #include "board_graph.hpp"
+#include "logger.hpp"
 #include "exception.hpp"
+
+static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 namespace Quoridor {
 
@@ -65,6 +68,8 @@ CostType astar_heuristic<Graph, CostType>::operator()(typename boost::graph_trai
 BoardGraph::BoardGraph(int row_num, int col_num)
     : g_(), row_num_(row_num), col_num_(col_num), fe_()
 {
+    lg.add_attribute("Tag", blattrs::constant<std::string>("board graph"));
+
     if ((row_num <= 0) || (col_num <= 0)) {
         throw Exception("invalid size");
     }
