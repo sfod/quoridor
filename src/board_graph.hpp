@@ -169,6 +169,7 @@ private:
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
     bool cached_path(const Node &start_node, const Node &end_node,
             std::list<Node> *path) const;
+    void update_cached_path(const Node &node1, const Node &node2) const;
 
 private:
     graph_t g_;

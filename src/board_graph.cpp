@@ -125,6 +125,8 @@ void BoardGraph::remove_edges(const Node &node1, const Node &node2)
     if (b) {
         g_.remove_edge(e);
     }
+
+    update_cached_path(node1, node2);
 }
 
 void BoardGraph::block_node(const Node &node)
@@ -512,6 +514,18 @@ bool BoardGraph::cached_path(const Node &start_node, const Node &end_node,
         return true;
     }
     return false;
+}
+
+void BoardGraph::update_cached_path(const Node &node1, const Node &node2) const
+{
+    for (auto n : path_data_list_) {
+        if ((n.path.get<by_node>().find(node1) != n.path.get<by_node>().end())
+                && (n.path.get<by_node>().find(node2) != n.path.get<by_node>().end())) {
+            std::list<Node> path;
+            find_path(n.start_node, n.end_node, &path);
+            std::cout << "updated path: " << n.start_node << " to " << n.end_node << std::endl;
+        }
+    }
 }
 
 }  /* namespace Quoridor */
