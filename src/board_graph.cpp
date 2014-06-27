@@ -479,8 +479,6 @@ void BoardGraph::add_path_to_cache(const Node &start_node, const Node &end_node,
         path_data.len = path.size();
     }
     path_data.is_exists = is_exists;
-
-    std::cout << "added to cache path: " << start_node << " to " << end_node << std::endl;
 }
 
 size_t BoardGraph::cached_shortest_path(const Node &start_node,
@@ -497,7 +495,6 @@ size_t BoardGraph::cached_shortest_path(const Node &start_node,
     }
 
     std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
-    std::cout << "found cached shortest path" << std::endl;
     return it->len;
 }
 
@@ -509,7 +506,6 @@ bool BoardGraph::cached_path(const Node &start_node, const Node &end_node,
                     .find(boost::make_tuple(start_node, end_node));
     if (it != path_data_list_.get<by_node_node>().end()) {
         std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
-        std::cout << "found cached path" << std::endl;
         return true;
     }
     return false;
