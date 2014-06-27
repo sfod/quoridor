@@ -84,11 +84,13 @@ private:
 };
 
 
+struct by_node {};
 typedef boost::multi_index_container<
     Node,
     boost::multi_index::indexed_by<
         boost::multi_index::random_access<>,
         boost::multi_index::ordered_unique<
+            boost::multi_index::tag<by_node>,
             boost::multi_index::identity<Node>>
     >
 > path_t;
