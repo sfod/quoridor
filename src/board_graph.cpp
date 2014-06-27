@@ -63,7 +63,7 @@ CostType astar_heuristic<Graph, CostType>::operator()(typename boost::graph_trai
 }
 
 BoardGraph::BoardGraph(int row_num, int col_num)
-    : g_(), row_num_(row_num), col_num_(col_num), fe_()
+    : g_(), row_num_(row_num), col_num_(col_num), fe_(), path_data_list_()
 {
     if ((row_num <= 0) || (col_num <= 0)) {
         throw Exception("invalid size");
@@ -193,6 +193,11 @@ void BoardGraph::get_out_node_list(const Node &node,
 size_t BoardGraph::shortest_path(const Node &start_node,
         const std::set<Node> &goal_nodes, std::list<Node> *path) const
 {
+    size_t len;
+    if ((len = cached_shortest_path(start_node, goal_nodes, path)) != 0) {
+        return len;
+    }
+
     size_t min_len = 73;
     for (auto goal_node : goal_nodes) {
         std::list<Node> tmp_path;
@@ -211,6 +216,10 @@ size_t BoardGraph::shortest_path(const Node &start_node,
 bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
         std::list<Node> *path) const
 {
+    if (cached_path(start_node, end_node, path)) {
+        return true;
+    }
+
     int start_inode = start_node.row() * col_num_ + start_node.col();
     int end_inode = end_node.row() * col_num_ + end_node.col();
 
@@ -240,9 +249,12 @@ bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
             node = Node(v / col_num_, v % col_num_);
             path->push_front(node);
         }
+
+        add_path_to_cache(start_node, end_node, *path, true);
         return true;
     }
 
+    add_path_to_cache(start_node, end_node, *path, false);
     return false;
 }
 
@@ -453,6 +465,53 @@ bool BoardGraph::is_inode_valid(int inode) const
         return false;
     }
     return true;
+}
+
+void BoardGraph::add_path_to_cache(const Node &start_node, const Node &end_node,
+        const std::list<Node> &path, bool is_exists) const
+{
+    path_data_t path_data;
+    path_data.start_node = start_node;
+    path_data.end_node = end_node;
+    if (is_exists) {
+        std::copy(path.begin(), path.end(), std::back_inserter(path_data.path));
+        path_data.len = path.size();
+    }
+    path_data.is_exists = is_exists;
+
+    std::cout << "added to cache path: " << start_node << " to " << end_node << std::endl;
+}
+
+size_t BoardGraph::cached_shortest_path(const Node &start_node,
+        const std::set<Node> &goal_nodes, std::list<Node> *path) const
+{
+    path_data_list_t::iterator it = path_data_list_.get<by_node_len>()
+            .upper_bound(boost::make_tuple(start_node, 0));
+    if (it == path_data_list_.get<by_node_len>().end()) {
+        return 0;
+    }
+    // @todo invalidate cache
+    if (goal_nodes.count(it->end_node) == 0) {
+        return 0;
+    }
+
+    std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
+    std::cout << "found cached shortest path" << std::endl;
+    return it->len;
+}
+
+bool BoardGraph::cached_path(const Node &start_node, const Node &end_node,
+        std::list<Node> *path) const
+{
+    path_data_list_t::index<by_node_node>::type::iterator it =
+            path_data_list_.get<by_node_node>()
+                    .find(boost::make_tuple(start_node, end_node));
+    if (it != path_data_list_.get<by_node_node>().end()) {
+        std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
+        std::cout << "found cached path" << std::endl;
+        return true;
+    }
+    return false;
 }
 
 }  /* namespace Quoridor */

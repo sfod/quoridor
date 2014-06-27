@@ -8,6 +8,13 @@
 #include <boost/graph/adjacency_iterator.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/multi_index/composite_key.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/tag.hpp>
+
 #include "node.hpp"
 
 namespace Quoridor {
@@ -76,6 +83,53 @@ private:
     Vertex m_goal;
 };
 
+
+typedef boost::multi_index_container<
+    Node,
+    boost::multi_index::indexed_by<
+        boost::multi_index::random_access<>,
+        boost::multi_index::ordered_unique<
+            boost::multi_index::identity<Node>>
+    >
+> path_t;
+
+struct path_data_t {
+    Node start_node;
+    Node end_node;
+    path_t path;
+    size_t len;
+    bool is_exists;
+};
+
+struct by_node_len{};
+struct by_node_node{};
+typedef boost::multi_index_container<
+    path_data_t,
+    boost::multi_index::indexed_by<
+        boost::multi_index::ordered_non_unique<
+            boost::multi_index::tag<by_node_len>,
+            boost::multi_index::composite_key<
+                path_data_t,
+                boost::multi_index::member<
+                    path_data_t, Node, &path_data_t::start_node>,
+                boost::multi_index::member<
+                    path_data_t, size_t, &path_data_t::len>
+            >
+        >,
+        boost::multi_index::ordered_non_unique<
+            boost::multi_index::tag<by_node_node>,
+            boost::multi_index::composite_key<
+                path_data_t,
+                boost::multi_index::member<
+                    path_data_t, Node, &path_data_t::start_node>,
+                boost::multi_index::member<
+                    path_data_t, Node, &path_data_t::end_node>
+            >
+        >
+    >
+> path_data_list_t;
+
+
 class BoardGraph {
 public:
     BoardGraph(int row_num, int col_num);
@@ -107,10 +161,19 @@ private:
     bool is_inode_valid(int inode) const;
 
 private:
+    void add_path_to_cache(const Node &start_node, const Node &end_node,
+            const std::list<Node> &path, bool is_exists) const;
+    size_t cached_shortest_path(const Node &start_node,
+            const std::set<Node> &goal_nodes, std::list<Node> *path) const;
+    bool cached_path(const Node &start_node, const Node &end_node,
+            std::list<Node> *path) const;
+
+private:
     graph_t g_;
     int row_num_;
     int col_num_;
     FilterEdges fe_;
+    mutable path_data_list_t path_data_list_;
 };
 
 }  /* namespace Quoridor */
