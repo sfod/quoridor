@@ -199,15 +199,16 @@ size_t BoardGraph::shortest_path(const Node &start_node,
     }
 
     size_t min_len = 73;
+    std::list<Node> tmp_path;
     for (auto goal_node : goal_nodes) {
-        std::list<Node> tmp_path;
         if (find_path(start_node, goal_node, &tmp_path)) {
             if (tmp_path.size() < min_len) {
+                min_len = tmp_path.size();
                 if (path != NULL) {
                     *path = std::move(tmp_path);
                 }
-                min_len = path->size();
             }
+            tmp_path.clear();
         }
     }
     return min_len;
