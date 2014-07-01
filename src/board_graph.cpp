@@ -136,7 +136,7 @@ void BoardGraph::block_node(const Node &node)
     block_inode(inode);
 
     IndexMap index = get(boost::vertex_index, g_);
-    std::set<int> neighbours;
+    std::set<int> adjacent_inodes;
     std::set<std::pair<int, int>> tmp_edges;
     vertex_descriptor v = boost::vertex(inode, g_);
     edge_descriptor e;
@@ -152,15 +152,21 @@ void BoardGraph::block_node(const Node &node)
         source_v = boost::source(e, g_);
         target_v = boost::target(e, g_);
         tmp_edges.insert(std::make_pair(source_v, target_v));
-        neighbours.insert(g_[e].interm_inode);
+        adjacent_inodes.insert(g_[e].interm_inode);
     }
 
     for (auto tmp_edge : tmp_edges) {
         block_edge(index[tmp_edge.first], index[tmp_edge.second], true);
     }
 
-    for (int neighbour_inode : neighbours) {
-        block_inode(neighbour_inode);
+    for (int adjacent_inode : adjacent_inodes) {
+        block_inode(adjacent_inode);
+    }
+
+    std::vector<Node> neighbour_nodes;
+    node.neighbours(row_num_, col_num_, &neighbour_nodes);
+    for (const Node &n : neighbour_nodes) {
+        update_cached_path(n);
     }
 }
 
@@ -168,6 +174,12 @@ void BoardGraph::unblock_node(const Node &node)
 {
     int inode = node.row() * col_num_ + node.col();
     unblock_inode(inode);
+
+    std::vector<Node> neighbour_nodes;
+    node.neighbours(row_num_, col_num_, &neighbour_nodes);
+    for (const Node &n : neighbour_nodes) {
+        update_cached_path(n);
+    }
 }
 
 void BoardGraph::get_out_node_list(const Node &node,
