@@ -25,6 +25,7 @@ struct pawn_data_t {
     std::shared_ptr<Pawn> pawn;
     Node node;
     std::set<Node> goal_nodes;
+    int wall_num;
 };
 
 struct by_pawn {};

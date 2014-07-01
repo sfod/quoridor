@@ -23,10 +23,11 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         throw Exception("Invalid number of players: " + std::to_string(pawn_num));
     }
 
-
+    int wall_num = 20 / pawn_list.size();
     for (size_t i = 0; i < pawn_list.size(); ++i) {
         pawn_data_t pawn_data;
         pawn_data.pawn = pawn_list[i];
+        pawn_data.wall_num = wall_num;
 
         pawn_data.idx = pawn_idx_list[i];
         switch (pawn_data.idx) {
@@ -114,8 +115,11 @@ int Game::move_pawn(const Node &node)
 
 int Game::add_wall(const Wall &wall)
 {
-    std::vector<std::pair<Node, Node>> edges;
+    if (pawn_data_list_.find(cur_pawn_idx_)->wall_num == 0) {
+        return -1;
+    }
 
+    std::vector<std::pair<Node, Node>> edges;
     if (try_add_wall(wall, &edges) < 0) {
         return -1;
     }
@@ -124,6 +128,9 @@ int Game::add_wall(const Wall &wall)
     for (auto edge : edges) {
         bg_.remove_edges(edge.first, edge.second);
     }
+
+    pawn_data_list_t::iterator it = pawn_data_list_.find(cur_pawn_idx_);
+    pawn_data_list_.modify(it, [=](pawn_data_t &e){ --e.wall_num; });
 
     return 0;
 }
