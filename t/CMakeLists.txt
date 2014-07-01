@@ -26,7 +26,7 @@ add_test(NAME game_test
 
 # board graph unittests
 set(TEST_TARGET board_graph_unittest)
-set(TEST_TARGET_ADDITIONAL_LIBS gtest)
+set(TEST_TARGET_ADDITIONAL_LIBS gtest boost_log boost_log_setup boost_system)
 add_executable(${TEST_TARGET}
     $<TARGET_OBJECTS:node_cxx_obj>
     $<TARGET_OBJECTS:board_graph_cxx_obj>
