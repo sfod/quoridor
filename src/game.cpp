@@ -177,10 +177,12 @@ void Game::possible_moves(std::shared_ptr<Pawn> pawn,
         moves->push_back(new WalkMove(p.first));
     }
 
-    std::vector<Wall> walls;
-    wg_.possible_walls(&walls);
-    for (auto wall : walls) {
-        moves->push_back(new WallMove(wall));
+    if (pawn_data.wall_num > 0) {
+        std::vector<Wall> walls;
+        wg_.possible_walls(&walls);
+        for (auto wall : walls) {
+            moves->push_back(new WallMove(wall));
+        }
     }
 }
 
