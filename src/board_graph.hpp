@@ -95,7 +95,7 @@ typedef boost::multi_index_container<
     >
 > path_t;
 
-struct path_data_t {
+struct cached_path_data_t {
     Node start_node;
     Node end_node;
     path_t path;
@@ -106,26 +106,26 @@ struct path_data_t {
 struct by_node_len {};
 struct by_node_node {};
 typedef boost::multi_index_container<
-    path_data_t,
+    cached_path_data_t,
     boost::multi_index::indexed_by<
         boost::multi_index::ordered_non_unique<
             boost::multi_index::tag<by_node_len>,
             boost::multi_index::composite_key<
-                path_data_t,
+                cached_path_data_t,
                 boost::multi_index::member<
-                    path_data_t, Node, &path_data_t::start_node>,
+                    cached_path_data_t, Node, &cached_path_data_t::start_node>,
                 boost::multi_index::member<
-                    path_data_t, size_t, &path_data_t::len>
+                    cached_path_data_t, size_t, &cached_path_data_t::len>
             >
         >,
         boost::multi_index::ordered_non_unique<
             boost::multi_index::tag<by_node_node>,
             boost::multi_index::composite_key<
-                path_data_t,
+                cached_path_data_t,
                 boost::multi_index::member<
-                    path_data_t, Node, &path_data_t::start_node>,
+                    cached_path_data_t, Node, &cached_path_data_t::start_node>,
                 boost::multi_index::member<
-                    path_data_t, Node, &path_data_t::end_node>
+                    cached_path_data_t, Node, &cached_path_data_t::end_node>
             >
         >
     >

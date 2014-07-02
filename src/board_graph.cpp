@@ -493,7 +493,7 @@ bool BoardGraph::is_inode_valid(int inode) const
 void BoardGraph::add_path_to_cache(const Node &start_node, const Node &end_node,
         const std::list<Node> &path, bool is_exists) const
 {
-    path_data_t path_data;
+    cached_path_data_t path_data;
     path_data.start_node = start_node;
     path_data.end_node = end_node;
     if (is_exists) {
