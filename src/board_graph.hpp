@@ -170,6 +170,7 @@ private:
     bool cached_path(const Node &start_node, const Node &end_node,
             std::list<Node> *path) const;
     void update_cached_path(const Node &node) const;
+    void remove_cached_path(const Node &node) const;
 
 private:
     graph_t g_;

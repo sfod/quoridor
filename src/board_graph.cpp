@@ -180,6 +180,8 @@ void BoardGraph::unblock_node(const Node &node)
     int inode = node.row() * col_num_ + node.col();
     unblock_inode(inode);
 
+    remove_cached_path(node);
+
     std::vector<Node> neighbour_nodes;
     node.neighbours(row_num_, col_num_, &neighbour_nodes);
     for (const Node &n : neighbour_nodes) {
@@ -544,6 +546,16 @@ void BoardGraph::update_cached_path(const Node &node) const
         else {
             ++it;
         }
+    }
+}
+
+void BoardGraph::remove_cached_path(const Node &node) const
+{
+    path_data_list_t::iterator it;
+    path_data_list_t::iterator it_end;
+    boost::tie(it, it_end) = path_data_list_.get<by_node_len>().equal_range(node);
+    while (it != it_end) {
+        it = path_data_list_.erase(it);
     }
 }
 
