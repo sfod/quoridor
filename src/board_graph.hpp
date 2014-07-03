@@ -84,6 +84,7 @@ private:
 };
 
 
+#ifdef USE_BOARD_GRAPH_CACHE
 struct by_node {};
 typedef boost::multi_index_container<
     Node,
@@ -130,6 +131,7 @@ typedef boost::multi_index_container<
         >
     >
 > path_data_list_t;
+#endif
 
 
 class BoardGraph {
@@ -162,6 +164,7 @@ private:
             const Node &node2) const;
     bool is_inode_valid(int inode) const;
 
+#ifdef USE_BOARD_GRAPH_CACHE
 private:
     void add_path_to_cache(const Node &start_node, const Node &end_node,
             const std::list<Node> &path, bool is_exists) const;
@@ -171,13 +174,16 @@ private:
             std::list<Node> *path) const;
     void update_cached_path(const Node &node) const;
     void remove_cached_path(const Node &node) const;
+#endif
 
 private:
     graph_t g_;
     int row_num_;
     int col_num_;
     FilterEdges fe_;
+#ifdef USE_BOARD_GRAPH_CACHE
     mutable path_data_list_t path_data_list_;
+#endif
 };
 
 }  /* namespace Quoridor */

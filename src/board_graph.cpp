@@ -66,7 +66,10 @@ CostType astar_heuristic<Graph, CostType>::operator()(typename boost::graph_trai
 }
 
 BoardGraph::BoardGraph(int row_num, int col_num)
-    : g_(), row_num_(row_num), col_num_(col_num), fe_(), path_data_list_()
+    : g_(), row_num_(row_num), col_num_(col_num), fe_()
+#ifdef USE_BOARD_GRAPH_CACHE
+      , path_data_list_()
+#endif
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("board graph"));
 
@@ -131,8 +134,10 @@ void BoardGraph::remove_edges(const Node &node1, const Node &node2)
         g_.remove_edge(e);
     }
 
+#ifdef USE_BOARD_GRAPH_CACHE
     update_cached_path(node1);
     update_cached_path(node2);
+#endif
 }
 
 void BoardGraph::block_node(const Node &node)
@@ -168,11 +173,13 @@ void BoardGraph::block_node(const Node &node)
         block_inode(adjacent_inode);
     }
 
+#ifdef USE_BOARD_GRAPH_CACHE
     std::vector<Node> neighbour_nodes;
     node.neighbours(row_num_, col_num_, &neighbour_nodes);
     for (const Node &n : neighbour_nodes) {
         update_cached_path(n);
     }
+#endif
 }
 
 void BoardGraph::unblock_node(const Node &node)
@@ -180,6 +187,7 @@ void BoardGraph::unblock_node(const Node &node)
     int inode = node.row() * col_num_ + node.col();
     unblock_inode(inode);
 
+#ifdef USE_BOARD_GRAPH_CACHE
     remove_cached_path(node);
 
     std::vector<Node> neighbour_nodes;
@@ -187,6 +195,7 @@ void BoardGraph::unblock_node(const Node &node)
     for (const Node &n : neighbour_nodes) {
         update_cached_path(n);
     }
+#endif
 }
 
 void BoardGraph::get_out_node_list(const Node &node,
@@ -215,10 +224,12 @@ void BoardGraph::get_out_node_list(const Node &node,
 size_t BoardGraph::shortest_path(const Node &start_node,
         const std::set<Node> &goal_nodes, std::list<Node> *path) const
 {
+#ifdef USE_BOARD_GRAPH_CACHE
     size_t len;
     if ((len = cached_shortest_path(start_node, goal_nodes, path)) != 0) {
         return len;
     }
+#endif
 
     size_t min_len = 73;
     std::list<Node> tmp_path;
@@ -239,9 +250,11 @@ size_t BoardGraph::shortest_path(const Node &start_node,
 bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
         std::list<Node> *path) const
 {
+#ifdef USE_BOARD_GRAPH_CACHE
     if (cached_path(start_node, end_node, path)) {
         return true;
     }
+#endif
 
     int start_inode = start_node.row() * col_num_ + start_node.col();
     int end_inode = end_node.row() * col_num_ + end_node.col();
@@ -273,11 +286,15 @@ bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
             path->push_front(node);
         }
 
+#ifdef USE_BOARD_GRAPH_CACHE
         add_path_to_cache(start_node, end_node, *path, true);
+#endif
         return true;
     }
 
+#ifdef USE_BOARD_GRAPH_CACHE
     add_path_to_cache(start_node, end_node, *path, false);
+#endif
     return false;
 }
 
@@ -490,6 +507,7 @@ bool BoardGraph::is_inode_valid(int inode) const
     return true;
 }
 
+#ifdef USE_BOARD_GRAPH_CACHE
 void BoardGraph::add_path_to_cache(const Node &start_node, const Node &end_node,
         const std::list<Node> &path, bool is_exists) const
 {
@@ -558,5 +576,6 @@ void BoardGraph::remove_cached_path(const Node &node) const
         it = path_data_list_.erase(it);
     }
 }
+#endif
 
 }  /* namespace Quoridor */
