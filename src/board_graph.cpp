@@ -145,32 +145,15 @@ void BoardGraph::block_node(const Node &node)
     int inode = node.row() * col_num_ + node.col();
     block_inode(inode);
 
-    IndexMap index = get(boost::vertex_index, g_);
-    std::set<int> adjacent_inodes;
-    std::set<std::pair<int, int>> tmp_edges;
-    vertex_descriptor v = boost::vertex(inode, g_);
-    edge_descriptor e;
-    vertex_descriptor source_v;
-    vertex_descriptor target_v;
-    in_edge_iterator it;
-    in_edge_iterator it_end;
-    for (tie(it, it_end) = boost::in_edges(v, g_); it != it_end; ++it) {
-        e = *it;
-        if (!g_[e].is_tmp) {
-            continue;
-        }
-        source_v = boost::source(e, g_);
-        target_v = boost::target(e, g_);
-        tmp_edges.insert(std::make_pair(source_v, target_v));
-        adjacent_inodes.insert(g_[e].interm_inode);
+    std::vector<edge_descriptor> tmp_edges;
+    std::vector<int> blocked_inodes;
+    find_tmp_edges(inode, &tmp_edges);
+    for (auto e : tmp_edges) {
+        blocked_inodes.push_back(g_[e].interm_inode);
+        block_edge(e, true);
     }
-
-    for (auto tmp_edge : tmp_edges) {
-        block_edge(index[tmp_edge.first], index[tmp_edge.second], true);
-    }
-
-    for (int adjacent_inode : adjacent_inodes) {
-        block_inode(adjacent_inode);
+    for (auto inode : blocked_inodes) {
+        block_inode(inode);
     }
 
 #ifdef USE_BOARD_GRAPH_CACHE
@@ -433,19 +416,24 @@ bool BoardGraph::block_edge(int from_inode, int to_inode, bool is_tmp)
     bool b;
     boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
     if (b) {
-        // edge is permanent, block it temporarily via adding to filtered graph
-        if (!is_tmp) {
-            fe_.add_edge(e);
-        }
-        // edge is temporary, remove it from the graph
-        else if (g_[e].is_tmp) {
-            boost::remove_edge(e, g_);
-        }
-        // @todo handle this situation
-        else {
-        }
+        block_edge(e, is_tmp);
     }
     return b;
+}
+
+void BoardGraph::block_edge(edge_descriptor e, bool is_tmp)
+{
+    // edge is permanent, block it temporarily via adding to filtered graph
+    if (!is_tmp) {
+        fe_.add_edge(e);
+    }
+    // edge is temporary, remove it from the graph
+    else if (g_[e].is_tmp) {
+        boost::remove_edge(e, g_);
+    }
+    // @todo handle this situation
+    else {
+    }
 }
 
 bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode)
@@ -505,6 +493,22 @@ bool BoardGraph::is_inode_valid(int inode) const
         return false;
     }
     return true;
+}
+
+void BoardGraph::find_tmp_edges(int inode,
+        std::vector<edge_descriptor> *tmp_edges) const
+{
+    vertex_descriptor v = boost::vertex(inode, g_);
+    edge_descriptor e;
+    in_edge_iterator it;
+    in_edge_iterator it_end;
+    for (tie(it, it_end) = boost::in_edges(v, g_); it != it_end; ++it) {
+        e = *it;
+        if (!g_[e].is_tmp) {
+            continue;
+        }
+        tmp_edges->push_back(e);
+    }
 }
 
 #ifdef USE_BOARD_GRAPH_CACHE

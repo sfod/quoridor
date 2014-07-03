@@ -159,10 +159,13 @@ private:
     void block_inode(int inode);
     void unblock_inode(int inode);
     bool block_edge(int from_inode, int to_inode, bool is_tmp);
+    void block_edge(edge_descriptor e, bool is_tmp);
     bool unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode = -1);
     void filter_edges(FilterEdges *fe, const Node &node1,
             const Node &node2) const;
     bool is_inode_valid(int inode) const;
+    void find_tmp_edges(int inode,
+            std::vector<edge_descriptor> *tmp_edges) const;
 
 #ifdef USE_BOARD_GRAPH_CACHE
 private:
