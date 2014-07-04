@@ -67,10 +67,6 @@ public:
         const;
 
 private:
-    int try_add_wall(const Wall &wall,
-            std::vector<std::pair<Node, Node>> *edges);
-
-private:
     int board_size_;
     pawn_data_list_t pawn_data_list_;
     int cur_pawn_idx_;

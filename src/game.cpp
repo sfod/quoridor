@@ -119,14 +119,42 @@ int Game::add_wall(const Wall &wall)
         return -1;
     }
 
-    std::vector<std::pair<Node, Node>> edges;
-    if (try_add_wall(wall, &edges) < 0) {
+    if (wg_.add_tmp_wall(wall) < 0) {
         return -1;
     }
 
-    wg_.apply_tmp_wall();
-    for (auto edge : edges) {
-        bg_.remove_edges(edge.first, edge.second);
+    std::vector<std::pair<Node, Node>> edge_list;
+
+    Node node1;
+    Node node2;
+    Node node_tmp;
+    if (wall.orientation() == Wall::kHorizontal) {
+        for (int i = 0; i < wall.cnt(); ++i) {
+            node1 = Node(wall.row() - 1, wall.col() + i);
+            node2 = Node(wall.row(), wall.col() + i);
+            edge_list.push_back(std::make_pair(node1, node2));
+        }
+    }
+    else if (wall.orientation() == Wall::kVertical) {
+        for (int i = 0; i < wall.cnt(); ++i) {
+            node1 = Node(wall.row() + i, wall.col() - 1);
+            node2 = Node(wall.row() + i, wall.col());
+            edge_list.push_back(std::make_pair(node1, node2));
+        }
+    }
+    else {
+        return -1;
+    }
+
+    std::vector<goal_nodes_t> goal_nodes_list;
+    for (auto pawn_data : pawn_data_list_) {
+        goal_nodes_t gn;
+        gn.node = pawn_data.node;
+        gn.goal_nodes = &pawn_data.goal_nodes;
+    }
+
+    if (!bg_.remove_edges(edge_list, goal_nodes_list, false)) {
+        return -1;
     }
 
     pawn_data_list_t::iterator it = pawn_data_list_.find(cur_pawn_idx_);
@@ -184,122 +212,6 @@ void Game::possible_moves(std::shared_ptr<Pawn> pawn,
             moves->push_back(new WallMove(wall));
         }
     }
-}
-
-int Game::try_add_wall(const Wall &wall,
-        std::vector<std::pair<Node, Node>> *edges)
-{
-    if (wg_.add_tmp_wall(wall) < 0) {
-        return -1;
-    }
-
-    std::vector<std::pair<Node, Node>> edge_list;
-
-    Node node1;
-    Node node2;
-    Node node_tmp;
-    if (wall.orientation() == Wall::kHorizontal) {
-        for (int i = 0; i < wall.cnt(); ++i) {
-            node1 = Node(wall.row() - 1, wall.col() + i);
-            node2 = Node(wall.row(), wall.col() + i);
-            edge_list.push_back(std::make_pair(node1, node2));
-            edges->push_back(std::make_pair(node1, node2));
-
-            node_tmp = Node(wall.row() + 1, wall.col() + i);
-            if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                    && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                edge_list.push_back(std::make_pair(node1, node_tmp));
-                edges->push_back(std::make_pair(node1, node_tmp));
-            }
-
-            node_tmp = Node(wall.row() - 2, wall.col() + i);
-            if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                    && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                edge_list.push_back(std::make_pair(node_tmp, node2));
-                edges->push_back(std::make_pair(node_tmp, node2));
-            }
-
-            for (int j = i - 1; j <= i + 1; j += 2) {
-                node_tmp = Node(wall.row(), wall.col() + j);
-                if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                        && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    edge_list.push_back(std::make_pair(node1, node_tmp));
-                    edges->push_back(std::make_pair(node1, node_tmp));
-                }
-
-                node_tmp = Node(wall.row() - 1, wall.col() + j);
-                if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                        && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    edge_list.push_back(std::make_pair(node_tmp, node2));
-                    edges->push_back(std::make_pair(node_tmp, node2));
-                }
-            }
-        }
-    }
-    else if (wall.orientation() == Wall::kVertical) {
-        for (int i = 0; i < wall.cnt(); ++i) {
-            node1 = Node(wall.row() + i, wall.col() - 1);
-            node2 = Node(wall.row() + i, wall.col());
-            edge_list.push_back(std::make_pair(node1, node2));
-            edges->push_back(std::make_pair(node1, node2));
-
-            node_tmp = Node(wall.row() + i, wall.col() + 1);
-            if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                    && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                edge_list.push_back(std::make_pair(node1, node_tmp));
-                edges->push_back(std::make_pair(node1, node_tmp));
-            }
-
-            node_tmp = Node(wall.row() + i, wall.col() - 2);
-            if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                    && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                edge_list.push_back(std::make_pair(node_tmp, node2));
-                edges->push_back(std::make_pair(node_tmp, node2));
-            }
-
-            for (int j = i - 1; j <= i + 1; j += 2) {
-                node_tmp = Node(wall.row() + j, wall.col());
-                if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                        && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    edge_list.push_back(std::make_pair(node1, node_tmp));
-                    edges->push_back(std::make_pair(node1, node_tmp));
-                }
-
-                node_tmp = Node(wall.row() + j, wall.col() - 1);
-                if ((node_tmp.row() >= 0) && (node_tmp.row() < board_size_)
-                        && (node_tmp.col() >= 0) && (node_tmp.col() < board_size_)) {
-                    edge_list.push_back(std::make_pair(node_tmp, node2));
-                    edges->push_back(std::make_pair(node_tmp, node2));
-                }
-            }
-        }
-    }
-    else {
-        return -1;
-    }
-
-    bool path_blocked = false;
-
-    for (auto pawn_data : pawn_data_list_) {
-        path_blocked = true;
-        for (auto goal_node : pawn_data.goal_nodes) {
-            if (bg_.is_path_exists(pawn_data.node, goal_node, edge_list)) {
-                path_blocked = false;
-                break;
-            }
-        }
-
-        // wall blocks all pathes to the opposite side for one of pawns
-        if (path_blocked) {
-            break;
-        }
-    }
-
-    if (path_blocked) {
-        return -1;
-    }
-
-    return 0;
 }
 
 }  // namespace Quoridor
