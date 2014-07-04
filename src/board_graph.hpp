@@ -134,12 +134,18 @@ typedef boost::multi_index_container<
 #endif
 
 
+struct goal_nodes_t {
+    Node node;
+    const std::set<Node> *goal_nodes;
+};
+
 class BoardGraph {
 public:
     BoardGraph(int row_num, int col_num);
     ~BoardGraph();
 
-    void remove_edges(const Node &node1, const Node &node2);
+    bool remove_edges(const std::vector<std::pair<Node, Node>> &node_pair_list,
+            const std::vector<goal_nodes_t> &goal_nodes_list, bool check_only);
 
     void block_node(const Node &node);
     void unblock_node(const Node &node);
@@ -151,18 +157,16 @@ public:
             std::list<Node> *path) const;
     bool is_adjacent(const Node &from_node, const Node &to_node) const;
 
-    bool is_path_exists(const Node &start_node, const Node &end_node,
-            const std::vector<std::pair<Node, Node>> blocked_edge_list) const;
-
 private:
+    bool check_paths_to_goal_nodes(
+            const std::vector<goal_nodes_t> &goal_nodes_list,
+            const std::vector<edge_descriptor> &removed_edges) const;
     bool is_adjacent(int from_inode, int to_inode, bool check_tmp_edges) const;
     void block_inode(int inode);
     void unblock_inode(int inode);
     bool block_edge(int from_inode, int to_inode, bool is_tmp);
     void block_edge(edge_descriptor e, bool is_tmp);
     bool unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode = -1);
-    void filter_edges(FilterEdges *fe, const Node &node1,
-            const Node &node2) const;
     bool is_inode_valid(int inode) const;
     void find_tmp_edges(int inode,
             std::vector<edge_descriptor> *tmp_edges) const;
