@@ -66,7 +66,7 @@ CostType astar_heuristic<Graph, CostType>::operator()(typename boost::graph_trai
 }
 
 BoardGraph::BoardGraph(int row_num, int col_num)
-    : g_(), row_num_(row_num), col_num_(col_num), fe_()
+    : g_(), row_num_(row_num), col_num_(col_num), fe_(), tmp_edges_()
 #ifdef USE_BOARD_GRAPH_CACHE
       , path_data_list_()
 #endif
@@ -387,23 +387,10 @@ void BoardGraph::unblock_inode(int inode)
     unblock_edge(inode - col_num_, inode, false);
     unblock_edge(inode + col_num_, inode, false);
 
-    for (int i = 0; i < 4; ++i) {
-        if (is_adjacent(neighbours[i], inode, false)) {
-            // check path across blocked node
-            if (is_adjacent(inode, neighbours[(i + 2) % 4], true)) {
-                block_edge(neighbours[i], neighbours[(i + 2) % 4], true);
-            }
-            // check path to diagonal nodes
-            else {
-                if (is_adjacent(inode, neighbours[(i + 1) % 4], true)) {
-                    block_edge(neighbours[i], neighbours[(i + 1) % 4], true);
-                }
-                if (is_adjacent(inode, neighbours[(i + 3) % 4], true)) {
-                    block_edge(neighbours[i], neighbours[(i + 3) % 4], true);
-                }
-            }
-        }
+    for (auto e : tmp_edges_[inode]) {
+        block_edge(e, true);
     }
+    tmp_edges_.erase(inode);
 }
 
 bool BoardGraph::block_edge(int from_inode, int to_inode, bool is_tmp)
@@ -454,6 +441,7 @@ bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp, int int
                 g_[e].weight = 1;
                 g_[e].is_tmp = true;
                 g_[e].interm_inode = interm_inode;
+                tmp_edges_[g_[e].interm_inode].insert(e);
             }
             // @todo handle
             else {

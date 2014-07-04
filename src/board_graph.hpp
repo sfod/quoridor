@@ -184,6 +184,7 @@ private:
     int row_num_;
     int col_num_;
     FilterEdges fe_;
+    std::map<int, std::set<edge_descriptor>> tmp_edges_;
 #ifdef USE_BOARD_GRAPH_CACHE
     mutable path_data_list_t path_data_list_;
 #endif
