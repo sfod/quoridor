@@ -157,6 +157,8 @@ int Game::add_wall(const Wall &wall)
         return -1;
     }
 
+    wg_.apply_tmp_wall();
+
     pawn_data_list_t::iterator it = pawn_data_list_.find(cur_pawn_idx_);
     pawn_data_list_.modify(it, [=](pawn_data_t &e){ --e.wall_num; });
 
