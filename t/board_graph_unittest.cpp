@@ -47,7 +47,10 @@ TEST_F(BoardGraphTest, find_path_on_empty_board_different_row_and_col)
 
 TEST_F(BoardGraphTest, find_path_on_board_with_walls_same_row)
 {
-    bg_.remove_edges(Node(4,2), Node(4,3));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(4,2), Node(4,3)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
 
     std::list<Node> path;
     bg_.find_path(Node(4, 2), Node(4, 3), &path);
@@ -63,7 +66,10 @@ TEST_F(BoardGraphTest, find_path_on_board_with_walls_same_row)
 // right to check found path length and it's last element only
 TEST_F(BoardGraphTest, find_path_on_board_with_walls_same_col)
 {
-    bg_.remove_edges(Node(1,2), Node(2,2));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(1,2), Node(2,2)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
 
     std::list<Node> path;
     bg_.find_path(Node(0, 2), Node(4, 2), &path);
@@ -364,7 +370,11 @@ TEST_F(BoardGraphTest, unblock_node_in_the_board_corner)
 
 TEST_F(BoardGraphTest, block_node_adjacent_to_wall)
 {
-    bg_.remove_edges(Node(2, 2), Node(3, 2));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(3, 2)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
+
     bg_.block_node(Node(2, 2));
 
     // edges from the blocked node to neighbour nodes
@@ -398,7 +408,10 @@ TEST_F(BoardGraphTest, block_node_adjacent_to_wall)
 
 TEST_F(BoardGraphTest, unblock_node_adjacent_to_wall)
 {
-    bg_.remove_edges(Node(2, 2), Node(3, 2));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(3, 2)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
     bg_.block_node(Node(2, 2));
     bg_.unblock_node(Node(2, 2));
 
@@ -433,8 +446,11 @@ TEST_F(BoardGraphTest, unblock_node_adjacent_to_wall)
 
 TEST_F(BoardGraphTest, block_node_in_walls_corner)
 {
-    bg_.remove_edges(Node(2, 2), Node(3, 2));
-    bg_.remove_edges(Node(2, 2), Node(2, 3));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(3, 2)));
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(2, 3)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
     bg_.block_node(Node(2, 2));
 
     // edges from the blocked node to neighbour nodes
@@ -468,8 +484,11 @@ TEST_F(BoardGraphTest, block_node_in_walls_corner)
 
 TEST_F(BoardGraphTest, unblock_node_in_walls_corner)
 {
-    bg_.remove_edges(Node(2, 2), Node(3, 2));
-    bg_.remove_edges(Node(2, 2), Node(2, 3));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(3, 2)));
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(2, 3)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
     bg_.block_node(Node(2, 2));
     bg_.unblock_node(Node(2, 2));
 
@@ -504,8 +523,11 @@ TEST_F(BoardGraphTest, unblock_node_in_walls_corner)
 
 TEST_F(BoardGraphTest, block_node_between_walls)
 {
-    bg_.remove_edges(Node(2, 2), Node(1, 2));
-    bg_.remove_edges(Node(2, 2), Node(3, 2));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(1, 2)));
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(3, 2)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
     bg_.block_node(Node(2, 2));
 
     // edges from the blocked node to neighbour nodes
@@ -539,8 +561,11 @@ TEST_F(BoardGraphTest, block_node_between_walls)
 
 TEST_F(BoardGraphTest, unblock_node_between_walls)
 {
-    bg_.remove_edges(Node(2, 2), Node(1, 2));
-    bg_.remove_edges(Node(2, 2), Node(3, 2));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(1, 2)));
+    node_pair_list.push_back(std::make_pair(Node(2, 2), Node(3, 2)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
     bg_.block_node(Node(2, 2));
     bg_.unblock_node(Node(2, 2));
 
@@ -575,7 +600,10 @@ TEST_F(BoardGraphTest, unblock_node_between_walls)
 
 TEST_F(BoardGraphTest, block_node_diagonal_to_wall)
 {
-    bg_.remove_edges(Node(2, 3), Node(3, 3));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 3), Node(3, 3)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
     bg_.block_node(Node(2, 2));
 
     // edges from the blocked node to neighbour nodes
@@ -609,7 +637,10 @@ TEST_F(BoardGraphTest, block_node_diagonal_to_wall)
 
 TEST_F(BoardGraphTest, unblock_node_diagonal_to_wall)
 {
-    bg_.remove_edges(Node(2, 3), Node(3, 3));
+    std::vector<std::pair<Node, Node>> node_pair_list;
+    std::vector<goal_nodes_t> goal_nodes_list;
+    node_pair_list.push_back(std::make_pair(Node(2, 3), Node(3, 3)));
+    bg_.remove_edges(node_pair_list, goal_nodes_list, false);
     bg_.block_node(Node(2, 2));
     bg_.unblock_node(Node(2, 2));
 
