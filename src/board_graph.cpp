@@ -171,7 +171,7 @@ bool BoardGraph::remove_edges(
 
         for (auto tmp_edge : removed_tmp_edges) {
             tmp_edges_[tmp_edge.first].erase(tmp_edge.second);
-            if (tmp_edges_.count(tmp_edge.first)) {
+            if (tmp_edges_.count(tmp_edge.first) == 0) {
                 tmp_edges_.erase(tmp_edge.first);
             }
         }
@@ -194,7 +194,12 @@ void BoardGraph::block_node(const Node &node)
     std::vector<int> blocked_inodes;
     find_tmp_edges(inode, &tmp_edges);
     for (auto e : tmp_edges) {
-        blocked_inodes.push_back(g_[e].interm_inode);
+        int interm_inode = g_[e].interm_inode;
+        blocked_inodes.push_back(interm_inode);
+        tmp_edges_[interm_inode].erase(e);
+        if (tmp_edges_.count(interm_inode) == 0) {
+            tmp_edges_.erase(interm_inode);
+        }
         block_edge(e, true);
     }
     for (auto inode : blocked_inodes) {
