@@ -117,6 +117,7 @@ TEST_F(WallGridTest, add_overlapping_walls)
 {
     // prepare walls
     EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kHorizontal, 2, 3, 3)));
+    EXPECT_EQ(-1, wg_.add_wall(Wall(Wall::kHorizontal, 2, 3, 3)));
     EXPECT_EQ(0, wg_.add_wall(Wall(Wall::kVertical, 4, 6, 3)));
 
     EXPECT_EQ(-1, wg_.add_wall(Wall(Wall::kHorizontal, 2, 3, 1)));
