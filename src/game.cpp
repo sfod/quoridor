@@ -151,6 +151,7 @@ int Game::add_wall(const Wall &wall)
         goal_nodes_t gn;
         gn.node = pawn_data.node;
         gn.goal_nodes = &pawn_data.goal_nodes;
+        goal_nodes_list.push_back(gn);
     }
 
     if (!bg_.remove_edges(edge_list, goal_nodes_list, false)) {
