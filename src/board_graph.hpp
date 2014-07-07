@@ -160,7 +160,7 @@ public:
 private:
     bool check_paths_to_goal_nodes(
             const std::vector<goal_nodes_t> &goal_nodes_list,
-            const std::vector<edge_descriptor> &removed_edges) const;
+            const std::vector<std::pair<int, int>> &removed_edges) const;
     bool is_adjacent(int from_inode, int to_inode, bool check_tmp_edges) const;
     void block_inode(int inode);
     void unblock_inode(int inode);
@@ -188,7 +188,7 @@ private:
     int row_num_;
     int col_num_;
     FilterEdges fe_;
-    std::map<int, std::set<edge_descriptor>> tmp_edges_;
+    std::map<int, std::set<std::pair<int, int>>> tmp_edges_;
 #ifdef USE_BOARD_GRAPH_CACHE
     mutable path_data_list_t path_data_list_;
 #endif

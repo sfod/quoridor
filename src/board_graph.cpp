@@ -121,8 +121,8 @@ bool BoardGraph::remove_edges(
         const std::vector<std::pair<Node, Node>> &node_pair_list,
         const std::vector<goal_nodes_t> &goal_nodes_list, bool check_only)
 {
-    std::vector<edge_descriptor> removed_edges;
-    std::vector<std::pair<int, edge_descriptor>> removed_tmp_edges;
+    std::vector<std::pair<int, int>> removed_edges;
+    std::vector<std::pair<int, std::pair<int, int>>> removed_tmp_edges;
 
     for (auto node_pair : node_pair_list) {
         int inode1 = node_pair.first.row() * col_num_ + node_pair.first.col();
@@ -132,29 +132,27 @@ bool BoardGraph::remove_edges(
         bool b;
         boost::tie(e, b) = boost::edge(inode1, inode2, g_);
         if (b) {
-            removed_edges.push_back(e);
+            removed_edges.push_back(std::make_pair(inode1, inode2));
         }
         boost::tie(e, b) = boost::edge(inode2, inode1, g_);
         if (b) {
-            removed_edges.push_back(e);
+            removed_edges.push_back(std::make_pair(inode2, inode1));
         }
 
         // find affected temporary edges
-        vertex_descriptor v1 = boost::vertex(inode1, g_);
-        vertex_descriptor v2 = boost::vertex(inode2, g_);
         if (tmp_edges_.count(inode1) > 0) {
-            for (auto e : tmp_edges_[inode1]) {
-                if ((boost::source(e, g_) == v2) || (boost::target(e, g_) == v2)) {
-                    removed_edges.push_back(e);
-                    removed_tmp_edges.push_back(std::make_pair(inode1, e));
+            for (auto edge_inodes : tmp_edges_[inode1]) {
+                if ((edge_inodes.first == inode2) || (edge_inodes.second == inode2)) {
+                    removed_edges.push_back(edge_inodes);
+                    removed_tmp_edges.push_back(std::make_pair(inode1, edge_inodes));
                 }
             }
         }
         if (tmp_edges_.count(inode2) > 0) {
-            for (auto e : tmp_edges_[inode2]) {
-                if ((boost::source(e, g_) == v1) || (boost::target(e, g_) == v1)) {
-                    removed_edges.push_back(e);
-                    removed_tmp_edges.push_back(std::make_pair(inode2, e));
+            for (auto edge_inodes : tmp_edges_[inode2]) {
+                if ((edge_inodes.first == inode1) || (edge_inodes.second == inode1)) {
+                    removed_edges.push_back(edge_inodes);
+                    removed_tmp_edges.push_back(std::make_pair(inode2, edge_inodes));
                 }
             }
         }
@@ -165,8 +163,18 @@ bool BoardGraph::remove_edges(
     }
 
     if (!check_only) {
-        for (auto e : removed_edges) {
-            g_.remove_edge(e);
+        edge_descriptor e;
+        bool b;
+        for (auto edge_inodes : removed_edges) {
+            boost::tie(e, b) = boost::edge(edge_inodes.first, edge_inodes.second, g_);
+            if (b) {
+                g_.remove_edge(e);
+            }
+            else {
+                throw Exception("graph is inconsistent: edge "
+                        + std::to_string(edge_inodes.first) + ":"
+                        + std::to_string(edge_inodes.second) + " does not exist");
+            }
         }
 
         for (auto tmp_edge : removed_tmp_edges) {
@@ -196,8 +204,8 @@ void BoardGraph::block_node(const Node &node)
     for (auto e : tmp_edges) {
         int interm_inode = g_[e].interm_inode;
         blocked_inodes.push_back(interm_inode);
-        tmp_edges_[interm_inode].erase(e);
-        if (tmp_edges_.count(interm_inode) == 0) {
+        tmp_edges_[interm_inode].erase(std::make_pair(boost::source(e, g_), inode));
+        if (tmp_edges_[interm_inode].empty()) {
             tmp_edges_.erase(interm_inode);
         }
         block_edge(e, true);
@@ -340,11 +348,21 @@ bool BoardGraph::is_adjacent(const Node &from_node, const Node &to_node) const
 
 bool BoardGraph::check_paths_to_goal_nodes(
         const std::vector<goal_nodes_t> &goal_nodes_list,
-        const std::vector<edge_descriptor> &removed_edges) const
+        const std::vector<std::pair<int, int>> &removed_edges) const
 {
     FilterEdges fe;
-    for (auto e : removed_edges) {
-        fe.add_edge(e);
+    for (auto edge_inodes : removed_edges) {
+        edge_descriptor e;
+        bool b;
+        boost::tie(e, b) = boost::edge(edge_inodes.first, edge_inodes.second, g_);
+        if (b) {
+            fe.add_edge(e);
+        }
+        else {
+            throw Exception("graph is inconsistent: temporary edge "
+                    + std::to_string(edge_inodes.first) + ":"
+                    + std::to_string(edge_inodes.second) + " does not exist");
+        }
     }
 
     boost::filtered_graph<graph_t, FilterEdges> fg(g_, fe);
@@ -449,8 +467,8 @@ void BoardGraph::unblock_inode(int inode)
     unblock_edge(inode - col_num_, inode, false);
     unblock_edge(inode + col_num_, inode, false);
 
-    for (auto e : tmp_edges_[inode]) {
-        block_edge(e, true);
+    for (auto edge_inodes : tmp_edges_[inode]) {
+        block_edge(edge_inodes.first, edge_inodes.second, true);
     }
     tmp_edges_.erase(inode);
 }
@@ -478,7 +496,14 @@ void BoardGraph::block_edge(edge_descriptor e, bool is_tmp)
     }
     // edge is temporary, remove it from the graph
     else if (g_[e].is_tmp) {
-        boost::remove_edge(e, g_);
+        vertex_descriptor v1 = boost::source(e, g_);
+        vertex_descriptor v2 = boost::target(e, g_);
+        edge_descriptor tmp_e;
+        bool b;
+        boost::tie(tmp_e, b) = boost::edge(v1, v2, g_);
+        if (b) {
+            boost::remove_edge(e, g_);
+        }
     }
     // @todo handle this situation
     else {
@@ -493,25 +518,18 @@ bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp, int int
 
     edge_descriptor e;
     bool b;
-
     boost::tie(e, b) = boost::edge(from_inode, to_inode, g_);
-
-    if (is_tmp) {
-        if (!b) {
-            boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
-            if (b) {
-                g_[e].weight = 1;
-                g_[e].is_tmp = true;
-                g_[e].interm_inode = interm_inode;
-                tmp_edges_[g_[e].interm_inode].insert(e);
-            }
-            // @todo handle
-            else {
-            }
-        }
-    }
-    else if (b) {
+    if (b && !is_tmp) {
         fe_.rm_edge(e);
+    }
+    else if (!b && is_tmp) {
+        boost::tie(e, b) = boost::add_edge(from_inode, to_inode, g_);
+        if (b) {
+            g_[e].weight = 1;
+            g_[e].is_tmp = true;
+            g_[e].interm_inode = interm_inode;
+            tmp_edges_[g_[e].interm_inode].insert(std::make_pair(from_inode, to_inode));
+        }
     }
 
     return b;
