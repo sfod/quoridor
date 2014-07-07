@@ -147,7 +147,7 @@ int Game::add_wall(const Wall &wall)
     }
 
     std::vector<goal_nodes_t> goal_nodes_list;
-    for (auto pawn_data : pawn_data_list_) {
+    for (const auto &pawn_data : pawn_data_list_) {
         goal_nodes_t gn;
         gn.node = pawn_data.node;
         gn.goal_nodes = &pawn_data.goal_nodes;
