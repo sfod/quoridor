@@ -8,6 +8,13 @@
 #include <boost/graph/adjacency_iterator.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/multi_index/composite_key.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/tag.hpp>
+
 #include "node.hpp"
 
 namespace Quoridor {
@@ -76,12 +83,69 @@ private:
     Vertex m_goal;
 };
 
+
+#ifdef USE_BOARD_GRAPH_CACHE
+struct by_node {};
+typedef boost::multi_index_container<
+    Node,
+    boost::multi_index::indexed_by<
+        boost::multi_index::random_access<>,
+        boost::multi_index::ordered_unique<
+            boost::multi_index::tag<by_node>,
+            boost::multi_index::identity<Node>>
+    >
+> path_t;
+
+struct cached_path_data_t {
+    Node start_node;
+    Node end_node;
+    path_t path;
+    size_t len;
+    bool is_exists;
+};
+
+struct by_node_len {};
+struct by_node_node {};
+typedef boost::multi_index_container<
+    cached_path_data_t,
+    boost::multi_index::indexed_by<
+        boost::multi_index::ordered_non_unique<
+            boost::multi_index::tag<by_node_len>,
+            boost::multi_index::composite_key<
+                cached_path_data_t,
+                boost::multi_index::member<
+                    cached_path_data_t, Node, &cached_path_data_t::start_node>,
+                boost::multi_index::member<
+                    cached_path_data_t, size_t, &cached_path_data_t::len>
+            >
+        >,
+        boost::multi_index::ordered_non_unique<
+            boost::multi_index::tag<by_node_node>,
+            boost::multi_index::composite_key<
+                cached_path_data_t,
+                boost::multi_index::member<
+                    cached_path_data_t, Node, &cached_path_data_t::start_node>,
+                boost::multi_index::member<
+                    cached_path_data_t, Node, &cached_path_data_t::end_node>
+            >
+        >
+    >
+> path_data_list_t;
+#endif
+
+
+struct goal_nodes_t {
+    Node node;
+    const std::set<Node> *goal_nodes;
+};
+
 class BoardGraph {
 public:
     BoardGraph(int row_num, int col_num);
     ~BoardGraph();
 
-    void remove_edges(const Node &node1, const Node &node2);
+    bool remove_edges(const std::vector<std::pair<Node, Node>> &node_pair_list,
+            const std::vector<goal_nodes_t> &goal_nodes_list, bool check_only);
 
     void block_node(const Node &node);
     void unblock_node(const Node &node);
@@ -93,24 +157,41 @@ public:
             std::list<Node> *path) const;
     bool is_adjacent(const Node &from_node, const Node &to_node) const;
 
-    bool is_path_exists(const Node &start_node, const Node &end_node,
-            const std::vector<std::pair<Node, Node>> blocked_edge_list) const;
-
 private:
+    bool check_paths_to_goal_nodes(
+            const std::vector<goal_nodes_t> &goal_nodes_list,
+            const std::vector<std::pair<int, int>> &removed_edges) const;
     bool is_adjacent(int from_inode, int to_inode, bool check_tmp_edges) const;
     void block_inode(int inode);
     void unblock_inode(int inode);
     bool block_edge(int from_inode, int to_inode, bool is_tmp);
+    void block_edge(edge_descriptor e, bool is_tmp);
     bool unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode = -1);
-    void filter_edges(FilterEdges *fe, const Node &node1,
-            const Node &node2) const;
     bool is_inode_valid(int inode) const;
+    void find_tmp_edges(int inode,
+            std::vector<edge_descriptor> *tmp_edges) const;
+
+#ifdef USE_BOARD_GRAPH_CACHE
+private:
+    void add_path_to_cache(const Node &start_node, const Node &end_node,
+            const std::list<Node> &path, bool is_exists) const;
+    size_t cached_shortest_path(const Node &start_node,
+            const std::set<Node> &goal_nodes, std::list<Node> *path) const;
+    bool cached_path(const Node &start_node, const Node &end_node,
+            std::list<Node> *path) const;
+    void update_cached_path(const Node &node) const;
+    void remove_cached_path(const Node &node) const;
+#endif
 
 private:
     graph_t g_;
     int row_num_;
     int col_num_;
     FilterEdges fe_;
+    std::map<int, std::set<std::pair<int, int>>> tmp_edges_;
+#ifdef USE_BOARD_GRAPH_CACHE
+    mutable path_data_list_t path_data_list_;
+#endif
 };
 
 }  /* namespace Quoridor */

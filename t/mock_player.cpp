@@ -33,6 +33,9 @@ MockPlayer::~MockPlayer()
 
 IMove *MockPlayer::get_move()
 {
+    if (moves_.size() == 0) {
+        throw Exception("no more moves");
+    }
     IMove *move = moves_.front();
     moves_.pop_front();
     return move;

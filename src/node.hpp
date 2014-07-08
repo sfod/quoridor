@@ -2,6 +2,7 @@
 #define QUORIDOR_POS_HPP_
 
 #include <iostream>
+#include <vector>
 
 namespace Quoridor {
 
@@ -16,6 +17,9 @@ public:
 
     void set_row(int row) { row_ = row; }
     void set_col(int col) { col_ = col; }
+
+    void neighbours(int row_num, int col_num,
+            std::vector<Node> *neighbours) const;
 
     bool operator<(const Node &node) const;
     bool operator==(const Node &node) const;

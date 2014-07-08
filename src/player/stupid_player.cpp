@@ -37,23 +37,15 @@ IMove *StupidPlayer::get_move()
     boost::random::discrete_distribution<> dist{0.6, 0.6};
 
     if (dist(gen_) == 0) {
-        size_t min_path_len = 81;
-        std::list<Node> min_path;
-        for (auto end_node : goal_nodes_) {
-            std::list<Node> path;
-            if (game_->get_path(pawn_, end_node, &path)) {
-                if (min_path_len > path.size()) {
-                    min_path_len = path.size();
-                    min_path = path;
-                }
-            }
-        }
+        size_t path_len = 81;
+        std::list<Node> path;
+        game_->shortest_path(game_->pawn_data(pawn_).node, goal_nodes_, &path);
 
-        if (min_path.size() == 0) {
+        if (path_len == 0) {
             throw Exception("all pathes are blocked");
         }
 
-        auto node_it = min_path.begin();
+        auto node_it = path.begin();
         Node next_node = *node_it;
         return new WalkMove(next_node);
     }

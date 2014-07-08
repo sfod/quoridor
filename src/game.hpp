@@ -25,6 +25,7 @@ struct pawn_data_t {
     std::shared_ptr<Pawn> pawn;
     Node node;
     std::set<Node> goal_nodes;
+    int wall_num;
 };
 
 struct by_pawn {};
@@ -64,10 +65,6 @@ public:
 
     void possible_moves(std::shared_ptr<Pawn> pawn, std::vector<IMove*> *moves)
         const;
-
-private:
-    int try_add_wall(const Wall &wall,
-            std::vector<std::pair<Node, Node>> *edges);
 
 private:
     int board_size_;
