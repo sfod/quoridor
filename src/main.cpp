@@ -89,10 +89,6 @@ void formatter(boost::log::record_view const &rec, boost::log::formatting_ostrea
 {
     strm << rec[timestamp] << " [" << rec[severity] << "] ";
 
-    for (const auto &n : rec[scope].get()) {
-        strm << "(" << n.scope_name << ") ";
-    }
-
     if (rec[tag_attr]) {
         strm << "(" << rec[tag_attr] << ") ";
     }
