@@ -571,6 +571,9 @@ void BoardGraph::add_path_to_cache(const Node &start_node, const Node &end_node,
         std::copy(path.begin(), path.end(), std::back_inserter(path_data.path));
         path_data.len = path.size();
     }
+    else {
+        path_data.len = 0;
+    }
     path_data.is_exists = is_exists;
     path_data_list_.insert(path_data);
 }
