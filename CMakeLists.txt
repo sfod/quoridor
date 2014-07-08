@@ -14,6 +14,12 @@ if (DEBUG)
     add_definitions(-DDEBUG)
 endif()
 
+option(USE_BOARD_GRAPH_CACHE "use cache" ON)
+if (USE_BOARD_GRAPH_CACHE)
+    message("Compile with cache support")
+    add_definitions(-DUSE_BOARD_GRAPH_CACHE)
+endif()
+
 enable_testing()
 
 add_subdirectory(src)

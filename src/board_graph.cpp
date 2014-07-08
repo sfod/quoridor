@@ -123,6 +123,9 @@ bool BoardGraph::remove_edges(
 {
     std::vector<std::pair<int, int>> removed_edges;
     std::vector<std::pair<int, std::pair<int, int>>> removed_tmp_edges;
+#ifdef USE_BOARD_GRAPH_CACHE
+    std::set<Node> affected_nodes;
+#endif
 
     for (auto node_pair : node_pair_list) {
         int inode1 = node_pair.first.row() * col_num_ + node_pair.first.col();
@@ -133,10 +136,18 @@ bool BoardGraph::remove_edges(
         boost::tie(e, b) = boost::edge(inode1, inode2, g_);
         if (b) {
             removed_edges.push_back(std::make_pair(inode1, inode2));
+#ifdef USE_BOARD_GRAPH_CACHE
+            affected_nodes.insert(node_pair.first);
+            affected_nodes.insert(node_pair.second);
+#endif
         }
         boost::tie(e, b) = boost::edge(inode2, inode1, g_);
         if (b) {
             removed_edges.push_back(std::make_pair(inode2, inode1));
+#ifdef USE_BOARD_GRAPH_CACHE
+            affected_nodes.insert(node_pair.first);
+            affected_nodes.insert(node_pair.second);
+#endif
         }
 
         // find affected temporary edges
@@ -145,6 +156,14 @@ bool BoardGraph::remove_edges(
                 if ((edge_inodes.first == inode2) || (edge_inodes.second == inode2)) {
                     removed_edges.push_back(edge_inodes);
                     removed_tmp_edges.push_back(std::make_pair(inode1, edge_inodes));
+#ifdef USE_BOARD_GRAPH_CACHE
+                    affected_nodes.insert(Node(
+                                edge_inodes.first / col_num_,
+                                edge_inodes.first % col_num_));
+                    affected_nodes.insert(Node(
+                                edge_inodes.second / col_num_,
+                                edge_inodes.second % col_num_));
+#endif
                 }
             }
         }
@@ -153,6 +172,14 @@ bool BoardGraph::remove_edges(
                 if ((edge_inodes.first == inode1) || (edge_inodes.second == inode1)) {
                     removed_edges.push_back(edge_inodes);
                     removed_tmp_edges.push_back(std::make_pair(inode2, edge_inodes));
+#ifdef USE_BOARD_GRAPH_CACHE
+                    affected_nodes.insert(Node(
+                                edge_inodes.first / col_num_,
+                                edge_inodes.first % col_num_));
+                    affected_nodes.insert(Node(
+                                edge_inodes.second / col_num_,
+                                edge_inodes.second % col_num_));
+#endif
                 }
             }
         }
@@ -179,14 +206,15 @@ bool BoardGraph::remove_edges(
 
         for (auto tmp_edge : removed_tmp_edges) {
             tmp_edges_[tmp_edge.first].erase(tmp_edge.second);
-            if (tmp_edges_.count(tmp_edge.first) == 0) {
+            if (tmp_edges_[tmp_edge.first].empty()) {
                 tmp_edges_.erase(tmp_edge.first);
             }
         }
 
 #ifdef USE_BOARD_GRAPH_CACHE
-        update_cached_path(node1);
-        update_cached_path(node2);
+        for (const auto &n : affected_nodes) {
+            update_cached_path(n);
+        }
 #endif
     }
 
@@ -291,9 +319,13 @@ size_t BoardGraph::shortest_path(const Node &start_node,
 bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
         std::list<Node> *path) const
 {
+    if (start_node == end_node) {
+        return true;
+    }
+
 #ifdef USE_BOARD_GRAPH_CACHE
     if (cached_path(start_node, end_node, path)) {
-        return true;
+        return (path->size() != 0);
     }
 #endif
 
@@ -581,20 +613,22 @@ void BoardGraph::add_path_to_cache(const Node &start_node, const Node &end_node,
 size_t BoardGraph::cached_shortest_path(const Node &start_node,
         const std::set<Node> &goal_nodes, std::list<Node> *path) const
 {
-    path_data_list_t::iterator it = path_data_list_.get<by_node_len>()
+    path_data_list_t::iterator down_it = path_data_list_.get<by_node_len>()
             .upper_bound(boost::make_tuple(start_node, 0));
-    if (it == path_data_list_.get<by_node_len>().end()) {
-        return 0;
-    }
-    // @todo invalidate cache
-    if (goal_nodes.count(it->end_node) == 0) {
-        return 0;
+    path_data_list_t::iterator up_it = path_data_list_.get<by_node_len>()
+            .lower_bound(boost::make_tuple(start_node, 73));
+
+    for (auto &e : boost::make_iterator_range(down_it, up_it)) {
+        if (goal_nodes.count(e.end_node) == 0) {
+            continue;
+        }
+        if (path != NULL) {
+            std::copy(e.path.begin(), e.path.end(), std::back_inserter(*path));
+        }
+        return e.len;
     }
 
-    if (path != NULL) {
-        std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
-    }
-    return it->len;
+    return 0;
 }
 
 bool BoardGraph::cached_path(const Node &start_node, const Node &end_node,
@@ -604,7 +638,9 @@ bool BoardGraph::cached_path(const Node &start_node, const Node &end_node,
             path_data_list_.get<by_node_node>()
                     .find(boost::make_tuple(start_node, end_node));
     if (it != path_data_list_.get<by_node_node>().end()) {
-        std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
+        if (it->is_exists) {
+            std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
+        }
         return true;
     }
     return false;
