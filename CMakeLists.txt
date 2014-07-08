@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Werror -pedantic -std=c++0x -O0 -ggdb")
 
 option(DEBUG "debug mode" OFF)
 if (DEBUG)
-    message("turn on debugging")
+    message("Turn on debugging")
     add_definitions(-DDEBUG)
 endif()
 
