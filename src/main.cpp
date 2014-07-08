@@ -96,19 +96,43 @@ void formatter(boost::log::record_view const &rec, boost::log::formatting_ostrea
     strm << rec[blexpr::smessage];
 }
 
+void verbose_formatter(boost::log::record_view const &rec, boost::log::formatting_ostream &strm)
+{
+    strm << rec[timestamp] << " [" << rec[severity] << "] ";
+
+    for (const auto &n : rec[scope].get()) {
+        strm << "(" << n.scope_name << ") ";
+    }
+
+    if (rec[tag_attr]) {
+        strm << "(" << rec[tag_attr] << ") ";
+    }
+
+    strm << rec[blexpr::smessage];
+}
+
 static void init_logging(const std::string &logfile)
 {
     typedef boost::log::sinks::synchronous_sink<
             boost::log::sinks::text_ostream_backend> text_sink;
-    boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
 
+    // set default logger
+    boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
     sink->locked_backend()->add_stream(
             boost::make_shared<std::ofstream>(logfile));
     sink->locked_backend()->auto_flush(true);
     sink->set_formatter(&formatter);
-
     boost::log::core::get()->add_sink(sink);
 
+    // set verbose logger
+    boost::shared_ptr<text_sink> verbose_sink = boost::make_shared<text_sink>();
+    verbose_sink->locked_backend()->add_stream(
+            boost::make_shared<std::ofstream>("verbose_" + logfile));
+    verbose_sink->locked_backend()->auto_flush(true);
+    verbose_sink->set_formatter(&verbose_formatter);
+    boost::log::core::get()->add_sink(verbose_sink);
+
+    // set console logger
     boost::log::add_console_log(
         std::clog,
         boost::log::keywords::format = (
