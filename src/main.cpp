@@ -122,6 +122,7 @@ static void init_logging(const std::string &logfile)
             boost::make_shared<std::ofstream>(logfile));
     sink->locked_backend()->auto_flush(true);
     sink->set_formatter(&formatter);
+    sink->set_filter(severity >= boost::log::trivial::info);
     boost::log::core::get()->add_sink(sink);
 
     // set verbose logger
