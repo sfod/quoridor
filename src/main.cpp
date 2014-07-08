@@ -55,13 +55,13 @@ static int init(int argc, char **argv)
     po::options_description options("Options");
     options.add_options()
     (
-         "log,l",
+        "log,l",
         po::value<std::string>(&logfile)->default_value("quoridor.log"),
         "logging file"
     )
     (
-         "help,h",
-         "show help message"
+        "help,h",
+        "show help message"
     );
     po::variables_map vm;
 
