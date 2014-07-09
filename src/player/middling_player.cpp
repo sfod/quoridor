@@ -141,7 +141,7 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 double MiddlingPlayer::evaluate(const Game &game) const
 {
     double max_k = 0;
-    size_t len = game.shortest_path(game_->pawn_data(pawn_).node, goal_nodes_, NULL);
+    size_t len = game.shortest_path(game.pawn_data(pawn_).node, goal_nodes_, NULL);
     double k = 1 / static_cast<double>(len);
     max_k = std::max(k, max_k);
 
