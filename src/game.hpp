@@ -11,6 +11,8 @@
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/tag.hpp>
 
+#include <boost/variant.hpp>
+
 #include "board_graph.hpp"
 #include "node.hpp"
 #include "pawn.hpp"
@@ -61,8 +63,8 @@ public:
     size_t shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
 
-    void possible_moves(std::shared_ptr<Pawn> pawn, std::vector<IMove*> *moves)
-        const;
+    std::vector<boost::variant<Node, Wall>> possible_moves(
+            std::shared_ptr<Pawn> pawn) const;
 
 private:
     int board_size_;

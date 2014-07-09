@@ -181,9 +181,11 @@ size_t Game::shortest_path(const Node &start_node,
     return bg_.shortest_path(start_node, goal_nodes, path);
 }
 
-void Game::possible_moves(std::shared_ptr<Pawn> pawn,
-        std::vector<IMove*> *moves) const
+std::vector<boost::variant<Node, Wall>> Game::possible_moves(
+        std::shared_ptr<Pawn> pawn) const
 {
+    std::vector<boost::variant<Node, Wall>> moves;
+
     const pawn_data_t &pawn_data = *pawn_data_list_.get<by_pawn>().find(pawn);
     std::vector<Node> nodes = bg_.adjacent_nodes(pawn_data.node);
     std::vector<std::pair<Node, size_t>> node_pathes;
@@ -198,16 +200,18 @@ void Game::possible_moves(std::shared_ptr<Pawn> pawn,
     );
 
     for (auto p : node_pathes) {
-        moves->push_back(new WalkMove(p.first));
+        moves.push_back(p.first);
     }
 
     if (pawn_data.wall_num > 0) {
         std::vector<Wall> walls;
         wg_.possible_walls(&walls);
         for (auto wall : walls) {
-            moves->push_back(new WallMove(wall));
+            moves.push_back(wall);
         }
     }
+
+    return moves;
 }
 
 }  // namespace Quoridor

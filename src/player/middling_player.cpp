@@ -1,6 +1,7 @@
 #include "middling_player.hpp"
 
 #include <ctime>
+#include <limits>
 
 #include <boost/random/discrete_distribution.hpp>
 
@@ -35,42 +36,43 @@ MiddlingPlayer::~MiddlingPlayer()
 
 IMove *MiddlingPlayer::get_move()
 {
-    IMove *move = NULL;
+    boost::variant<Node, Wall> move;
     kMinimaxNodes = 0;
     double v = get_max_move(*game_, 0, -100, 100, &move);
     BOOST_LOG_DEBUG(lg) << "got k " << v << " (analyzed " << kMinimaxNodes
         << " nodes)";
-    if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-        BOOST_LOG_DEBUG(lg) << "best move is " << m->node().row() << ":"
-            << m->node().col();
+
+    if (Node *node = boost::get<Node>(&move)) {
+        BOOST_LOG_DEBUG(lg) << "best move is " << *node;
+        return new WalkMove(*node);
     }
-    else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-        BOOST_LOG_DEBUG(lg) << "best move is " << m->wall();
+    else if (Wall *wall = boost::get<Wall>(&move)) {
+        BOOST_LOG_DEBUG(lg) << "best move is " << *wall;
+        return new WallMove(*wall);
     }
-    return move;
+
+    return NULL;
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth,
-        double a, double b, IMove **best_move)
+        double a, double b, boost::variant<Node, Wall> *best_move)
 {
     ++kMinimaxNodes;
 
-    std::vector<IMove*> moves;
-    game.possible_moves(pawn_, &moves);
+    std::vector<boost::variant<Node, Wall>> moves = game.possible_moves(pawn_);
     for (auto move : moves) {
         Game game_cp = game;
-        if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-            game_cp.move_pawn(m->node());
+        if (Node *node = boost::get<Node>(&move)) {
+            game_cp.move_pawn(*node);
             if (game_cp.is_finished()) {
                 if (best_move != NULL) {
-                    *best_move = new WalkMove(*m);
+                    *best_move = *node;
                 }
-                a = 1.0f;
                 return a;
             }
         }
-        else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-            if (game_cp.add_wall(m->wall()) < 0) {
+        else if (Wall *wall = boost::get<Wall>(&move)) {
+            if (game_cp.add_wall(*wall) < 0) {
                 continue;
             }
         }
@@ -81,11 +83,11 @@ double MiddlingPlayer::get_max_move(const Game &game, int depth,
             if (val > a) {
                 a = val;
                 if (best_move != NULL) {
-                    if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-                        *best_move = new WalkMove(*m);
+                    if (Node *node = boost::get<Node>(&move)) {
+                        *best_move = *node;
                     }
-                    else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-                        *best_move = new WallMove(*m);
+                    else if (Wall *wall = boost::get<Wall>(&move)) {
+                        *best_move = *wall;
                     }
                 }
             }
@@ -106,19 +108,18 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 {
     ++kMinimaxNodes;
 
-    std::vector<IMove*> moves;
-    game.possible_moves(pawn_, &moves);
+    std::vector<boost::variant<Node, Wall>> moves = game.possible_moves(pawn_);
     for (auto move : moves) {
         Game game_cp = game;
-        if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-            game_cp.move_pawn(m->node());
+        if (Node *node = boost::get<Node>(&move)) {
+            game_cp.move_pawn(*node);
             if (game_cp.is_finished()) {
                 b = -1.0f;
                 return b;
             }
         }
-        else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-            if (game_cp.add_wall(m->wall()) < 0) {
+        else if (Wall *wall = boost::get<Wall>(&move)) {
+            if (game_cp.add_wall(*wall) < 0) {
                 continue;
             }
         }
