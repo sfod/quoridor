@@ -4,7 +4,7 @@
 namespace Quoridor {
 
 // order in which pawns are adding
-// pawns rotates according to their indexes: 0 -> 1 -> 2 -> 3 -> 0 -> ...
+// pawns rotate according to their indexes: 0 -> 1 -> 2 -> 3 -> 0 -> ...
 static const std::vector<int> pawn_idx_list = {0, 2, 1, 3};
 
 Game::Game(int board_size) : board_size_(board_size), pawn_data_list_(),
