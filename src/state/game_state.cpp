@@ -47,7 +47,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
 
     int i = 0;
     for (auto player_type : player_types) {
-        BOOST_LOG_INFO(lg) << "adding player " << player_type;
+        BOOST_LOG_INFO(lg) << "adding player " << player_type << " (" << colors[i] << ")";
         players_[pawn_list_[i]] = pf_.make_player(player_type, game_, pawn_list_[i]);
         ++i;
     }
@@ -225,7 +225,6 @@ void GameState::draw_wall_()
     Node node;
     CEGUI::UVector2 pos;
 
-    BOOST_LOG_INFO(lg) << "adding " << added_wall_;
     if (added_wall_.orientation() == Wall::kHorizontal) {
         for (int i = 0; i < added_wall_.cnt(); ++i) {
             node.set_row(added_wall_.row() - 1);
@@ -292,12 +291,7 @@ void GameState::make_move_()
         int rc;
 
         if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-            BOOST_LOG_DEBUG(lg) << cur_pawn_->color()
-                << " move: " << cur_node.row() << ":" << cur_node.col()
-                << " -> " << walk_move->node().row() << ":"
-                << walk_move->node().col();
-
-            rc = game_->move_pawn(walk_move->node());
+            rc = move_pawn_(walk_move->node());
             if (rc == 0) {
                 pawn_path_.push_back(cur_node);
                 pawn_path_.push_back(game_->cur_pawn_data().node);
@@ -305,13 +299,33 @@ void GameState::make_move_()
             }
         }
         else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
-            rc = game_->add_wall(wall_move->wall());
+            rc = add_wall_(wall_move->wall());
             if (rc == 0) {
-                added_wall_ = wall_move->wall();
                 status_ = kNeedDrawWall;
             }
         }
     }
+}
+
+int GameState::move_pawn_(const Node &node)
+{
+    Node cur_node = game_->cur_pawn_data().node;
+    int rc = game_->move_pawn(node);
+    if (rc == 0) {
+        BOOST_LOG_INFO(lg) << cur_pawn_->color() << ": " << cur_node << " -> "
+            << node;
+    }
+    return rc;
+}
+
+int GameState::add_wall_(const Wall &wall)
+{
+    int rc = game_->add_wall(wall);
+    if (rc == 0) {
+        BOOST_LOG_INFO(lg) << cur_pawn_->color() << ": " << wall;
+        added_wall_ = wall;
+    }
+    return rc;
 }
 
 bool GameState::is_finished_() const
@@ -346,15 +360,12 @@ bool GameState::handle_window_dropped_(const CEGUI::EventArgs &e)
 {
     auto de = static_cast<const CEGUI_Ext::DragEvent&>(e);
     if (pawn_wins_.count(de.window())) {
-        BOOST_LOG_DEBUG(lg) << "pawn was dropped!";
         return handle_pawn_dropped_(de);
     }
     else if (wall_wins_.count(de.window())) {
-        BOOST_LOG_DEBUG(lg) << "wall was dropped!";
         return handle_wall_dropped_(de);
     }
     else {
-        BOOST_LOG_DEBUG(lg) << "unknown object was dropped!";
         return false;
     }
 }
@@ -367,11 +378,8 @@ bool GameState::handle_pawn_dropped_(const CEGUI_Ext::DragEvent &de)
     );
     Node node = normalize_pawn_pos_(rel_pos);
 
-    BOOST_LOG_INFO(lg) << de.window() << " position "
-        << node.row() << ":" << node.col();
-
     CEGUI::UVector2 pos;
-    int rc = game_->move_pawn(node);
+    int rc = move_pawn_(node);
     if (rc == 0) {
         pos = pos_utils_.node_to_pos(node);
         status_ = kPerformedMove;
@@ -393,12 +401,8 @@ bool GameState::handle_wall_dropped_(const CEGUI_Ext::DragEvent &de)
             {568, 568}  // @fixme get parent size
     );
     Wall wall = normalize_wall_pos_(rel_pos);
-    BOOST_LOG_DEBUG(lg) << "adding wall: "
-        << wall.orientation() << ", " << wall.row() << ", "
-        << wall.col();
-    int rc = game_->add_wall(wall);
+    int rc = add_wall_(wall);
     if (rc == 0) {
-        added_wall_ = wall;
         status_ = kNeedDrawWall;
         de.window()->setVisible(false);
     }

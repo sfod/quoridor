@@ -45,6 +45,8 @@ private:
     void post_process_move_();
     void switch_cur_pawn_();
     void make_move_();
+    int move_pawn_(const Node &node);
+    int add_wall_(const Wall &wall);
     bool is_finished_() const;
 
 private:
