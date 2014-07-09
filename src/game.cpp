@@ -181,12 +181,6 @@ size_t Game::shortest_path(const Node &start_node,
     return bg_.shortest_path(start_node, goal_nodes, path);
 }
 
-bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
-        std::list<Node> *path) const
-{
-    return bg_.find_path(pawn_data(pawn).node, node, path);
-}
-
 void Game::possible_moves(std::shared_ptr<Pawn> pawn,
         std::vector<IMove*> *moves) const
 {

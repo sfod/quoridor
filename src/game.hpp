@@ -60,8 +60,6 @@ public:
 
     size_t shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
-    bool get_path(std::shared_ptr<Pawn> pawn, const Node &node,
-            std::list<Node> *path) const;
 
     void possible_moves(std::shared_ptr<Pawn> pawn, std::vector<IMove*> *moves)
         const;
