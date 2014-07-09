@@ -226,9 +226,8 @@ void BoardGraph::block_node(const Node &node)
     int inode = node.row() * col_num_ + node.col();
     block_inode(inode);
 
-    std::vector<edge_descriptor> tmp_edges;
     std::vector<int> blocked_inodes;
-    find_tmp_edges(inode, &tmp_edges);
+    std::vector<edge_descriptor> tmp_edges = find_tmp_edges(inode);
     for (auto e : tmp_edges) {
         int interm_inode = g_[e].interm_inode;
         blocked_inodes.push_back(interm_inode);
@@ -267,27 +266,27 @@ void BoardGraph::unblock_node(const Node &node)
 #endif
 }
 
-void BoardGraph::get_out_node_list(const Node &node,
-        std::vector<Node> *node_list) const
+std::vector<Node> BoardGraph::adjacent_nodes(const Node &node) const
 {
+    std::vector<Node> adjacent_nodes;
+
     IndexMap index = get(boost::vertex_index, g_);
     int inode = node.row() * col_num_ + node.col();
     vertex_descriptor v = boost::vertex(inode, g_);
     vertex_descriptor target_v;
-    Node neighbour_node;
 
     out_edge_iterator it;
     out_edge_iterator it_end;
-    for (boost::tie(it, it_end) = boost::out_edges(v, g_);
-            it != it_end; ++ it) {
+    for (boost::tie(it, it_end) = boost::out_edges(v, g_); it != it_end; ++it) {
         if (fe_.exists(*it)) {
             continue;
         }
         target_v = boost::target(*it, g_);
-        neighbour_node.set_row(index[target_v] / row_num_);
-        neighbour_node.set_col(index[target_v] % col_num_);
-        node_list->push_back(neighbour_node);
+        adjacent_nodes.push_back(
+                Node(index[target_v] / col_num_, index[target_v] % col_num_));
     }
+
+    return adjacent_nodes;
 }
 
 size_t BoardGraph::shortest_path(const Node &start_node,
@@ -576,9 +575,10 @@ bool BoardGraph::is_inode_valid(int inode) const
     return true;
 }
 
-void BoardGraph::find_tmp_edges(int inode,
-        std::vector<edge_descriptor> *tmp_edges) const
+std::vector<edge_descriptor> BoardGraph::find_tmp_edges(int inode) const
 {
+    std::vector<edge_descriptor> tmp_edges;
+
     vertex_descriptor v = boost::vertex(inode, g_);
     edge_descriptor e;
     in_edge_iterator it;
@@ -588,8 +588,10 @@ void BoardGraph::find_tmp_edges(int inode,
         if (!g_[e].is_tmp) {
             continue;
         }
-        tmp_edges->push_back(e);
+        tmp_edges.push_back(e);
     }
+
+    return tmp_edges;
 }
 
 #ifdef USE_BOARD_GRAPH_CACHE

@@ -191,8 +191,7 @@ void Game::possible_moves(std::shared_ptr<Pawn> pawn,
         std::vector<IMove*> *moves) const
 {
     const pawn_data_t &pawn_data = *pawn_data_list_.get<by_pawn>().find(pawn);
-    std::vector<Node> nodes;
-    bg_.get_out_node_list(pawn_data.node, &nodes);
+    std::vector<Node> nodes = bg_.adjacent_nodes(pawn_data.node);
     std::vector<std::pair<Node, size_t>> node_pathes;
     for (auto node : nodes) {
         node_pathes.push_back(std::make_pair(node, shortest_path(node, pawn_data.goal_nodes, NULL)));

@@ -149,7 +149,7 @@ public:
 
     void block_node(const Node &node);
     void unblock_node(const Node &node);
-    void get_out_node_list(const Node &node, std::vector<Node> *node_list) const;
+    std::vector<Node> adjacent_nodes(const Node &node) const;
 
     size_t shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
@@ -168,8 +168,7 @@ private:
     void block_edge(edge_descriptor e, bool is_tmp);
     bool unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode = -1);
     bool is_inode_valid(int inode) const;
-    void find_tmp_edges(int inode,
-            std::vector<edge_descriptor> *tmp_edges) const;
+    std::vector<edge_descriptor> find_tmp_edges(int inode) const;
 
 #ifdef USE_BOARD_GRAPH_CACHE
 private:
