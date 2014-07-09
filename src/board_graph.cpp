@@ -299,32 +299,40 @@ size_t BoardGraph::shortest_path(const Node &start_node,
     }
 #endif
 
-    size_t min_len = 73;
-    std::list<Node> tmp_path;
+    size_t min_len = col_num_ * row_num_ - (col_num_ - 1);
+
+    // @todo copy tmp_path into path only once
     for (auto goal_node : goal_nodes) {
-        if (find_path(start_node, goal_node, &tmp_path)) {
-            if (tmp_path.size() < min_len) {
-                min_len = tmp_path.size();
+        if (auto tmp_path = find_path(start_node, goal_node)) {
+            if (tmp_path->size() < min_len) {
+                min_len = tmp_path->size();
                 if (path != NULL) {
-                    *path = std::move(tmp_path);
+                    *path = tmp_path.get();
                 }
             }
-            tmp_path.clear();
         }
     }
     return min_len;
 }
 
-bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
-        std::list<Node> *path) const
+boost::optional<std::list<Node>> BoardGraph::find_path(const Node &start_node,
+        const Node &end_node) const
 {
+    std::list<Node> path;
+
     if (start_node == end_node) {
-        return true;
+        return boost::optional<std::list<Node>>(path);
     }
 
 #ifdef USE_BOARD_GRAPH_CACHE
-    if (cached_path(start_node, end_node, path)) {
-        return (path->size() != 0);
+    if (auto opt_path = cached_path(start_node, end_node)) {
+        if (opt_path->size() != 0) {
+            return opt_path;
+        }
+        // path is blocked
+        else {
+            return boost::optional<std::list<Node>>();
+        }
     }
 #endif
 
@@ -355,19 +363,20 @@ bool BoardGraph::find_path(const Node &start_node, const Node &end_node,
             if (p[v] == v)
                 break;
             node = Node(v / col_num_, v % col_num_);
-            path->push_front(node);
+            path.push_front(node);
         }
 
 #ifdef USE_BOARD_GRAPH_CACHE
-        add_path_to_cache(start_node, end_node, *path, true);
+        add_path_to_cache(start_node, end_node, path, true);
 #endif
-        return true;
+        return boost::optional<std::list<Node>>(path);
     }
 
 #ifdef USE_BOARD_GRAPH_CACHE
-    add_path_to_cache(start_node, end_node, *path, false);
+    add_path_to_cache(start_node, end_node, path, false);
 #endif
-    return false;
+
+    return boost::optional<std::list<Node>>();
 }
 
 bool BoardGraph::is_adjacent(const Node &from_node, const Node &to_node) const
@@ -633,19 +642,23 @@ size_t BoardGraph::cached_shortest_path(const Node &start_node,
     return 0;
 }
 
-bool BoardGraph::cached_path(const Node &start_node, const Node &end_node,
-        std::list<Node> *path) const
+boost::optional<std::list<Node>> BoardGraph::cached_path(const Node &start_node,
+        const Node &end_node) const
 {
+    std::list<Node> path;
+
     path_data_list_t::index<by_node_node>::type::iterator it =
             path_data_list_.get<by_node_node>()
                     .find(boost::make_tuple(start_node, end_node));
     if (it != path_data_list_.get<by_node_node>().end()) {
         if (it->is_exists) {
-            std::copy(it->path.begin(), it->path.end(), std::back_inserter(*path));
+            std::copy(it->path.begin(), it->path.end(), std::back_inserter(path));
         }
-        return true;
+        return boost::optional<std::list<Node>>(path);
     }
-    return false;
+    else {
+        return boost::optional<std::list<Node>>();
+    }
 }
 
 void BoardGraph::update_cached_path(const Node &node) const

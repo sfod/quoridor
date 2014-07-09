@@ -15,6 +15,8 @@
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/tag.hpp>
 
+#include <boost/optional.hpp>
+
 #include "node.hpp"
 
 namespace Quoridor {
@@ -153,8 +155,8 @@ public:
 
     size_t shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
-    bool find_path(const Node &start_node, const Node &end_node,
-            std::list<Node> *path) const;
+    boost::optional<std::list<Node>> find_path(const Node &start_node,
+            const Node &end_node) const;
     bool is_adjacent(const Node &from_node, const Node &to_node) const;
 
 private:
@@ -176,8 +178,8 @@ private:
             const std::list<Node> &path, bool is_exists) const;
     size_t cached_shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
-    bool cached_path(const Node &start_node, const Node &end_node,
-            std::list<Node> *path) const;
+    boost::optional<std::list<Node>> cached_path(const Node &start_node,
+            const Node &end_node) const;
     void update_cached_path(const Node &node) const;
     void remove_cached_path(const Node &node) const;
 #endif
