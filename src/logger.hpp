@@ -22,6 +22,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace blattrs = boost::log::attributes;
+namespace blexpr = boost::log::expressions;
 
 #define BOOST_LOG_DEBUG(lg) BOOST_LOG_SEV((lg), boost::log::trivial::debug)
 #define BOOST_LOG_INFO(lg) BOOST_LOG_SEV((lg), boost::log::trivial::info)
