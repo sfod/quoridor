@@ -4,8 +4,6 @@
 #include <limits>
 
 #include "logger.hpp"
-#include "walk_move.hpp"
-#include "wall_move.hpp"
 #include "exception.hpp"
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
@@ -32,33 +30,24 @@ MiddlingPlayer::~MiddlingPlayer()
 {
 }
 
-IMove *MiddlingPlayer::get_move()
+move_t MiddlingPlayer::get_move()
 {
-    boost::variant<Node, Wall> move;
+    move_t move;
     kMinimaxNodes = 0;
     double v = get_max_move(*game_, 0,
             -std::numeric_limits<double>::infinity(),
             std::numeric_limits<double>::infinity(), &move);
-
     BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
         << ", analyzed " << kMinimaxNodes << " nodes)";
-
-    if (Node *node = boost::get<Node>(&move)) {
-        return new WalkMove(*node);
-    }
-    else if (Wall *wall = boost::get<Wall>(&move)) {
-        return new WallMove(*wall);
-    }
-
-    return NULL;
+    return move;
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth,
-        double a, double b, boost::variant<Node, Wall> *best_move)
+        double a, double b, move_t *best_move)
 {
     ++kMinimaxNodes;
 
-    std::vector<boost::variant<Node, Wall>> moves = game.possible_moves(pawn_);
+    std::vector<move_t> moves = game.possible_moves(pawn_);
     for (auto move : moves) {
         Game game_cp = game;
         if (Node *node = boost::get<Node>(&move)) {
@@ -107,7 +96,7 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 {
     ++kMinimaxNodes;
 
-    std::vector<boost::variant<Node, Wall>> moves = game.possible_moves(pawn_);
+    std::vector<move_t> moves = game.possible_moves(pawn_);
     for (auto move : moves) {
         Game game_cp = game;
         if (Node *node = boost::get<Node>(&move)) {

@@ -11,14 +11,12 @@
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/tag.hpp>
 
-#include <boost/variant.hpp>
-
 #include "board_graph.hpp"
 #include "node.hpp"
+#include "wall.hpp"
 #include "pawn.hpp"
-#include "walk_move.hpp"
 #include "wall_grid.hpp"
-#include "wall_move.hpp"
+#include "player/iplayer.hpp"
 
 namespace Quoridor {
 
@@ -65,8 +63,7 @@ public:
     size_t shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
 
-    std::vector<boost::variant<Node, Wall>> possible_moves(
-            std::shared_ptr<Pawn> pawn) const;
+    std::vector<move_t> possible_moves(std::shared_ptr<Pawn> pawn) const;
 
 private:
     int row_num_;

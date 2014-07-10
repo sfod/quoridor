@@ -10,8 +10,6 @@ add_executable(${TEST_TARGET}
     $<TARGET_OBJECTS:game_cxx_obj>
     $<TARGET_OBJECTS:wall_cxx_obj>
     $<TARGET_OBJECTS:wall_grid_cxx_obj>
-    $<TARGET_OBJECTS:wall_move_cxx_obj>
-    $<TARGET_OBJECTS:walk_move_cxx_obj>
     $<TARGET_OBJECTS:node_cxx_obj>
     $<TARGET_OBJECTS:board_graph_cxx_obj>
     $<TARGET_OBJECTS:pawn_cxx_obj>

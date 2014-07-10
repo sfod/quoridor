@@ -24,7 +24,7 @@ std::shared_ptr<IPlayer> PlayerFactory::make_player(const std::string &type,
             std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn)
 {
     if (type == "human") {
-        return std::shared_ptr<IPlayer>(new Player(game, pawn));
+        return std::shared_ptr<IPlayer>(new Player());
     }
     else if (type == "stupid") {
         return std::shared_ptr<IPlayer>(new StupidPlayer(game, pawn));

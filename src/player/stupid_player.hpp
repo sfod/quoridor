@@ -10,7 +10,6 @@
 #include "game.hpp"
 #include "pawn.hpp"
 
-
 namespace Quoridor {
 
 class StupidPlayer : public IPlayer {
@@ -18,7 +17,7 @@ public:
     StupidPlayer(std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
     virtual ~StupidPlayer();
 
-    virtual IMove *get_move();
+    virtual move_t get_move();
     virtual bool is_interactive() const { return false; };
 
 private:

@@ -5,8 +5,6 @@ set(CORE_SOURCES
     game
     wall
     wall_grid
-    wall_move
-    walk_move
     node
     board_graph
     pawn

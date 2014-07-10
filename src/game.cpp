@@ -182,10 +182,9 @@ size_t Game::shortest_path(const Node &start_node,
     return bg_.shortest_path(start_node, goal_nodes, path);
 }
 
-std::vector<boost::variant<Node, Wall>> Game::possible_moves(
-        std::shared_ptr<Pawn> pawn) const
+std::vector<move_t> Game::possible_moves(std::shared_ptr<Pawn> pawn) const
 {
-    std::vector<boost::variant<Node, Wall>> moves;
+    std::vector<move_t> moves;
 
     const pawn_data_t &pawn_data = *pawn_data_list_.get<by_pawn>().find(pawn);
     std::vector<Node> nodes = bg_.adjacent_nodes(pawn_data.node);

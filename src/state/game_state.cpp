@@ -1,9 +1,6 @@
 #include "game_state.hpp"
 
 #include "start_game_state.hpp"
-#include "imove.hpp"
-#include "walk_move.hpp"
-#include "wall_move.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
 
@@ -275,34 +272,24 @@ void GameState::switch_cur_pawn_()
 
 void GameState::make_move_()
 {
-    IMove *move = NULL;
 
-    // bot's turn
-    if (!players_[cur_pawn_]->is_interactive()) {
-        move = players_[cur_pawn_]->get_move();
-    }
     // human's turn, handle it in one of event handlers
-    else {
+    if (players_[cur_pawn_]->is_interactive()) {
         return;
     }
 
-    if (move != NULL) {
+    move_t move = players_[cur_pawn_]->get_move();
+    if (Node *node = boost::get<Node>(&move)) {
         Node cur_node = game_->cur_pawn_data().node;
-        int rc;
-
-        if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-            rc = move_pawn_(walk_move->node());
-            if (rc == 0) {
-                pawn_path_.push_back(cur_node);
-                pawn_path_.push_back(game_->cur_pawn_data().node);
-                status_ = kNeedPawnRedraw;
-            }
+        if (move_pawn_(*node) == 0) {
+            pawn_path_.push_back(cur_node);
+            pawn_path_.push_back(*node);
+            status_ = kNeedPawnRedraw;
         }
-        else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
-            rc = add_wall_(wall_move->wall());
-            if (rc == 0) {
-                status_ = kNeedDrawWall;
-            }
+    }
+    else if (Wall *wall = boost::get<Wall>(&move)) {
+        if (add_wall_(*wall) == 0) {
+            status_ = kNeedDrawWall;
         }
     }
 }
