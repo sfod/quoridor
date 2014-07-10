@@ -36,7 +36,9 @@ IMove *MiddlingPlayer::get_move()
 {
     boost::variant<Node, Wall> move;
     kMinimaxNodes = 0;
-    double v = get_max_move(*game_, 0, -100, 100, &move);
+    double v = get_max_move(*game_, 0,
+            -std::numeric_limits<double>::infinity(),
+            std::numeric_limits<double>::infinity(), &move);
 
     BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
         << ", analyzed " << kMinimaxNodes << " nodes)";
@@ -65,7 +67,7 @@ double MiddlingPlayer::get_max_move(const Game &game, int depth,
                 if (best_move != NULL) {
                     *best_move = *node;
                 }
-                return a;
+                return std::numeric_limits<double>::infinity();
             }
         }
         else if (Wall *wall = boost::get<Wall>(&move)) {
@@ -111,8 +113,7 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
         if (Node *node = boost::get<Node>(&move)) {
             game_cp.move_pawn(*node);
             if (game_cp.is_finished()) {
-                b = -1.0f;
-                return b;
+                return -std::numeric_limits<double>::infinity();
             }
         }
         else if (Wall *wall = boost::get<Wall>(&move)) {
@@ -138,22 +139,14 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 
 double MiddlingPlayer::evaluate(const Game &game) const
 {
-    double max_k = 0;
-    size_t len = game.shortest_path(game.pawn_data(pawn_).node, goal_nodes_, NULL);
-    double k = 1 / static_cast<double>(len);
-    max_k = std::max(k, max_k);
-
-    double rival_max_k = 0;
+    double own_k = 0;
+    double rival_k = 0;
     for (auto pawn_data : game.pawn_data_list()) {
-        if (pawn_data.pawn == pawn_) {
-            continue;
-        }
-        len = game.shortest_path(pawn_data.node, pawn_data.goal_nodes, NULL);
-        double k = 1 / static_cast<double>(len);
-        rival_max_k = std::max(k, rival_max_k);
+        double &k = (pawn_data.pawn == pawn_) ? own_k : rival_k;
+        size_t len = game.shortest_path(pawn_data.node, pawn_data.goal_nodes, NULL);
+        k = game.node_num() - len;
     }
-
-    return max_k - rival_max_k;
+    return own_k - rival_k;
 }
 
 }  /* namespace Quoridor */
