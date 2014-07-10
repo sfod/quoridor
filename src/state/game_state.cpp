@@ -4,7 +4,6 @@
 #include "logger.hpp"
 #include "exception.hpp"
 
-
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
 namespace Quoridor {
@@ -272,7 +271,6 @@ void GameState::switch_cur_pawn_()
 
 void GameState::make_move_()
 {
-
     // human's turn, handle it in one of event handlers
     if (players_[cur_pawn_]->is_interactive()) {
         return;
