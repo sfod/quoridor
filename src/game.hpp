@@ -46,8 +46,10 @@ typedef boost::multi_index_container<
 
 class Game {
 public:
-    explicit Game(int board_size);
+    Game(int row_num, int col_num);
     virtual ~Game();
+
+    int node_num() const { return row_num_ * col_num_; }
 
     void set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list);
     void switch_pawn();
@@ -67,7 +69,8 @@ public:
             std::shared_ptr<Pawn> pawn) const;
 
 private:
-    int board_size_;
+    int row_num_;
+    int col_num_;
     pawn_data_list_t pawn_data_list_;
     int cur_pawn_idx_;
     BoardGraph bg_;

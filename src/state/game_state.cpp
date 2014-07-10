@@ -17,7 +17,7 @@ std::string GameState::name_("Game State");
 
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
-    game_(new Game(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
+    game_(new Game(9, 9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(),
     added_wall_(Wall::kInvalid, 0, 0, 0), wall_idx_(0),
     status_(kWaitingForMove),

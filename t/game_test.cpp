@@ -34,7 +34,7 @@ int main()
     std::shared_ptr<Pawn> pawn2(new Pawn(colors[1]));
     pawn_list.push_back(pawn2);
 
-    std::shared_ptr<Game> game(new Game(9));
+    std::shared_ptr<Game> game(new Game(9, 9));
     try {
         game->set_pawns(pawn_list);
         game->switch_pawn();
