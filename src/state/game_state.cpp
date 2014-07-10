@@ -277,6 +277,10 @@ void GameState::make_move_()
     }
 
     move_t move = players_[cur_pawn_]->get_move();
+    if (move.which() == 0) {
+        throw Exception("invalid move");
+    }
+
     if (Node *node = boost::get<Node>(&move)) {
         Node cur_node = game_->cur_pawn_data().node;
         if (move_pawn_(*node) == 0) {
