@@ -144,7 +144,7 @@ double MiddlingPlayer::evaluate(const Game &game) const
     for (auto pawn_data : game.pawn_data_list()) {
         double &k = (pawn_data.pawn == pawn_) ? own_k : rival_k;
         size_t len = game.shortest_path(pawn_data.node, pawn_data.goal_nodes, NULL);
-        k = game.node_num() - len;
+        k = game.node_num() - len + pawn_data.wall_num * 2;
     }
     return own_k - rival_k;
 }
