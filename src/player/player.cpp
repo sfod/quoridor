@@ -1,21 +1,12 @@
 #include "player.hpp"
-#include <iostream>
-#include "walk_move.hpp"
+#include "exception.hpp"
 
 namespace Quoridor {
 
-Player::Player(std::shared_ptr<Game> /* game */, std::shared_ptr<Pawn> /* pawn */)
+move_t Player::get_move()
 {
-}
-
-Player::~Player()
-{
-}
-
-IMove *Player::get_move()
-{
-    IMove *move = new WalkMove();
-    return move;
+    throw Exception("method get_move() is called on Player");
+    return boost::blank();
 }
 
 }  /* namespace Quoridor */

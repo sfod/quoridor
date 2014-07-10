@@ -10,17 +10,28 @@
 
 namespace Quoridor {
 
+class MoveVisitor : public boost::static_visitor<double> {
+public:
+    double operator()(const Node &node, std::shared_ptr<Pawn> pawn,
+            const Game &game, int depth, double a, double b) const;
+    double operator()(const Wall &wall, std::shared_ptr<Pawn> pawn,
+            const Game &game, int depth, double a, double b) const;
+
+private:
+    double evaluate() const;
+};
+
 class MiddlingPlayer : public IPlayer {
 public:
     MiddlingPlayer(std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
     virtual ~MiddlingPlayer();
 
-    virtual IMove *get_move();
+    virtual move_t get_move();
     virtual bool is_interactive() const { return false; };
 
 private:
     double get_max_move(const Game &game, int depth, double a, double b,
-            IMove **best_move);
+            move_t *best_move);
     double get_min_move(const Game &game, int depth, double a, double b);
     double evaluate(const Game &game) const;
 

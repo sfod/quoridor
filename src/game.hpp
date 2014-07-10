@@ -13,10 +13,10 @@
 
 #include "board_graph.hpp"
 #include "node.hpp"
+#include "wall.hpp"
 #include "pawn.hpp"
-#include "walk_move.hpp"
 #include "wall_grid.hpp"
-#include "wall_move.hpp"
+#include "player/iplayer.hpp"
 
 namespace Quoridor {
 
@@ -44,8 +44,10 @@ typedef boost::multi_index_container<
 
 class Game {
 public:
-    explicit Game(int board_size);
+    Game(int row_num, int col_num);
     virtual ~Game();
+
+    int node_num() const { return row_num_ * col_num_; }
 
     void set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list);
     void switch_pawn();
@@ -60,14 +62,12 @@ public:
 
     size_t shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
-    bool get_path(std::shared_ptr<Pawn> pawn, const Node &node,
-            std::list<Node> *path) const;
 
-    void possible_moves(std::shared_ptr<Pawn> pawn, std::vector<IMove*> *moves)
-        const;
+    std::vector<move_t> possible_moves(std::shared_ptr<Pawn> pawn) const;
 
 private:
-    int board_size_;
+    int row_num_;
+    int col_num_;
     pawn_data_list_t pawn_data_list_;
     int cur_pawn_idx_;
     BoardGraph bg_;

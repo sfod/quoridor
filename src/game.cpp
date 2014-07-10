@@ -7,8 +7,9 @@ namespace Quoridor {
 // pawns rotate according to their indexes: 0 -> 1 -> 2 -> 3 -> 0 -> ...
 static const std::vector<int> pawn_idx_list = {0, 2, 1, 3};
 
-Game::Game(int board_size) : board_size_(board_size), pawn_data_list_(),
-    cur_pawn_idx_(-1), bg_(board_size_, board_size_), wg_(board_size_ + 1)
+Game::Game(int row_num, int col_num) : row_num_(row_num), col_num_(col_num),
+    pawn_data_list_(), cur_pawn_idx_(-1), bg_(row_num, col_num),
+    wg_(row_num + 1)
 {
 }
 
@@ -33,36 +34,36 @@ void Game::set_pawns(std::vector<std::shared_ptr<Pawn>> &pawn_list)
         switch (pawn_data.idx) {
         case 0:
             pawn_data.node.set_row(0);
-            pawn_data.node.set_col(board_size_ / 2);
+            pawn_data.node.set_col(col_num_ / 2);
             bg_.block_node(pawn_data.node);
-            for (int j = 0; j < board_size_; ++j) {
-                Node gn(board_size_ - 1, j);
+            for (int j = 0; j < col_num_; ++j) {
+                Node gn(row_num_ - 1, j);
                 pawn_data.goal_nodes.insert(gn);
             }
             break;
         case 1:
-            pawn_data.node.set_row(board_size_ / 2);
+            pawn_data.node.set_row(row_num_ / 2);
             pawn_data.node.set_col(0);
             bg_.block_node(pawn_data.node);
-            for (int j = 0; j < board_size_; ++j) {
-                Node gn(j, board_size_ - 1);
+            for (int j = 0; j < row_num_; ++j) {
+                Node gn(j, col_num_ - 1);
                 pawn_data.goal_nodes.insert(gn);
             }
             break;
         case 2:
-            pawn_data.node.set_row(board_size_ - 1);
-            pawn_data.node.set_col(board_size_ / 2);
+            pawn_data.node.set_row(row_num_ - 1);
+            pawn_data.node.set_col(col_num_ / 2);
             bg_.block_node(pawn_data.node);
-            for (int j = 0; j < board_size_; ++j) {
+            for (int j = 0; j < col_num_; ++j) {
                 Node gn(0, j);
                 pawn_data.goal_nodes.insert(gn);
             }
             break;
         case 3:
-            pawn_data.node.set_row(board_size_ / 2);
-            pawn_data.node.set_col(board_size_ - 1);
+            pawn_data.node.set_row(row_num_ / 2);
+            pawn_data.node.set_col(col_num_ - 1);
             bg_.block_node(pawn_data.node);
-            for (int j = 0; j < board_size_; ++j) {
+            for (int j = 0; j < row_num_; ++j) {
                 Node gn(j, 0);
                 pawn_data.goal_nodes.insert(gn);
             }
@@ -181,18 +182,12 @@ size_t Game::shortest_path(const Node &start_node,
     return bg_.shortest_path(start_node, goal_nodes, path);
 }
 
-bool Game::get_path(std::shared_ptr<Pawn> pawn, const Node &node,
-        std::list<Node> *path) const
+std::vector<move_t> Game::possible_moves(std::shared_ptr<Pawn> pawn) const
 {
-    return bg_.find_path(pawn_data(pawn).node, node, path);
-}
+    std::vector<move_t> moves;
 
-void Game::possible_moves(std::shared_ptr<Pawn> pawn,
-        std::vector<IMove*> *moves) const
-{
     const pawn_data_t &pawn_data = *pawn_data_list_.get<by_pawn>().find(pawn);
-    std::vector<Node> nodes;
-    bg_.get_out_node_list(pawn_data.node, &nodes);
+    std::vector<Node> nodes = bg_.adjacent_nodes(pawn_data.node);
     std::vector<std::pair<Node, size_t>> node_pathes;
     for (auto node : nodes) {
         node_pathes.push_back(std::make_pair(node, shortest_path(node, pawn_data.goal_nodes, NULL)));
@@ -205,16 +200,18 @@ void Game::possible_moves(std::shared_ptr<Pawn> pawn,
     );
 
     for (auto p : node_pathes) {
-        moves->push_back(new WalkMove(p.first));
+        moves.push_back(p.first);
     }
 
     if (pawn_data.wall_num > 0) {
         std::vector<Wall> walls;
         wg_.possible_walls(&walls);
         for (auto wall : walls) {
-            moves->push_back(new WallMove(wall));
+            moves.push_back(wall);
         }
     }
+
+    return moves;
 }
 
 }  // namespace Quoridor

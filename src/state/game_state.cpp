@@ -1,12 +1,8 @@
 #include "game_state.hpp"
 
 #include "start_game_state.hpp"
-#include "imove.hpp"
-#include "walk_move.hpp"
-#include "wall_move.hpp"
 #include "logger.hpp"
 #include "exception.hpp"
-
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 
@@ -17,7 +13,7 @@ std::string GameState::name_("Game State");
 
 GameState::GameState(std::shared_ptr<StateManager> stm,
         const std::vector<std::string> &player_types) : stm_(stm), anim_(),
-    game_(new Game(9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
+    game_(new Game(9, 9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(),
     added_wall_(Wall::kInvalid, 0, 0, 0), wall_idx_(0),
     status_(kWaitingForMove),
@@ -275,34 +271,27 @@ void GameState::switch_cur_pawn_()
 
 void GameState::make_move_()
 {
-    IMove *move = NULL;
-
-    // bot's turn
-    if (!players_[cur_pawn_]->is_interactive()) {
-        move = players_[cur_pawn_]->get_move();
-    }
     // human's turn, handle it in one of event handlers
-    else {
+    if (players_[cur_pawn_]->is_interactive()) {
         return;
     }
 
-    if (move != NULL) {
-        Node cur_node = game_->cur_pawn_data().node;
-        int rc;
+    move_t move = players_[cur_pawn_]->get_move();
+    if (move.which() == 0) {
+        throw Exception("invalid move");
+    }
 
-        if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-            rc = move_pawn_(walk_move->node());
-            if (rc == 0) {
-                pawn_path_.push_back(cur_node);
-                pawn_path_.push_back(game_->cur_pawn_data().node);
-                status_ = kNeedPawnRedraw;
-            }
+    if (Node *node = boost::get<Node>(&move)) {
+        Node cur_node = game_->cur_pawn_data().node;
+        if (move_pawn_(*node) == 0) {
+            pawn_path_.push_back(cur_node);
+            pawn_path_.push_back(*node);
+            status_ = kNeedPawnRedraw;
         }
-        else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
-            rc = add_wall_(wall_move->wall());
-            if (rc == 0) {
-                status_ = kNeedDrawWall;
-            }
+    }
+    else if (Wall *wall = boost::get<Wall>(&move)) {
+        if (add_wall_(*wall) == 0) {
+            status_ = kNeedDrawWall;
         }
     }
 }

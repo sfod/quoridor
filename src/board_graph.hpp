@@ -15,6 +15,8 @@
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/tag.hpp>
 
+#include <boost/optional.hpp>
+
 #include "node.hpp"
 
 namespace Quoridor {
@@ -149,12 +151,12 @@ public:
 
     void block_node(const Node &node);
     void unblock_node(const Node &node);
-    void get_out_node_list(const Node &node, std::vector<Node> *node_list) const;
+    std::vector<Node> adjacent_nodes(const Node &node) const;
 
     size_t shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
-    bool find_path(const Node &start_node, const Node &end_node,
-            std::list<Node> *path) const;
+    boost::optional<std::list<Node>> find_path(const Node &start_node,
+            const Node &end_node) const;
     bool is_adjacent(const Node &from_node, const Node &to_node) const;
 
 private:
@@ -168,8 +170,7 @@ private:
     void block_edge(edge_descriptor e, bool is_tmp);
     bool unblock_edge(int from_inode, int to_inode, bool is_tmp, int interm_inode = -1);
     bool is_inode_valid(int inode) const;
-    void find_tmp_edges(int inode,
-            std::vector<edge_descriptor> *tmp_edges) const;
+    std::vector<edge_descriptor> find_tmp_edges(int inode) const;
 
 #ifdef USE_BOARD_GRAPH_CACHE
 private:
@@ -177,8 +178,8 @@ private:
             const std::list<Node> &path, bool is_exists) const;
     size_t cached_shortest_path(const Node &start_node,
             const std::set<Node> &goal_nodes, std::list<Node> *path) const;
-    bool cached_path(const Node &start_node, const Node &end_node,
-            std::list<Node> *path) const;
+    boost::optional<std::list<Node>> cached_path(const Node &start_node,
+            const Node &end_node) const;
     void update_cached_path(const Node &node) const;
     void remove_cached_path(const Node &node) const;
 #endif

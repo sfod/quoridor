@@ -1,12 +1,9 @@
 #include "middling_player.hpp"
 
 #include <ctime>
-
-#include <boost/random/discrete_distribution.hpp>
+#include <limits>
 
 #include "logger.hpp"
-#include "walk_move.hpp"
-#include "wall_move.hpp"
 #include "exception.hpp"
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
@@ -33,44 +30,37 @@ MiddlingPlayer::~MiddlingPlayer()
 {
 }
 
-IMove *MiddlingPlayer::get_move()
+move_t MiddlingPlayer::get_move()
 {
-    IMove *move = NULL;
+    move_t move;
     kMinimaxNodes = 0;
-    double v = get_max_move(*game_, 0, -100, 100, &move);
-    BOOST_LOG_DEBUG(lg) << "got k " << v << " (analyzed " << kMinimaxNodes
-        << " nodes)";
-    if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-        BOOST_LOG_DEBUG(lg) << "best move is " << m->node().row() << ":"
-            << m->node().col();
-    }
-    else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-        BOOST_LOG_DEBUG(lg) << "best move is " << m->wall();
-    }
+    double v = get_max_move(*game_, 0,
+            -std::numeric_limits<double>::infinity(),
+            std::numeric_limits<double>::infinity(), &move);
+    BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
+        << ", analyzed " << kMinimaxNodes << " nodes)";
     return move;
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth,
-        double a, double b, IMove **best_move)
+        double a, double b, move_t *best_move)
 {
     ++kMinimaxNodes;
 
-    std::vector<IMove*> moves;
-    game.possible_moves(pawn_, &moves);
+    std::vector<move_t> moves = game.possible_moves(pawn_);
     for (auto move : moves) {
         Game game_cp = game;
-        if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-            game_cp.move_pawn(m->node());
+        if (Node *node = boost::get<Node>(&move)) {
+            game_cp.move_pawn(*node);
             if (game_cp.is_finished()) {
                 if (best_move != NULL) {
-                    *best_move = new WalkMove(*m);
+                    *best_move = *node;
                 }
-                a = 1.0f;
-                return a;
+                return std::numeric_limits<double>::infinity();
             }
         }
-        else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-            if (game_cp.add_wall(m->wall()) < 0) {
+        else if (Wall *wall = boost::get<Wall>(&move)) {
+            if (game_cp.add_wall(*wall) < 0) {
                 continue;
             }
         }
@@ -81,11 +71,11 @@ double MiddlingPlayer::get_max_move(const Game &game, int depth,
             if (val > a) {
                 a = val;
                 if (best_move != NULL) {
-                    if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-                        *best_move = new WalkMove(*m);
+                    if (Node *node = boost::get<Node>(&move)) {
+                        *best_move = *node;
                     }
-                    else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-                        *best_move = new WallMove(*m);
+                    else if (Wall *wall = boost::get<Wall>(&move)) {
+                        *best_move = *wall;
                     }
                 }
             }
@@ -106,19 +96,17 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 {
     ++kMinimaxNodes;
 
-    std::vector<IMove*> moves;
-    game.possible_moves(pawn_, &moves);
+    std::vector<move_t> moves = game.possible_moves(pawn_);
     for (auto move : moves) {
         Game game_cp = game;
-        if (WalkMove *m = dynamic_cast<WalkMove*>(move)) {
-            game_cp.move_pawn(m->node());
+        if (Node *node = boost::get<Node>(&move)) {
+            game_cp.move_pawn(*node);
             if (game_cp.is_finished()) {
-                b = -1.0f;
-                return b;
+                return -std::numeric_limits<double>::infinity();
             }
         }
-        else if (WallMove *m = dynamic_cast<WallMove*>(move)) {
-            if (game_cp.add_wall(m->wall()) < 0) {
+        else if (Wall *wall = boost::get<Wall>(&move)) {
+            if (game_cp.add_wall(*wall) < 0) {
                 continue;
             }
         }
@@ -140,22 +128,14 @@ double MiddlingPlayer::get_min_move(const Game &game, int depth,
 
 double MiddlingPlayer::evaluate(const Game &game) const
 {
-    double max_k = 0;
-    size_t len = game.shortest_path(game.pawn_data(pawn_).node, goal_nodes_, NULL);
-    double k = 1 / static_cast<double>(len);
-    max_k = std::max(k, max_k);
-
-    double rival_max_k = 0;
+    double own_k = 0;
+    double rival_k = 0;
     for (auto pawn_data : game.pawn_data_list()) {
-        if (pawn_data.pawn == pawn_) {
-            continue;
-        }
-        len = game.shortest_path(pawn_data.node, pawn_data.goal_nodes, NULL);
-        double k = 1 / static_cast<double>(len);
-        rival_max_k = std::max(k, rival_max_k);
+        double &k = (pawn_data.pawn == pawn_) ? own_k : rival_k;
+        size_t len = game.shortest_path(pawn_data.node, pawn_data.goal_nodes, NULL);
+        k = game.node_num() - len + pawn_data.wall_num * 2;
     }
-
-    return max_k - rival_max_k;
+    return own_k - rival_k;
 }
 
 }  /* namespace Quoridor */

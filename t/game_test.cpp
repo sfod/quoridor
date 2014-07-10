@@ -34,7 +34,7 @@ int main()
     std::shared_ptr<Pawn> pawn2(new Pawn(colors[1]));
     pawn_list.push_back(pawn2);
 
-    std::shared_ptr<Game> game(new Game(9));
+    std::shared_ptr<Game> game(new Game(9, 9));
     try {
         game->set_pawns(pawn_list);
         game->switch_pawn();
@@ -47,40 +47,33 @@ int main()
     std::map<std::shared_ptr<Pawn>, std::shared_ptr<MockPlayer>> players;
     for (int i = 0; i < 2; ++i) {
         BOOST_LOG_INFO(lg) << "adding mock player";
-        players[pawn_list[i]] = std::shared_ptr<MockPlayer>(new MockPlayer(game, pawn_list[i]));
+        players[pawn_list[i]] = std::shared_ptr<MockPlayer>(new MockPlayer());
     }
 
-    players[pawn_list[1]]->push_move(new WalkMove(Node(7, 4)));
-    players[pawn_list[1]]->push_move(new WalkMove(Node(6, 4)));
-    players[pawn_list[1]]->push_move(new WallMove(Wall(Wall::kHorizontal, 8, 4, 2)));
-    players[pawn_list[1]]->push_move(new WalkMove(Node(7, 4)));
-    players[pawn_list[1]]->push_move(new WalkMove(Node(8, 4)));
+    players[pawn_list[1]]->push_move(Node(7, 4));
+    players[pawn_list[1]]->push_move(Node(6, 4));
+    players[pawn_list[1]]->push_move(Wall(Wall::kHorizontal, 8, 4, 2));
+    players[pawn_list[1]]->push_move(Node(7, 4));
+    players[pawn_list[1]]->push_move(Node(8, 4));
 
     game->switch_pawn();
     for (int i = 0; i < 5; ++i) {
-        IMove *move = players[pawn_list[1]]->get_move();
-        if (move != NULL) {
-            Node cur_node = game->cur_pawn_data().node;
-            int rc;
-
+        move_t move = players[pawn_list[1]]->get_move();
+        if (move.which() != 0) {
             auto pawn = game->cur_pawn_data().pawn;
-            if (WalkMove *walk_move = dynamic_cast<WalkMove*>(move)) {
-                rc = game->move_pawn(walk_move->node());
-                if (rc == 0) {
-                    BOOST_LOG_DEBUG(lg) << pawn->color()
-                        << " move: " << cur_node.row() << ":" << cur_node.col()
-                        << " -> " << walk_move->node().row() << ":"
-                        << walk_move->node().col();
+            if (Node *node = boost::get<Node>(&move)) {
+                Node cur_node = game->cur_pawn_data().node;
+                if (game->move_pawn(*node) == 0) {
+                    BOOST_LOG_DEBUG(lg) << pawn->color() << ": " << cur_node
+                        << " -> " << *node;
                 }
                 else {
                     continue;
                 }
             }
-            else if (WallMove *wall_move = dynamic_cast<WallMove*>(move)) {
-                rc = game->add_wall(wall_move->wall());
-                if (rc == 0) {
-                    BOOST_LOG_DEBUG(lg) << pawn->color() << " added "
-                        << wall_move->wall();
+            else if (Wall *wall = boost::get<Wall>(&move)) {
+                if (game->add_wall(*wall) == 0) {
+                    BOOST_LOG_DEBUG(lg) << pawn->color() << ": " << *wall;
                 }
                 else {
                     continue;

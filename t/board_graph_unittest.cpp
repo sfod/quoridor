@@ -13,36 +13,36 @@ protected:
 
 TEST_F(BoardGraphTest, find_path_on_empty_board_same_row)
 {
-    std::list<Node> path;
-    bg_.find_path(Node(0, 1), Node(0, 3), &path);
+    boost::optional<std::list<Node>> path;
+    path = bg_.find_path(Node(0, 1), Node(0, 3));
     std::list<Node> expected_path = {
         Node(0, 2),
         Node(0, 3)
     };
-    EXPECT_EQ(expected_path, path);
+    EXPECT_EQ(expected_path, path.get());
 }
 
 TEST_F(BoardGraphTest, find_path_on_empty_board_same_col)
 {
-    std::list<Node> path;
-    bg_.find_path(Node(0, 1), Node(4, 1), &path);
+    boost::optional<std::list<Node>> path;
+    path = bg_.find_path(Node(0, 1), Node(4, 1));
     std::list<Node> expected_path = {
         Node(1, 1),
         Node(2, 1),
         Node(3, 1),
         Node(4, 1)
     };
-    EXPECT_EQ(expected_path, path);
+    EXPECT_EQ(expected_path, path.get());
 }
 
 // for this test there are multiple paths with minimal length, so it will be
 // right to check found path length and it's last element only
 TEST_F(BoardGraphTest, find_path_on_empty_board_different_row_and_col)
 {
-    std::list<Node> path;
-    bg_.find_path(Node(1, 1), Node(4, 3), &path);
-    EXPECT_EQ(5, path.size());
-    EXPECT_EQ(Node(4, 3), path.back());
+    boost::optional<std::list<Node>> path;
+    path = bg_.find_path(Node(1, 1), Node(4, 3));
+    EXPECT_EQ(5, path->size());
+    EXPECT_EQ(Node(4, 3), path->back());
 }
 
 TEST_F(BoardGraphTest, find_path_on_board_with_walls_same_row)
@@ -52,14 +52,14 @@ TEST_F(BoardGraphTest, find_path_on_board_with_walls_same_row)
     node_pair_list.push_back(std::make_pair(Node(4,2), Node(4,3)));
     bg_.remove_edges(node_pair_list, goal_nodes_list, false);
 
-    std::list<Node> path;
-    bg_.find_path(Node(4, 2), Node(4, 3), &path);
+    boost::optional<std::list<Node>> path;
+    path = bg_.find_path(Node(4, 2), Node(4, 3));
     std::list<Node> expected_path = {
         Node(3, 2),
         Node(3, 3),
         Node(4, 3)
     };
-    EXPECT_EQ(expected_path, path);
+    EXPECT_EQ(expected_path, path.get());
 }
 
 // for this test there are multiple paths with minimal length, so it will be
@@ -71,10 +71,10 @@ TEST_F(BoardGraphTest, find_path_on_board_with_walls_same_col)
     node_pair_list.push_back(std::make_pair(Node(1,2), Node(2,2)));
     bg_.remove_edges(node_pair_list, goal_nodes_list, false);
 
-    std::list<Node> path;
-    bg_.find_path(Node(0, 2), Node(4, 2), &path);
-    EXPECT_EQ(6, path.size());
-    EXPECT_EQ(Node(4, 2), path.back());
+    boost::optional<std::list<Node>> path;
+    path = bg_.find_path(Node(0, 2), Node(4, 2));
+    EXPECT_EQ(6, path->size());
+    EXPECT_EQ(Node(4, 2), path->back());
 }
 
 TEST_F(BoardGraphTest, block_node_wo_surroundings)
