@@ -3,8 +3,6 @@
 #include <ctime>
 #include <limits>
 
-#include <boost/random/discrete_distribution.hpp>
-
 #include "logger.hpp"
 #include "walk_move.hpp"
 #include "wall_move.hpp"
