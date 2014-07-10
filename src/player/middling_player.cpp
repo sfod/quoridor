@@ -39,15 +39,14 @@ IMove *MiddlingPlayer::get_move()
     boost::variant<Node, Wall> move;
     kMinimaxNodes = 0;
     double v = get_max_move(*game_, 0, -100, 100, &move);
-    BOOST_LOG_DEBUG(lg) << "got k " << v << " (analyzed " << kMinimaxNodes
-        << " nodes)";
+
+    BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
+        << ", analyzed " << kMinimaxNodes << " nodes)";
 
     if (Node *node = boost::get<Node>(&move)) {
-        BOOST_LOG_DEBUG(lg) << "best move is " << *node;
         return new WalkMove(*node);
     }
     else if (Wall *wall = boost::get<Wall>(&move)) {
-        BOOST_LOG_DEBUG(lg) << "best move is " << *wall;
         return new WallMove(*wall);
     }
 
