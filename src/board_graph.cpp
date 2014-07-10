@@ -123,6 +123,7 @@ bool BoardGraph::remove_edges(
 {
     std::vector<std::pair<int, int>> removed_edges;
     std::vector<std::pair<int, std::pair<int, int>>> removed_tmp_edges;
+    std::set<int> affected_blocked_nodes;
 #ifdef USE_BOARD_GRAPH_CACHE
     std::set<Node> affected_nodes;
 #endif
@@ -156,6 +157,7 @@ bool BoardGraph::remove_edges(
                 if ((edge_inodes.first == inode2) || (edge_inodes.second == inode2)) {
                     removed_edges.push_back(edge_inodes);
                     removed_tmp_edges.push_back(std::make_pair(inode1, edge_inodes));
+                    affected_blocked_nodes.insert(inode1);
 #ifdef USE_BOARD_GRAPH_CACHE
                     affected_nodes.insert(Node(
                                 edge_inodes.first / col_num_,
@@ -172,6 +174,7 @@ bool BoardGraph::remove_edges(
                 if ((edge_inodes.first == inode1) || (edge_inodes.second == inode1)) {
                     removed_edges.push_back(edge_inodes);
                     removed_tmp_edges.push_back(std::make_pair(inode2, edge_inodes));
+                    affected_blocked_nodes.insert(inode2);
 #ifdef USE_BOARD_GRAPH_CACHE
                     affected_nodes.insert(Node(
                                 edge_inodes.first / col_num_,
@@ -209,6 +212,10 @@ bool BoardGraph::remove_edges(
             if (tmp_edges_[tmp_edge.first].empty()) {
                 tmp_edges_.erase(tmp_edge.first);
             }
+        }
+
+        for (auto inode : affected_blocked_nodes) {
+            block_inode(inode);
         }
 
 #ifdef USE_BOARD_GRAPH_CACHE
