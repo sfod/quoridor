@@ -30,7 +30,7 @@ MiddlingPlayer::~MiddlingPlayer()
 {
 }
 
-move_t MiddlingPlayer::get_move()
+void MiddlingPlayer::get_move(std::function<void(move_t)> callback)
 {
     move_t move;
     kMinimaxNodes = 0;
@@ -39,7 +39,7 @@ move_t MiddlingPlayer::get_move()
             std::numeric_limits<double>::infinity(), &move);
     BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
         << ", analyzed " << kMinimaxNodes << " nodes)";
-    return move;
+    callback(move);
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth,

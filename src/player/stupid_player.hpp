@@ -17,7 +17,7 @@ public:
     StupidPlayer(std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
     virtual ~StupidPlayer();
 
-    virtual move_t get_move();
+    virtual void get_move(std::function<void(move_t)> callback);
     virtual bool is_interactive() const { return false; };
 
 private:
