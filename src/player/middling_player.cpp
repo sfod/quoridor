@@ -2,6 +2,7 @@
 
 #include <ctime>
 #include <limits>
+#include <thread>
 
 #include "logger.hpp"
 #include "exception.hpp"
@@ -31,6 +32,11 @@ MiddlingPlayer::~MiddlingPlayer()
 }
 
 void MiddlingPlayer::get_move(std::function<void(move_t)> callback)
+{
+    std::thread(&MiddlingPlayer::calc_move, this, callback).detach();
+}
+
+void MiddlingPlayer::calc_move(std::function<void(move_t)> callback)
 {
     move_t move;
     kMinimaxNodes = 0;
