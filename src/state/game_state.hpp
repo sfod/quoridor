@@ -27,6 +27,7 @@ public:
 private:
     enum GameStatus {
         kPreparingMove,
+        kNeedMove,
         kWaitingForMove,
         kPerformedMove,
         kNeedPawnRedraw,
@@ -48,6 +49,7 @@ private:
     int move_pawn_(const Node &node);
     int add_wall_(const Wall &wall);
     bool is_finished_() const;
+    void callback_move(move_t move);
 
 private:
     void subscribe_for_events_();

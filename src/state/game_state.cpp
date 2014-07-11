@@ -16,7 +16,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     game_(new Game(9, 9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(),
     added_wall_(Wall::kInvalid, 0, 0, 0), wall_idx_(0),
-    status_(kWaitingForMove),
+    status_(kNeedMove),
     pos_utils_(9, 52, 50)
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game state"));
@@ -66,10 +66,13 @@ void GameState::update()
     switch (status_) {
     case kPreparingMove:
         pre_process_move_();
+        status_ = kNeedMove;
+        break;
+    case kNeedMove:
         status_ = kWaitingForMove;
+        make_move_();
         break;
     case kWaitingForMove:
-        make_move_();
         break;
     case kPerformedMove:
         post_process_move_();
@@ -276,24 +279,8 @@ void GameState::make_move_()
         return;
     }
 
-    move_t move = players_[cur_pawn_]->get_move();
-    if (move.which() == 0) {
-        throw Exception("invalid move");
-    }
-
-    if (Node *node = boost::get<Node>(&move)) {
-        Node cur_node = game_->cur_pawn_data().node;
-        if (move_pawn_(*node) == 0) {
-            pawn_path_.push_back(cur_node);
-            pawn_path_.push_back(*node);
-            status_ = kNeedPawnRedraw;
-        }
-    }
-    else if (Wall *wall = boost::get<Wall>(&move)) {
-        if (add_wall_(*wall) == 0) {
-            status_ = kNeedDrawWall;
-        }
-    }
+    auto f = std::bind(&GameState::callback_move, this, std::placeholders::_1);
+    players_[cur_pawn_]->get_move(f);
 }
 
 int GameState::move_pawn_(const Node &node)
@@ -320,6 +307,29 @@ int GameState::add_wall_(const Wall &wall)
 bool GameState::is_finished_() const
 {
     return game_->is_finished();
+}
+
+void GameState::callback_move(move_t move)
+{
+    BOOST_LOG_DEBUG(lg) << "callback_move called";
+
+    if (move.which() == 0) {
+        throw Exception("invalid move");
+    }
+
+    if (Node *node = boost::get<Node>(&move)) {
+        Node cur_node = game_->cur_pawn_data().node;
+        if (move_pawn_(*node) == 0) {
+            pawn_path_.push_back(cur_node);
+            pawn_path_.push_back(*node);
+            status_ = kNeedPawnRedraw;
+        }
+    }
+    else if (Wall *wall = boost::get<Wall>(&move)) {
+        if (add_wall_(*wall) == 0) {
+            status_ = kNeedDrawWall;
+        }
+    }
 }
 
 void GameState::subscribe_for_events_()
