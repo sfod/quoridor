@@ -1,6 +1,7 @@
 #ifndef QUORIDOR_MIDDLING_PLAYER_HPP_
 #define QUORIDOR_MIDDLING_PLAYER_HPP_
 
+#include <atomic>
 #include <memory>
 #include <set>
 
@@ -28,6 +29,7 @@ public:
 
     virtual void get_move(std::function<void(move_t)> callback);
     virtual bool is_interactive() const { return false; };
+    virtual void interrupt();
 
 private:
     void calc_move(std::function<void(move_t)> callback);
@@ -40,6 +42,7 @@ private:
     std::shared_ptr<Game> game_;
     std::shared_ptr<Pawn> pawn_;
     std::set<Node> goal_nodes_;
+    std::atomic<bool> interrupted_;
 };
 
 }  /* namespace Quoridor */

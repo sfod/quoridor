@@ -59,6 +59,9 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
 
 GameState::~GameState()
 {
+    if (status_ == kWaitingForMove) {
+        players_[cur_pawn_]->interrupt();
+    }
 }
 
 void GameState::update()

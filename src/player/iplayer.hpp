@@ -15,6 +15,7 @@ public:
     virtual ~IPlayer() {}
     virtual void get_move(std::function<void(move_t)> callback) = 0;
     virtual bool is_interactive() const = 0;
+    virtual void interrupt() = 0;
 };
 
 }  /* namespace Quoridor */
