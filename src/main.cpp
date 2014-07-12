@@ -16,13 +16,6 @@
 namespace po = boost::program_options;
 namespace logging = boost::log;
 
-
-BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", boost::log::attributes::named_scope::value_type)
-BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
-BOOST_LOG_ATTRIBUTE_KEYWORD(tag_attr, "Tag", std::string)
-BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", boost::log::trivial::severity_level)
-
-
 static int init(int argc, char **argv);
 static void init_logging(const std::string &logfile);
 

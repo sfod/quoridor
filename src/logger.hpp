@@ -24,6 +24,11 @@
 namespace blattrs = boost::log::attributes;
 namespace blexpr = boost::log::expressions;
 
+BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", boost::log::attributes::named_scope::value_type)
+BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
+BOOST_LOG_ATTRIBUTE_KEYWORD(tag_attr, "Tag", std::string)
+BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", boost::log::trivial::severity_level)
+
 #define BOOST_LOG_DEBUG(lg) BOOST_LOG_SEV((lg), boost::log::trivial::debug)
 #define BOOST_LOG_INFO(lg) BOOST_LOG_SEV((lg), boost::log::trivial::info)
 #define BOOST_LOG_ERROR(lg) BOOST_LOG_SEV((lg), boost::log::trivial::error)
