@@ -15,7 +15,7 @@ namespace Quoridor {
 
 MiddlingPlayer::MiddlingPlayer(std::shared_ptr<Game> game,
         std::shared_ptr<Pawn> pawn)
-    : game_(game), pawn_(pawn), goal_nodes_(), interrupted_(false)
+    : game_(game), pawn_(pawn), goal_nodes_()
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("middling player"));
 
@@ -36,11 +36,6 @@ void MiddlingPlayer::get_move(std::function<void(move_t)> callback)
     std::thread(&MiddlingPlayer::calc_move, this, callback).detach();
 }
 
-void MiddlingPlayer::interrupt()
-{
-    interrupted_ = true;
-}
-
 void MiddlingPlayer::calc_move(std::function<void(move_t)> callback)
 {
     move_t move;
@@ -50,11 +45,9 @@ void MiddlingPlayer::calc_move(std::function<void(move_t)> callback)
             -std::numeric_limits<double>::infinity(),
             std::numeric_limits<double>::infinity(), &move);
 
-    if (!interrupted_) {
-        BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
-            << ", analyzed " << kMinimaxNodes << " nodes)";
-        callback(move);
-    }
+    BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
+        << ", analyzed " << kMinimaxNodes << " nodes)";
+    callback(move);
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth,

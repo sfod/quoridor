@@ -53,8 +53,4 @@ void StupidPlayer::get_move(std::function<void(move_t)> callback)
     }
 }
 
-void StupidPlayer::interrupt()
-{
-}
-
 }  /* namespace Quoridor */

@@ -14,6 +14,7 @@ set(PLAYER_SOURCES
     player
     stupid_player
     middling_player
+    move_handler
 )
 set(STATE_SOURCES
     main_menu_state

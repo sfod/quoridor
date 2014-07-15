@@ -19,7 +19,6 @@ public:
 
     virtual void get_move(std::function<void(move_t)> callback);
     virtual bool is_interactive() const { return false; };
-    virtual void interrupt();
 
 private:
     std::shared_ptr<Game> game_;
