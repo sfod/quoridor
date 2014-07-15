@@ -8,7 +8,7 @@
 #include "exception.hpp"
 
 static boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
-static int kLookForward = 2;
+static int kLookForward = 1;
 static int kMinimaxNodes = 0;
 
 namespace Quoridor {
