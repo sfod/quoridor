@@ -11,14 +11,14 @@ MockPlayer::~MockPlayer()
 {
 }
 
-move_t MockPlayer::get_move()
+void MockPlayer::get_move(std::function<void(move_t)> callback)
 {
     if (moves_.size() == 0) {
         throw Exception("no more moves");
     }
     move_t move = moves_.front();
     moves_.pop_front();
-    return move;
+    callback(move);
 }
 
 void MockPlayer::push_move(move_t move)

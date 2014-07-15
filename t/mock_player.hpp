@@ -11,8 +11,9 @@ public:
     MockPlayer();
     virtual ~MockPlayer();
 
-    virtual move_t get_move();
+    virtual void get_move(std::function<void(move_t)> callback);
     virtual bool is_interactive() const { return false; };
+    virtual void interrupt() {}
 
     void push_move(move_t move);
 

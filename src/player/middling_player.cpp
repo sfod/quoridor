@@ -2,6 +2,7 @@
 
 #include <ctime>
 #include <limits>
+#include <thread>
 
 #include "logger.hpp"
 #include "exception.hpp"
@@ -30,16 +31,23 @@ MiddlingPlayer::~MiddlingPlayer()
 {
 }
 
-move_t MiddlingPlayer::get_move()
+void MiddlingPlayer::get_move(std::function<void(move_t)> callback)
+{
+    std::thread(&MiddlingPlayer::calc_move, this, callback).detach();
+}
+
+void MiddlingPlayer::calc_move(std::function<void(move_t)> callback)
 {
     move_t move;
     kMinimaxNodes = 0;
-    double v = get_max_move(*game_, 0,
+    Game game = *game_;
+    double v = get_max_move(game, 0,
             -std::numeric_limits<double>::infinity(),
             std::numeric_limits<double>::infinity(), &move);
+
     BOOST_LOG_DEBUG(lg) << "best move: " << move << " (k " << v
         << ", analyzed " << kMinimaxNodes << " nodes)";
-    return move;
+    callback(move);
 }
 
 double MiddlingPlayer::get_max_move(const Game &game, int depth,

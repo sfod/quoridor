@@ -26,10 +26,11 @@ public:
     MiddlingPlayer(std::shared_ptr<Game> game, std::shared_ptr<Pawn> pawn);
     virtual ~MiddlingPlayer();
 
-    virtual move_t get_move();
+    virtual void get_move(std::function<void(move_t)> callback);
     virtual bool is_interactive() const { return false; };
 
 private:
+    void calc_move(std::function<void(move_t)> callback);
     double get_max_move(const Game &game, int depth, double a, double b,
             move_t *best_move);
     double get_min_move(const Game &game, int depth, double a, double b);

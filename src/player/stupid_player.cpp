@@ -30,7 +30,7 @@ StupidPlayer::~StupidPlayer()
 {
 }
 
-move_t StupidPlayer::get_move()
+void StupidPlayer::get_move(std::function<void(move_t)> callback)
 {
     boost::random::discrete_distribution<> dist{0.6, 0.6};
 
@@ -41,7 +41,7 @@ move_t StupidPlayer::get_move()
         if (path_len == 0) {
             throw Exception("all pathes are blocked");
         }
-        return *path.begin();
+        callback(*path.begin());
     }
     else {
         boost::random::discrete_distribution<> dist_2{8, 2};
@@ -49,7 +49,7 @@ move_t StupidPlayer::get_move()
         boost::random::discrete_distribution<> dist_8{1, 1, 2, 3, 3, 2, 1, 1};
         Wall::Orientation wall_orient =
             (dist_2(gen_) == 0) ? Wall::kHorizontal : Wall::kVertical;
-        return Wall(wall_orient, dist_9(gen_), dist_8(gen_), 2);
+        callback(Wall(wall_orient, dist_9(gen_), dist_8(gen_), 2));
     }
 }
 

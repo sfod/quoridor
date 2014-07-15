@@ -6,6 +6,7 @@
 
 #include "istate.hpp"
 #include "game.hpp"
+#include "player/move_handler.hpp"
 #include "player/iplayer.hpp"
 #include "player/player_factory.hpp"
 #include "pos_utils.hpp"
@@ -27,6 +28,7 @@ public:
 private:
     enum GameStatus {
         kPreparingMove,
+        kNeedMove,
         kWaitingForMove,
         kPerformedMove,
         kNeedPawnRedraw,
@@ -42,6 +44,7 @@ private:
     void redraw_pawn_();
     void draw_wall_();
     void pre_process_move_();
+    void process_move(const move_t &move);
     void post_process_move_();
     void switch_cur_pawn_();
     void make_move_();
@@ -79,6 +82,7 @@ private:
     size_t wall_idx_;
     GameStatus status_;
     PosUtils pos_utils_;
+    std::shared_ptr<MoveHandler> move_handler_;
 };
 
 }  /* namespace Quoridor */

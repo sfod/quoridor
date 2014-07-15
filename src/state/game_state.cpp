@@ -16,8 +16,7 @@ GameState::GameState(std::shared_ptr<StateManager> stm,
     game_(new Game(9, 9)), pf_(), players_(), pawn_list_(), cur_pawn_(),
     drag_list_(), pawn_wins_(), wall_wins_(), pawn_path_(),
     added_wall_(Wall::kInvalid, 0, 0, 0), wall_idx_(0),
-    status_(kWaitingForMove),
-    pos_utils_(9, 52, 50)
+    status_(kNeedMove), pos_utils_(9, 52, 50), move_handler_(new MoveHandler())
 {
     lg.add_attribute("Tag", blattrs::constant<std::string>("game state"));
 
@@ -66,10 +65,16 @@ void GameState::update()
     switch (status_) {
     case kPreparingMove:
         pre_process_move_();
+        status_ = kNeedMove;
+        break;
+    case kNeedMove:
         status_ = kWaitingForMove;
+        make_move_();
         break;
     case kWaitingForMove:
-        make_move_();
+        if (move_handler_->is_ready()) {
+            process_move(move_handler_->move());
+        }
         break;
     case kPerformedMove:
         post_process_move_();
@@ -256,6 +261,29 @@ void GameState::pre_process_move_()
     }
 }
 
+void GameState::process_move(const move_t &move)
+{
+    BOOST_LOG_DEBUG(lg) << "callback_move called";
+
+    if (move.which() == 0) {
+        throw Exception("invalid move");
+    }
+
+    if (const Node *node = boost::get<Node>(&move)) {
+        Node cur_node = game_->cur_pawn_data().node;
+        if (move_pawn_(*node) == 0) {
+            pawn_path_.push_back(cur_node);
+            pawn_path_.push_back(*node);
+            status_ = kNeedPawnRedraw;
+        }
+    }
+    else if (const Wall *wall = boost::get<Wall>(&move)) {
+        if (add_wall_(*wall) == 0) {
+            status_ = kNeedDrawWall;
+        }
+    }
+}
+
 void GameState::post_process_move_()
 {
     if (drag_list_.count(cur_pawn_)) {
@@ -276,24 +304,9 @@ void GameState::make_move_()
         return;
     }
 
-    move_t move = players_[cur_pawn_]->get_move();
-    if (move.which() == 0) {
-        throw Exception("invalid move");
-    }
-
-    if (Node *node = boost::get<Node>(&move)) {
-        Node cur_node = game_->cur_pawn_data().node;
-        if (move_pawn_(*node) == 0) {
-            pawn_path_.push_back(cur_node);
-            pawn_path_.push_back(*node);
-            status_ = kNeedPawnRedraw;
-        }
-    }
-    else if (Wall *wall = boost::get<Wall>(&move)) {
-        if (add_wall_(*wall) == 0) {
-            status_ = kNeedDrawWall;
-        }
-    }
+    move_handler_->reset();
+    auto f = std::bind(&MoveHandler::callback, move_handler_, std::placeholders::_1);
+    players_[cur_pawn_]->get_move(f);
 }
 
 int GameState::move_pawn_(const Node &node)
