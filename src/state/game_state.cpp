@@ -263,8 +263,6 @@ void GameState::pre_process_move_()
 
 void GameState::process_move(const move_t &move)
 {
-    BOOST_LOG_DEBUG(lg) << "callback_move called";
-
     if (move.which() == 0) {
         throw Exception("invalid move");
     }
