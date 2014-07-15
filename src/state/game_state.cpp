@@ -274,10 +274,16 @@ void GameState::process_move(const move_t &move)
             pawn_path_.push_back(*node);
             status_ = kNeedPawnRedraw;
         }
+        else {
+            status_ = kNeedMove;
+        }
     }
     else if (const Wall *wall = boost::get<Wall>(&move)) {
         if (add_wall_(*wall) == 0) {
             status_ = kNeedDrawWall;
+        }
+        else {
+            status_ = kNeedMove;
         }
     }
 }
