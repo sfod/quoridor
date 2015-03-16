@@ -7,7 +7,7 @@ ApplicationWindow {
 
     visible: true
     width: 500
-    height: 550
+    height: 600
     title: qsTr("Quoridor")
 
     Rectangle {
@@ -134,14 +134,36 @@ ApplicationWindow {
                 objectName: "board"
 
                 width: parent.width
-                height: parent.height - 40
+                height: parent.height - 60
                 x: 0
                 y: 0
             }
 
-            Item {
-                width: parent.width / 2
+            Rectangle {
+                id: pawnWallSwitcher
+
+                width: parent.width / 4
+                height: 20
                 anchors.top: board.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                color: "sienna"
+
+                MouseArea {
+                    id: pawnWallSwitcherMouseArea
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("pawn/wall switcher clicked");
+                        board.switchPlayerActivity();
+                    }
+                }
+            }
+
+            Item {
+                id: buttonsArea
+
+                width: parent.width / 2
+                anchors.top: pawnWallSwitcher.bottom
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
 

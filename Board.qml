@@ -8,7 +8,7 @@ Rectangle {
 
     property var pawnList: ({})
     property bool isRunning: false
-    property bool wallEnabled: true
+    property int playerCurrentActivity: 0
     property int activeActorId: -1
 
     function init() {
@@ -73,6 +73,23 @@ Rectangle {
         }
 
         board.activeActorId = actorId;
+
+        // by default player current activity is pawn moving
+        board.playerCurrentActivity = 0;
+    }
+
+    function switchPlayerActivity() {
+        if (board.playerCurrentActivity == 1) {
+            if (boardMouseArea.tempWall) {
+                boardMouseArea.tempWall.destroy();
+            }
+            pawnList[board.activeActorId].setDragging(true);
+        }
+        else {
+            pawnList[board.activeActorId].setDragging(false);
+        }
+
+        board.playerCurrentActivity = 1 - board.playerCurrentActivity;
     }
 
     function finishGame() {
@@ -102,6 +119,79 @@ Rectangle {
         isRunning = false;
     }
 
+    function getWall(x, y) {
+        var iw = boardGrid.cellWidth + boardGrid.lineWidth;
+        var sx = Math.floor((x - boardGrid.lineWidth) / iw);
+        var px = (x - boardGrid.lineWidth - sx * iw) / boardGrid.cellWidth;
+
+        var ih = boardGrid.cellHeight + boardGrid.lineWidth;
+        var sy = Math.floor((y - boardGrid.lineWidth) / ih);
+        var py = (y - boardGrid.lineWidth - sy * ih) / boardGrid.cellHeight;
+
+        var info = [];
+
+        /* mouse cursor placed on line between nodes */
+        if (py > 1.0) {
+            info = getHorizontalWallCoordinates(sx, px, sy, py);
+        }
+        /* mouse cursor placed on line between nodes */
+        else if (px > 1.0) {
+            info = getVerticalWallCoordinates(sx, px, sy, py);
+        }
+        else {
+            var minPx = Math.min(Math.abs(1.0 - px), px);
+            var minPy = Math.min(Math.abs(1.0 - py), py);
+            if (minPy <= minPx) {
+                info = getHorizontalWallCoordinates(sx, px, sy, py);
+            }
+            else {
+                info = getVerticalWallCoordinates(sx, px, sy, py);
+            }
+        }
+
+        return info;
+    }
+
+    function getHorizontalWallCoordinates(sx, px, sy, py) {
+        var wallColumn = sx + Math.floor(px);
+        if (wallColumn == boardGrid.columnNumber - 1) {
+            wallColumn -= 1;
+        }
+        else if (wallColumn == boardGrid.columnNumber) {
+            wallColumn -= 2;
+        }
+
+        var wallRow = sy + Math.round(py);
+        if (wallRow == 0) {
+            wallRow += 1;
+        }
+        if (wallRow == boardGrid.rowNumber) {
+            wallRow -= 1;
+        }
+
+        return [0, wallRow, wallColumn, boardGrid.rowNumber - wallRow, wallColumn];
+    }
+
+    function getVerticalWallCoordinates(sx, px, sy, py) {
+        var wallColumn = sx + Math.round(px);
+        if (wallColumn == 0) {
+            wallColumn += 1;
+        }
+        else if (wallColumn == boardGrid.columnNumber) {
+            wallColumn -= 1;
+        }
+
+        var wallRow = sy + Math.floor(py) - 1;
+        if (wallRow == -1) {
+            wallRow = 0;
+        }
+        if (wallRow == boardGrid.rowNumber - 1) {
+            wallRow -= 1;
+        }
+
+        return [1, wallRow, wallColumn, boardGrid.rowNumber - wallRow - 2, wallColumn];
+    }
+
     color: "#D18B47"
 
     MouseArea {
@@ -119,82 +209,9 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
 
-        function getWall(x, y) {
-            var iw = boardGrid.cellWidth + boardGrid.lineWidth;
-            var sx = Math.floor((x - boardGrid.lineWidth) / iw);
-            var px = (x - boardGrid.lineWidth - sx * iw) / boardGrid.cellWidth;
-
-            var ih = boardGrid.cellHeight + boardGrid.lineWidth;
-            var sy = Math.floor((y - boardGrid.lineWidth) / ih);
-            var py = (y - boardGrid.lineWidth - sy * ih) / boardGrid.cellHeight;
-
-            var info = [];
-
-            /* mouse cursor placed on line between nodes */
-            if (py > 1.0) {
-                info = getHorizontalWallCoordinates(sx, px, sy, py);
-            }
-            /* mouse cursor placed on line between nodes */
-            else if (px > 1.0) {
-                info = getVerticalWallCoordinates(sx, px, sy, py);
-            }
-            else {
-                var minPx = Math.min(Math.abs(1.0 - px), px);
-                var minPy = Math.min(Math.abs(1.0 - py), py);
-                if (minPy <= minPx) {
-                    info = getHorizontalWallCoordinates(sx, px, sy, py);
-                }
-                else {
-                    info = getVerticalWallCoordinates(sx, px, sy, py);
-                }
-            }
-
-            return info;
-        }
-
-        function getHorizontalWallCoordinates(sx, px, sy, py) {
-            var wallColumn = sx + Math.floor(px);
-            if (wallColumn == boardGrid.columnNumber - 1) {
-                wallColumn -= 1;
-            }
-            else if (wallColumn == boardGrid.columnNumber) {
-                wallColumn -= 2;
-            }
-
-            var wallRow = sy + Math.round(py);
-            if (wallRow == 0) {
-                wallRow += 1;
-            }
-            if (wallRow == boardGrid.rowNumber) {
-                wallRow -= 1;
-            }
-
-            return [0, wallRow, wallColumn, boardGrid.rowNumber - wallRow, wallColumn];
-        }
-
-        function getVerticalWallCoordinates(sx, px, sy, py) {
-            var wallColumn = sx + Math.round(px);
-            if (wallColumn == 0) {
-                wallColumn += 1;
-            }
-            else if (wallColumn == boardGrid.columnNumber) {
-                wallColumn -= 1;
-            }
-
-            var wallRow = sy + Math.floor(py) - 1;
-            if (wallRow == -1) {
-                wallRow = 0;
-            }
-            if (wallRow == boardGrid.rowNumber - 1) {
-                wallRow -= 1;
-            }
-
-            return [1, wallRow, wallColumn, boardGrid.rowNumber - wallRow - 2, wallColumn];
-        }
-
         onPositionChanged: {
-            if (board.wallEnabled) {
-                var wallInfo = getWall(mouseX, mouseY);
+            if (board.playerCurrentActivity == 1) {
+                var wallInfo = board.getWall(mouseX, mouseY);
 
                 boardMouseArea.wallGameOrientation = wallInfo[0];
                 var wallRow = wallInfo[1];
@@ -239,7 +256,7 @@ Rectangle {
         }
 
         onClicked: {
-            if (board.wallEnabled) {
+            if (board.playerCurrentActivity == 1) {
                 boardMouseArea.requestedWallStr = boardMouseArea.tempWallStr;
                 board.wallDropped(activeActorId,
                         boardMouseArea.wallGameOrientation,
