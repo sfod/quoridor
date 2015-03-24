@@ -1,5 +1,4 @@
-#ifndef ACTOR_COMPONENT_HPP
-#define ACTOR_COMPONENT_HPP
+#pragma once
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/functional/hash.hpp>
@@ -28,5 +27,3 @@ public:
 private:
     std::shared_ptr<Actor> owner_;
 };
-
-#endif // ACTOR_COMPONENT_HPP

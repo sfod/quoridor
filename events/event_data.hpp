@@ -1,5 +1,4 @@
-#ifndef EVENT_DATA_HPP
-#define EVENT_DATA_HPP
+#pragma once
 
 #include "actors/actor.hpp"
 #include "game/game_data.hpp"
@@ -197,5 +196,3 @@ public:
 private:
     ActorId actor_id_;
 };
-
-#endif // EVENT_DATA_HPP

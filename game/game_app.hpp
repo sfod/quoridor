@@ -1,5 +1,4 @@
-#ifndef GAME_APP_H
-#define GAME_APP_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -33,5 +32,3 @@ private:
     QQmlComponent *qcomponent_;
     QObject *qroot_;
 };
-
-#endif // GAME_APP_H

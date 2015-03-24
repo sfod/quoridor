@@ -1,5 +1,4 @@
-#ifndef GRAPH_COMPONENT_HPP
-#define GRAPH_COMPONENT_HPP
+#pragma once
 
 #include "actor_component.hpp"
 #include "graph/graph.hpp"
@@ -31,5 +30,3 @@ private:
     Node node_;
     std::set<Node> goal_nodes_;
 };
-
-#endif // GRAPH_COMPONENT_HPP

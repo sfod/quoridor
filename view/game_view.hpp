@@ -1,5 +1,4 @@
-#ifndef GAME_VIEW_HPP
-#define GAME_VIEW_HPP
+#pragma once
 
 #include <QObject>
 #include "qt_view.hpp"
@@ -43,5 +42,3 @@ private:
     ActorId actor_id_;
     bool is_main_;
 };
-
-#endif // GAME_VIEW_HPP

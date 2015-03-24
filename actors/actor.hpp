@@ -1,5 +1,4 @@
-#ifndef ACTOR_HPP
-#define ACTOR_HPP
+#pragma once
 
 #include <map>
 #include <memory>
@@ -27,5 +26,3 @@ private:
     ActorId id_;
     std::string type_;
 };
-
-#endif // ACTOR_HPP

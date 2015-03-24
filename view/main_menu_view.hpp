@@ -1,5 +1,4 @@
-#ifndef MAIN_MENU_VIEW_HPP
-#define MAIN_MENU_VIEW_HPP
+#pragma once
 
 #include <list>
 #include <QObject>
@@ -28,5 +27,3 @@ private:
     QObject *qroot_;
     ActorId actor_id_;
 };
-
-#endif // MAIN_MENU_VIEW_HPP

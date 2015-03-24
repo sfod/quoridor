@@ -1,5 +1,4 @@
-#ifndef AI_VIEW_HPP
-#define AI_VIEW_HPP
+#pragma once
 
 #include "iview.hpp"
 #include "events/event_manager.hpp"
@@ -20,5 +19,3 @@ private:
     std::list<bs2::connection> conn_list_;
     ActorId actor_id_;
 };
-
-#endif // AI_VIEW_HPP

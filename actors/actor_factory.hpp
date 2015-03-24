@@ -1,5 +1,4 @@
-#ifndef ACTOR_FACTORY_HPP
-#define ACTOR_FACTORY_HPP
+#pragma once
 
 #include <memory>
 #include "actor.hpp"
@@ -15,5 +14,3 @@ public:
     std::shared_ptr<ActorComponent> create_actor_component(
             const std::string &type, const boost_pt::ptree &component_data);
 };
-
-#endif // ACTOR_FACTORY_HPP

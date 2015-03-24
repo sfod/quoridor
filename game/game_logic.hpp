@@ -1,5 +1,4 @@
-#ifndef GAME_LOGIC_HPP
-#define GAME_LOGIC_HPP
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -64,5 +63,3 @@ private:
     int player_idx_;
     PlayerHandler player_handler_;
 };
-
-#endif // GAME_LOGIC_HPP

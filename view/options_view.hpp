@@ -1,5 +1,4 @@
-#ifndef OPTIONS_VIEW_HPP
-#define OPTIONS_VIEW_HPP
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -39,5 +38,3 @@ private:
     std::vector<int> player_nums_;
     std::vector<PlayerType> selected_players_;
 };
-
-#endif // OPTIONS_VIEW_HPP

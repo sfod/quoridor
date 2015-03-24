@@ -1,5 +1,4 @@
-#ifndef BRAIN_HPP
-#define BRAIN_HPP
+#pragma once
 
 #include <memory>
 #include "graph/graph.hpp"
@@ -11,5 +10,3 @@ public:
     virtual void set_graph(const std::shared_ptr<Graph> &graph) = 0;
     virtual void set_goal_nodes(const std::set<Node> &goal_nodes) = 0;
 };
-
-#endif // BRAIN_HPP

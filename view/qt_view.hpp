@@ -1,5 +1,4 @@
-#ifndef QT_VIEW_HPP
-#define QT_VIEW_HPP
+#pragma once
 
 #include <QObject>
 #include "iview.hpp"
@@ -19,5 +18,3 @@ protected:
     virtual bool connect_button(const char *name, const char *slot,
             QObject **obj = NULL);
 };
-
-#endif // QT_VIEW_HPP

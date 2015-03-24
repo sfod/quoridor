@@ -1,5 +1,4 @@
-#ifndef AI_COMPONENT_HPP
-#define AI_COMPONENT_HPP
+#pragma once
 
 #include <memory>
 #include "actor_component.hpp"
@@ -22,5 +21,3 @@ public:
 private:
     std::shared_ptr<Brain> brain_;
 };
-
-#endif // AI_COMPONENT_HPP

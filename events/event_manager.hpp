@@ -1,5 +1,4 @@
-#ifndef EVENT_MANAGER_HPP
-#define EVENT_MANAGER_HPP
+#pragma once
 
 #include <memory>
 #include <boost/signals2.hpp>
@@ -30,5 +29,3 @@ private:
     std::map<EventType, signal_t> signal_list_;
     std::list<std::shared_ptr<EventData>> event_list_;
 };
-
-#endif // EVENT_MANAGER_HPP

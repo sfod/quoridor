@@ -1,5 +1,4 @@
-#ifndef WALL_HPP
-#define WALL_HPP
+#pragma once
 
 #include <vector>
 #include <QObject>
@@ -37,5 +36,3 @@ private:
     Node node_;
     std::vector<std::pair<Node, Node>> affected_nodes_;
 };
-
-#endif // WALL_HPP

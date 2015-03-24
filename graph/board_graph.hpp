@@ -1,5 +1,4 @@
-﻿#ifndef QUORIDOR_BOARD_GRAPH_HPP_
-#define QUORIDOR_BOARD_GRAPH_HPP_
+﻿#pragma once
 
 #include <vector>
 
@@ -192,5 +191,3 @@ private:
     mutable path_data_list_t path_data_list_;
 #endif
 };
-
-#endif  /* QUORIDOR_BOARD_GRAPH_HPP_ */

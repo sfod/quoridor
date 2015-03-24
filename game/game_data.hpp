@@ -1,5 +1,4 @@
-#ifndef GAME_DATA_HPP
-#define GAME_DATA_HPP
+#pragma once
 
 #include <map>
 #include <string>
@@ -19,5 +18,3 @@ static const std::map<PlayerType, std::string> player_type_to_str = {
     {PlayerType::PT_Human, "human"},
     {PlayerType::PT_AI, "AI"}
 };
-
-#endif // GAME_DATA_HPP
