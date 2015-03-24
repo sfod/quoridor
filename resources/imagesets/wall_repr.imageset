@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<Imageset version="2" name="WallReprSet" imagefile="wall_repr.png" nativeHorzRes="70" nativeVertRes="140" autoScaled="vertical">
-	<Image name="WallRepr" xPos="0" yPos="0" width="70" height="140" />
-</Imageset>
