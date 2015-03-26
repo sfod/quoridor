@@ -12,6 +12,15 @@ ActorFactory::ActorFactory()
 {
 }
 
+std::shared_ptr<Actor> ActorFactory::create_actor(QString &resource_file,
+        const std::vector<QString> &component_resource_files)
+{
+    QFile resource(resource_file);
+    resource.open(QIODevice::ReadOnly | QIODevice::Text);
+    QJsonDocument j = QJsonDocument::fromJson(resource.readAll());
+    return std::shared_ptr<Actor>();
+}
+
 std::shared_ptr<Actor> ActorFactory::create_actor(const std::string &resource,
         const std::vector<std::string> &component_resources)
 {
