@@ -4,8 +4,6 @@
         <file>Board.qml</file>
         <file>DropTile.qml</file>
         <file>DragTile.qml</file>
-        <file>resources/pawn.png</file>
-        <file>data/player.json</file>
         <file>Carousel.qml</file>
         <file>Options.qml</file>
     </qresource>
