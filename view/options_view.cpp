@@ -1,12 +1,9 @@
 #include "options_view.hpp"
 #include <QDebug>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include "game/game_data.hpp"
 #include "events/event_data.hpp"
 #include "events/event_manager.hpp"
 
-namespace boost_pt = boost::property_tree;
 
 OptionsView::OptionsView(QObject *qroot, QObject *qparent)
     : QtView(qparent), qroot_(qroot), qoptions_(), actor_id_(-1),

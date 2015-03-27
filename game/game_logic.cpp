@@ -250,9 +250,9 @@ void GameLogic::register_delegates()
 void GameLogic::create_player(int idx, PlayerType ptype)
 {
     QString ptype_str(player_type_to_str.at(ptype).c_str());
-    QString player_cfg_file("qrc:///player_" + ptype_str + ".json");
+    QString player_cfg_file(":/configs/player_" + ptype_str + ".json");
     std::vector<QString> component_resources = {
-        QString("qrc:///player_position_" + QString(idx) + ".json")
+        QString(":/configs/player_position_" + QString::number(idx) + ".json")
     };
     std::shared_ptr<Actor> actor = actor_factory_->create_actor(player_cfg_file,
             component_resources);
