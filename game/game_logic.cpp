@@ -249,8 +249,7 @@ void GameLogic::register_delegates()
 
 void GameLogic::create_player(int idx, PlayerType ptype)
 {
-    QString ptype_str(player_type_to_str.at(ptype).c_str());
-    QString player_cfg_file(":/configs/player_" + ptype_str + ".json");
+    QString player_cfg_file(":/configs/player_" + player_type_to_str.at(ptype) + ".json");
     std::vector<QString> component_resources = {
         QString(":/configs/player_position_" + QString::number(idx) + ".json")
     };

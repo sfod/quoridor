@@ -89,12 +89,12 @@ void OptionsView::on_players_changed(QVariant player_list)
     QVariantList lst = player_list.toList();
     selected_players_.clear();
     for (QVariant ptype_str : lst) {
-        PlayerType ptype = str_to_player_type.at(ptype_str.toString().toStdString());
+        PlayerType ptype = str_to_player_type.at(ptype_str.toString());
         selected_players_.push_back(ptype);
     }
     qDebug() << "selected players:";
     for (auto ptype : selected_players_) {
-        qDebug() << "\t" << player_type_to_str.at(ptype).c_str();
+        qDebug() << "\t" << player_type_to_str.at(ptype);
     }
 }
 

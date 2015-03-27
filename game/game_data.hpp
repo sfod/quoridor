@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include <string>
+#include <QString>
 
 enum class PlayerType {
     PT_Human,
@@ -9,12 +9,12 @@ enum class PlayerType {
     PT_Invalid
 };
 
-static const std::map<std::string, PlayerType> str_to_player_type = {
+static const std::map<QString, PlayerType> str_to_player_type = {
     {"human", PlayerType::PT_Human},
     {"AI", PlayerType::PT_AI}
 };
 
-static const std::map<PlayerType, std::string> player_type_to_str = {
+static const std::map<PlayerType, QString> player_type_to_str = {
     {PlayerType::PT_Human, "human"},
     {PlayerType::PT_AI, "AI"}
 };
