@@ -31,7 +31,7 @@ bool OptionsView::init()
 
     QVariantList types;
     for (const auto &type : player_types_) {
-        types << type.c_str();
+        types << type;
     }
     QMetaObject::invokeMethod(qoptions_, "setPlayerTypes",
             Q_ARG(QVariant, QVariant::fromValue(types)));
@@ -117,37 +117,22 @@ bool OptionsView::load_players_data()
 
     QJsonDocument jd = QJsonDocument::fromJson(players_file.readAll());
     QJsonObject players = jd.object();
+
     QJsonArray player_types = players["types"].toArray();
+    if (player_types.isEmpty()) {
+        return false;
+    }
     for (auto type : player_types) {
-        qDebug() << type.toString();
+        player_types_.push_back(type.toString());
     }
 
-//    boost_pt::ptree pt;
-//    try {
-//        boost_pt::read_json(players_file, pt);
-//    }
-//    catch (boost_pt::ptree_error &e) {
-//        qDebug() << "failed to open file:" << e.what();
-//        return false;
-//    }
-
-//    boost::optional<boost_pt::ptree &> types = pt.get_child_optional("types");
-//    if (!types) {
-//        return false;
-//    }
-//    player_types_.clear();
-//    for (auto type : *types) {
-//        player_types_.push_back(type.second.get_value<std::string>());
-//    }
-
-//    boost::optional<boost_pt::ptree &> nums = pt.get_child_optional("nums");
-//    if (!nums) {
-//        return false;
-//    }
-//    player_nums_.clear();
-//    for (auto num : *nums) {
-//        player_nums_.push_back(num.second.get_value<int>());
-//    }
+    QJsonArray player_nums = players["nums"].toArray();
+    if (player_nums.isEmpty()) {
+        return false;
+    }
+    for (auto num : player_nums) {
+        player_nums_.push_back(num.toInt());
+    }
 
     return true;
 }
