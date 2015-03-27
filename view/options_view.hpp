@@ -34,7 +34,7 @@ private:
     QObject *qroot_;
     QObject *qoptions_;
     ActorId actor_id_;
-    std::vector<std::string> player_types_;
+    std::vector<QString> player_types_;
     std::vector<int> player_nums_;
     std::vector<PlayerType> selected_players_;
 };

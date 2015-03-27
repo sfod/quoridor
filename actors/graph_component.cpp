@@ -13,38 +13,28 @@ GraphComponent::~GraphComponent()
 {
 }
 
-bool GraphComponent::init(const boost::property_tree::ptree &component_data)
+bool GraphComponent::init(const QJsonObject &component_data)
 {
+    qDebug() << component_data;
+
     // set player initial position
-    boost::optional<const boost_pt::ptree &> pos =
-            component_data.get_child_optional("position");
-    if (!pos || ((*pos).size() != 2)) {
+    QJsonArray pos = component_data["position"].toArray();
+    if (pos.size() != 2) {
         return false;
     }
-    auto pos_it = (*pos).begin();
-    node_.set_row(pos_it->second.get_value<int>());
-    node_.set_col((++pos_it)->second.get_value<int>());
+    node_.set_row(pos.at(0).toInt());
+    node_.set_col(pos.at(1).toInt());
 
     // set player goal nodes
-    boost::optional<const boost_pt::ptree &> goals =
-            component_data.get_child_optional("goals");
-    if (!goals) {
-        return false;
-    }
-
     bool rc = true;
-    for (auto &goal : *goals) {
-        if (goal.second.size() != 2) {
+    QJsonArray goals = component_data["goals"].toArray();
+    for (const auto &goal : goals) {
+        QJsonArray g = goal.toArray();
+        if (g.size() != 2) {
             rc = false;
             break;
         }
-
-        int items[2];
-        int i = 0;
-        for (auto &node_item : goal.second) {
-            items[i++] = node_item.second.get_value<int>();
-        }
-        goal_nodes_.emplace(items[0], items[1]);
+        goal_nodes_.emplace(g.at(0).toInt(), g.at(1).toInt());
     }
 
     return rc;

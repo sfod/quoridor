@@ -9,7 +9,7 @@ public:
     GraphComponent();
     virtual ~GraphComponent();
 
-    virtual bool init(const boost_pt::ptree &component_data) override;
+    virtual bool init(const QJsonObject &component_data) override;
     virtual void post_init() override;
     virtual const char *name() const override { return name_; }
 

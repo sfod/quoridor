@@ -15,17 +15,17 @@ AIComponent::~AIComponent()
 {
 }
 
-bool AIComponent::init(const boost::property_tree::ptree &component_data)
+bool AIComponent::init(const QJsonObject &component_data)
 {
-    std::string brain_type = component_data.get<std::string>("brain", "");
-    if (brain_type == "") {
+    QString brain_type = component_data["brain"].toString();
+    if (brain_type.isEmpty()) {
         return false;
     }
 
-    if (brain_type == std::string("randomer")) {
+    if (brain_type == "randomer") {
         brain_ = std::make_shared<RandomerBrain>();
     }
-    else if (brain_type == std::string("straight")) {
+    else if (brain_type == "straight") {
         brain_ = std::make_shared<StraightBrain>();
     }
     else {

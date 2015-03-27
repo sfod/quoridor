@@ -9,14 +9,13 @@ Actor::~Actor()
 {
 }
 
-bool Actor::init(const boost_pt::ptree &actor_data)
+bool Actor::init(QJsonObject actor_data)
 {
-    type_ = actor_data.get<std::string>("type", "");
-    if (type_ == "") {
+    type_ = actor_data["type"].toString();
+    if (type_.isEmpty()) {
         return false;
     }
-
-    qDebug() << "actor type: " << type_.c_str();
+    qDebug() << "actor type: " << type_;
     return true;
 }
 

@@ -9,7 +9,7 @@ public:
     AIComponent();
     virtual ~AIComponent();
 
-    virtual bool init(const boost::property_tree::ptree &component_data) override;
+    virtual bool init(const QJsonObject &component_data) override;
     virtual void post_init() override;
     virtual const char *name() const override { return name_; }
 
