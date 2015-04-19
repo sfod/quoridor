@@ -25,3 +25,23 @@ Wall::~Wall()
 {
 }
 
+QString Wall::to_string() const
+{
+    QString orientation_str;
+
+    switch (orientation_) {
+    case WallEnumClass::WallOrientation::WO_Horizontal:
+        orientation_str = "horizontal";
+        break;
+    case WallEnumClass::WallOrientation::WO_Vertical:
+        orientation_str = "horizontal";
+        break;
+    case WallEnumClass::WallOrientation::WO_Invalid:
+    default:
+        orientation_str = "invalid";
+        break;
+    }
+
+    return orientation_str + " wall at " + node_.to_string();
+}
+

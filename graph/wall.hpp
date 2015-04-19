@@ -31,6 +31,8 @@ public:
     WallEnumClass::WallOrientation orientation() const { return orientation_; }
     const Node &node() const { return node_; }
 
+    QString to_string() const;
+
 private:
     WallEnumClass::WallOrientation orientation_;
     Node node_;
