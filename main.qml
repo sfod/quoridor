@@ -6,7 +6,7 @@ ApplicationWindow {
     id: windowApp
 
     visible: true
-    width: 500
+    width: 800
     height: 600
     title: qsTr("Quoridor")
 
@@ -126,7 +126,7 @@ ApplicationWindow {
 
             x: 20
             y: 20
-            width: parent.width - 40
+            width: parent.width - 300 - 40
             height: parent.height - 40
 
             Board {
@@ -137,6 +137,24 @@ ApplicationWindow {
                 height: parent.height - 60
                 x: 0
                 y: 0
+            }
+
+            TextArea {
+                id: movesRecorder
+                objectName: "moveRecorder"
+
+                anchors.left: board.right
+
+                text: ""
+                readOnly: true
+
+                function init() {
+                    movesRecorder.text = "";
+                }
+
+                function addMessage(message) {
+                    movesRecorder.append(message);
+                }
             }
 
             Rectangle {

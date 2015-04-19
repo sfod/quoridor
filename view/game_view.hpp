@@ -32,12 +32,13 @@ public slots:
 
 private:
     virtual QObject *find_object_by_name(const char *name) const override;
-    bool connect_board();
+    bool connect_objects();
 
 private:
     std::list<bs2::connection> conn_list_;
     QObject *qroot_;
     QObject *qboard_;
+    QObject *qrecorder_;
     QObject *qbutton_;
     ActorId actor_id_;
     bool is_main_;

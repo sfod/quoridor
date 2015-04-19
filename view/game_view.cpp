@@ -3,8 +3,8 @@
 #include <QDebug>
 
 GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
-    : QtView(qparent), conn_list_(), qroot_(qroot), qboard_(), qbutton_(),
-      actor_id_(-1), is_main_(is_main)
+    : QtView(qparent), conn_list_(), qroot_(qroot), qboard_(), qrecorder_(),
+      qbutton_(), actor_id_(-1), is_main_(is_main)
 {
 }
 
@@ -18,7 +18,7 @@ GameView::~GameView()
 
 bool GameView::init()
 {
-    if (!connect_board()) {
+    if (!connect_objects()) {
         return false;
     }
 
@@ -58,6 +58,7 @@ bool GameView::init()
 
     if (is_main_) {
         QMetaObject::invokeMethod(qboard_, "init");
+        QMetaObject::invokeMethod(qrecorder_, "init");
     }
 
     return true;
@@ -105,6 +106,10 @@ void GameView::move_actor_delegate(const std::shared_ptr<EventData> &event)
                 Q_ARG(QVariant, static_cast<int>(move_event->actor_id())),
                 Q_ARG(QVariant, idx),
                 Q_ARG(QVariant, QVariant::fromValue(possible_idx_list)));
+
+        QString msg = QString::number(static_cast<int>(move_event->actor_id()))
+                + " moves to " + node.to_string();
+        QMetaObject::invokeMethod(qrecorder_, "addMessage", Q_ARG(QVariant, msg));
     }
 }
 
@@ -135,6 +140,9 @@ void GameView::set_wall_delegate(const std::shared_ptr<EventData> &event)
                 Q_ARG(QVariant, static_cast<int>(wall.orientation())),
                 Q_ARG(QVariant, node.row()),
                 Q_ARG(QVariant, node.col()));
+        QString msg = QString::number(static_cast<int>(set_wall_event->actor_id()))
+                + " set " + wall.to_string();
+        QMetaObject::invokeMethod(qrecorder_, "addMessage", Q_ARG(QVariant, msg));
     }
 }
 
@@ -147,11 +155,16 @@ void GameView::set_active_delegate(const std::shared_ptr<EventData> &event)
     }
 }
 
-void GameView::game_finished_delegate(const std::shared_ptr<EventData> &/*event*/)
+void GameView::game_finished_delegate(const std::shared_ptr<EventData> &event)
 {
-//    auto game_finished_event = std::dynamic_pointer_cast<EventData_GameFinished>(event);
-    qDebug() << "finishing game!";
-    QMetaObject::invokeMethod(qboard_, "finishGame");
+    if (is_main_) {
+        auto game_finished_event = std::dynamic_pointer_cast<EventData_GameFinished>(event);
+        qDebug() << "finishing game!";
+        QMetaObject::invokeMethod(qboard_, "finishGame");
+
+        QString msg = QString::number(game_finished_event->actor_id()) + " wins";
+        QMetaObject::invokeMethod(qrecorder_, "addMessage", Q_ARG(QVariant, msg));
+    }
 }
 
 void GameView::on_pawn_dropped(int actor_id, int idx)
@@ -200,12 +213,18 @@ QObject *GameView::find_object_by_name(const char *name) const
     return qroot_->findChild<QObject*>(name);
 }
 
-bool GameView::connect_board()
+bool GameView::connect_objects()
 {
     qboard_ = find_object_by_name("board");
     if (qboard_ == NULL) {
         return false;
     }
+
+    qrecorder_ = find_object_by_name("moveRecorder");
+    if (qrecorder_ == NULL) {
+        return false;
+    }
+
     QObject::connect(
             qboard_, SIGNAL(pawnDropped(int, int)),
             this, SLOT(on_pawn_dropped(int, int))
