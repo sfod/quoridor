@@ -57,10 +57,15 @@ public:
 
 class EventData_GameFinished : public EventData {
 public:
-    EventData_GameFinished();
+    explicit EventData_GameFinished(ActorId actor_id);
     virtual ~EventData_GameFinished();
     virtual const EventType &event_type() const;
     static const EventType event_type_;
+
+    ActorId actor_id() const { return actor_id_; }
+
+private:
+    ActorId actor_id_;
 };
 
 
