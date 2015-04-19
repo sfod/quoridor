@@ -25,10 +25,11 @@ public:
     const Node &operator+=(const Node &node);
     const Node operator+(const Node &node);
 
+    QString to_string() const;
+
 private:
     int row_;
     int col_;
 };
 
-std::ostream &operator<<(std::ostream &os, const Node &node);
 QDebug operator<<(QDebug dbg, const Node &node);

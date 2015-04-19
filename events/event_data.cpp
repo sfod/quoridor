@@ -72,7 +72,7 @@ const EventType &EventData_GameTerminated::event_type() const
 }
 
 
-EventData_GameFinished::EventData_GameFinished()
+EventData_GameFinished::EventData_GameFinished(ActorId actor_id) : actor_id_(actor_id)
 {
 }
 
