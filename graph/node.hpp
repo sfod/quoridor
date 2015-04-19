@@ -25,6 +25,8 @@ public:
     const Node &operator+=(const Node &node);
     const Node operator+(const Node &node);
 
+    QString to_string() const;
+
 private:
     int row_;
     int col_;

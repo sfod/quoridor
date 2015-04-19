@@ -76,6 +76,11 @@ const Node Node::operator+(const Node &node) {
     return n;
 }
 
+QString Node::to_string() const
+{
+    return QString::number(row_) + ":" + QString::number(col_);
+}
+
 std::ostream &operator<<(std::ostream &os, const Node &node)
 {
     return os << node.row() << ":" << node.col();
@@ -83,5 +88,5 @@ std::ostream &operator<<(std::ostream &os, const Node &node)
 
 QDebug operator<<(QDebug dbg, const Node &node)
 {
-    return dbg.nospace() << node.row() << ":" << node.col();
+    return dbg.nospace() << node.to_string();
 }
