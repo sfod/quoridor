@@ -32,5 +32,4 @@ private:
     int col_;
 };
 
-std::ostream &operator<<(std::ostream &os, const Node &node);
 QDebug operator<<(QDebug dbg, const Node &node);

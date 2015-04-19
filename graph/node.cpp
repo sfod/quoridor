@@ -81,11 +81,6 @@ QString Node::to_string() const
     return QString::number(row_) + ":" + QString::number(col_);
 }
 
-std::ostream &operator<<(std::ostream &os, const Node &node)
-{
-    return os << node.row() << ":" << node.col();
-}
-
 QDebug operator<<(QDebug dbg, const Node &node)
 {
     return dbg.nospace() << node.to_string();
