@@ -6,5 +6,7 @@
         <file>DragTile.qml</file>
         <file>Carousel.qml</file>
         <file>Options.qml</file>
+        <file>WallStock.qml</file>
+        <file>BoardFrame.qml</file>
     </qresource>
 </RCC>
