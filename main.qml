@@ -16,20 +16,12 @@ ApplicationWindow {
 
         anchors.fill: parent
 
-        property int frameX: 40
-        property int frameY: 40
-        property int frameWidth: width - 40
-        property int frameHeight: height - 40
-
         // main menu window
         Item {
             id: windowMainMenu
             objectName: "mainMenu"
 
-            x: windowMain.frameX
-            y: windowMain.frameY
-            width: windowMain.frameWidth
-            height: windowMain.frameHeight
+            anchors.fill: parent
 
             RowLayout {
                 height: parent.height / 2
@@ -71,10 +63,7 @@ ApplicationWindow {
         Item {
             id: windowOptions
 
-            x: windowMain.frameX
-            y: windowMain.frameY
-            width: windowMain.frameWidth
-            height: windowMain.frameHeight
+            anchors.fill: parent
 
             Options {
                 id: options
@@ -126,10 +115,7 @@ ApplicationWindow {
         Item {
             id: windowGame
 
-            x: windowMain.frameX
-            y: windowMain.frameY
-            width: windowMain.frameWidth
-            height: windowMain.frameHeight
+            anchors.fill: parent
 
             BoardFrame {
                 id: boardFrame
