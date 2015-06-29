@@ -4,13 +4,16 @@ Rectangle {
     color: "sienna"
 
     property bool isActive: false
+    property int actorId: -1
 
     MouseArea {
         id: pawnWallSwitcherMouseArea
         anchors.fill: parent
         onClicked: {
-            console.log("pawn/wall switcher clicked");
-            board.switchPlayerActivity();
+            if (isActive) {
+                console.log("clicked switch " + actorId);
+                board.switchPlayerActivity();
+            }
         }
     }
 }
