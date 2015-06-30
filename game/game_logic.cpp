@@ -266,18 +266,19 @@ void GameLogic::create_player(int idx, PlayerType ptype)
 void GameLogic::set_players()
 {
     for (auto actor : player_list_) {
-        auto new_event = std::make_shared<EventData_NewActor>(actor.first->id());
-        EventManager::get()->trigger_event(new_event);
-
         ComponentId cid = ActorComponent::id(GraphComponent::name_);
         auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor.first->component(cid));
-        if (graph_comp) {
-            auto move_event = std::make_shared<EventData_MoveActor>(
+        // FIXME
+        if (!graph_comp) {
+            throw std::runtime_error("Invalid player object: no Graph component found");
+        }
+
+        auto new_event = std::make_shared<EventData_NewActor>(
                     actor.first->id(),
                     graph_comp->node(),
-                    graph_comp->possible_moves());
-            EventManager::get()->queue_event(move_event);
-        }
+                    graph_comp->possible_moves()
+        );
+        EventManager::get()->trigger_event(new_event);
     }
 
     ActorId active_player = player_handler_.next_player();

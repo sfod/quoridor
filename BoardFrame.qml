@@ -11,6 +11,11 @@ Rectangle {
         board.addPawn(actorId);
     }
 
+    function addPawn(actorId, idx, possibleMoves) {
+        board.addPawn(actorId);
+        board.setPawnPos(actorId, idx, possibleMoves);
+    }
+
     function setPawnPos(actorId, idx, possibleMoves) {
     }
 

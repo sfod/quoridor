@@ -81,8 +81,23 @@ void GameView::new_actor_delegate(const std::shared_ptr<EventData> &event)
 {
     auto new_actor_event = std::dynamic_pointer_cast<EventData_NewActor>(event);
     if (is_main_) {
+        const Node &node = new_actor_event->node();
+        int idx = (8 - node.row()) * 9 + node.col();
+
+        qDebug() << "move actor delegate";
+
+        QVariantList possible_idx_list;
+        for (auto &node : new_actor_event->possible_moves()) {
+            int idx = (8 - node.row()) * 9 + node.col();
+            possible_idx_list << idx;
+            qDebug() << "\tmove:" << node;
+        }
+
         QMetaObject::invokeMethod(qboard_, "addPawn",
-                Q_ARG(QVariant, static_cast<int>(new_actor_event->actor_id())));
+                Q_ARG(QVariant, static_cast<int>(new_actor_event->actor_id())),
+                Q_ARG(QVariant, idx),
+                Q_ARG(QVariant, QVariant::fromValue(possible_idx_list))
+        );
     }
 }
 
@@ -215,7 +230,7 @@ QObject *GameView::find_object_by_name(const char *name) const
 
 bool GameView::connect_objects()
 {
-    qboard_ = find_object_by_name("board");
+    qboard_ = find_object_by_name("boardFrame");
     if (qboard_ == NULL) {
         return false;
     }

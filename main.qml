@@ -119,20 +119,12 @@ ApplicationWindow {
 
             BoardFrame {
                 id: boardFrame
+                objectName: "boardFrame"
+
                 width: parent.width - 300
                 height: parent.height - 60
                 x: 0
                 y: 0
-
-                Board {
-                    id: board
-                    objectName: "board"
-
-                    width: parent.width
-                    height: parent.height - 60
-                    x: 0
-                    y: 0
-                }
             }
 
             TextArea {
@@ -152,7 +144,6 @@ ApplicationWindow {
                     movesRecorder.append(message);
                 }
             }
-
 
             Item {
                 id: buttonsArea
