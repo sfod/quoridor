@@ -7,12 +7,11 @@ Rectangle {
     property int actorId: -1
 
     MouseArea {
-        id: pawnWallSwitcherMouseArea
         anchors.fill: parent
         onClicked: {
             if (isActive) {
                 console.log("clicked switch " + actorId);
-                board.switchPlayerActivity();
+                boardFrame.switchPlayerActivity();
             }
         }
     }

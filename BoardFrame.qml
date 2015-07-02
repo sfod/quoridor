@@ -1,45 +1,87 @@
 import QtQuick 2.0
 
 Rectangle {
-    id: boardFrame
-    objectName: "boardFrame"
+    signal pawnDropped(int actorId, int idx)
+    signal wallDropped(int actorId, int orientation, int row, int col)
+
+    property list<WallStock> wallStocks
 
     property var playerList: ({})
+    property var wallStockList: ({})
     property int activeActorId: -1
+    property int playerCurrentActivity: 0
+    property int playerNum: 0
+    property bool isRunning: false
 
-    function addPlayer(actorId) {
-        board.addPawn(actorId);
+    function init() {
+        board.clear();
+        start();
     }
 
-    function addPawn(actorId, idx, possibleMoves) {
+    function addPlayer(actorId, nodeIdx, possibleMoves, walls) {
+        playerList[actorId] = 1;
+        wallStockList[actorId] = wallStocks[playerNum];
+        playerNum += 1;
+
         board.addPawn(actorId);
-        board.setPawnPos(actorId, idx, possibleMoves);
+        board.setPawnPos(actorId, nodeIdx, possibleMoves);
+        wallStocks[playerNum].actorId = actorId;
     }
 
-    function setPawnPos(actorId, idx, possibleMoves) {
+    function setPawnPos(actorId, nodeIdx, possibleMoves) {
+        board.setPawnPos(actorId, nodeIdx, possibleMoves);
     }
 
     function setPawnPossibleMoves(actorId, possibleMoves) {
+        board.setPawnPossibleMoves(actorId, possibleMoves);
     }
 
     function setWall(actorId, orientation, row, col) {
+        board.setWall(actorId, orientation, row, col);
     }
 
     function setActivePlayer(actorId) {
+        if (!isRunning || !playerList.hasOwnProperty(actorId)) {
+            return;
+        }
+        board.setActivePlayer(actorId);
+        wallStockList[actorId].isActive = true;
+
+        activeActorId = actorId;
+        playerCurrentActivity = 0;
     }
 
     function switchPlayerActivity() {
+        playerCurrentActivity = 1 - playerCurrentActivity;
+        board.switchPlayerActivity(activeActorId, playerCurrentActivity);
     }
 
-    function finishGame() {
+    function start() {
+        isRunning = true;
+    }
+
+    function stop() {
+        isRunning = false;
     }
 
     function endGame() {
+        board.clear();
+        stop();
     }
+
+    function finishGame() {
+        board.finishGame();
+    }
+
+    function clear() {
+        playerList = {};
+        wallStockList = {};
+        playerNum = 0;
+    }
+
 
     Board {
         id: board
-        objectName: "board"
         width: boardFrame.width - 80
         height: boardFrame.height - 80
         anchors.horizontalCenter: boardFrame.horizontalCenter
@@ -80,6 +122,10 @@ Rectangle {
         height: board.height / 2
         anchors.left: board.right
         anchors.verticalCenter: board.verticalCenter
+    }
+
+    Component.onCompleted: {
+        wallStocks = [wallStock_1, wallStock_2, wallStock_3, wallStock_4];
     }
 }
 

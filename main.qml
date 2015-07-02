@@ -121,8 +121,8 @@ ApplicationWindow {
                 id: boardFrame
                 objectName: "boardFrame"
 
-                width: parent.width - 300
-                height: parent.height - 60
+                width: windowApp.width - 300
+                height: windowApp.height - 60
                 x: 0
                 y: 0
             }
@@ -163,7 +163,7 @@ ApplicationWindow {
 
                     // @fixme change state from C++
                     onClicked: {
-                        board.endGame()
+                        boardFrame.endGame()
                         windowMain.state = "stateOptions"
                     }
                 }

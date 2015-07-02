@@ -93,10 +93,11 @@ void GameView::new_actor_delegate(const std::shared_ptr<EventData> &event)
             qDebug() << "\tmove:" << node;
         }
 
-        QMetaObject::invokeMethod(qboard_, "addPawn",
+        QMetaObject::invokeMethod(qboard_, "addPlayer",
                 Q_ARG(QVariant, static_cast<int>(new_actor_event->actor_id())),
                 Q_ARG(QVariant, idx),
-                Q_ARG(QVariant, QVariant::fromValue(possible_idx_list))
+                Q_ARG(QVariant, QVariant::fromValue(possible_idx_list)),
+                Q_ARG(QVariant, 10)
         );
     }
 }
