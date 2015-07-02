@@ -21,11 +21,12 @@ Rectangle {
     function addPlayer(actorId, nodeIdx, possibleMoves, walls) {
         playerList[actorId] = 1;
         wallStockList[actorId] = wallStocks[playerNum];
-        playerNum += 1;
 
         board.addPawn(actorId);
         board.setPawnPos(actorId, nodeIdx, possibleMoves);
         wallStocks[playerNum].actorId = actorId;
+
+        playerNum += 1;
     }
 
     function setPawnPos(actorId, nodeIdx, possibleMoves) {
