@@ -45,6 +45,10 @@ Rectangle {
             return;
         }
         board.setActivePlayer(actorId);
+
+        for (var i in playerList) {
+            wallStockList[i].isActive = false;
+        }
         wallStockList[actorId].isActive = true;
 
         activeActorId = actorId;
@@ -90,7 +94,6 @@ Rectangle {
 
     WallStock {
         id: wallStock_1
-        actorId: 1
         width: board.width / 2
         height: 30
         anchors.top: board.bottom
@@ -99,7 +102,6 @@ Rectangle {
 
     WallStock {
         id: wallStock_2
-        actorId: 2
         width: board.width / 2
         height: 30
         anchors.bottom: board.top
@@ -108,7 +110,6 @@ Rectangle {
 
     WallStock {
         id: wallStock_3
-        actorId: 3
         width: 30
         height: board.height / 2
         anchors.right: board.left
@@ -117,7 +118,6 @@ Rectangle {
 
     WallStock {
         id: wallStock_4
-        actorId: 4
         width: 30
         height: board.height / 2
         anchors.left: board.right
