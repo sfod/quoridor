@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>configs/player.json</file>
         <file>configs/player_AI.json</file>
         <file>configs/player_human.json</file>
         <file>configs/player_position_1.json</file>
