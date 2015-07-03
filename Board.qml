@@ -2,20 +2,10 @@ import QtQuick 2.0
 import WallOrientationQML 1.0
 
 Rectangle {
-    id: board
     signal pawnDropped(int actorId, int idx)
     signal wallDropped(int actorId, int orientation, int row, int col)
 
     property var pawnList: ({})
-    property bool isRunning: false
-    property int playerCurrentActivity: 0
-    property int activeActorId: -1
-
-    function init() {
-        clear();
-        start();
-        console.log("initialized game");
-    }
 
     function addPawn(actorId) {
         var component = Qt.createComponent("DragTile.qml");
@@ -62,7 +52,7 @@ Rectangle {
     }
 
     function setActivePlayer(actorId) {
-        if (!isRunning || !pawnList.hasOwnProperty(actorId)) {
+        if (!pawnList.hasOwnProperty(actorId)) {
             return;
         }
 
@@ -71,37 +61,24 @@ Rectangle {
             var t = (parseInt(i) === iActorId) ? true : false;
             pawnList[i].setDragging(t);
         }
-
-        board.activeActorId = actorId;
-
-        // by default player current activity is pawn moving
-        board.playerCurrentActivity = 0;
     }
 
-    function switchPlayerActivity() {
-        if (board.playerCurrentActivity == 1) {
+    function switchPlayerActivity(actorId, playerCurrentActivity) {
+        if (playerCurrentActivity === 1) {
             if (boardMouseArea.tempWall) {
                 boardMouseArea.tempWall.destroy();
             }
-            pawnList[board.activeActorId].setDragging(true);
+            pawnList[actorId].setDragging(true);
         }
         else {
-            pawnList[board.activeActorId].setDragging(false);
+            pawnList[actorId].setDragging(false);
         }
-
-        board.playerCurrentActivity = 1 - board.playerCurrentActivity;
     }
 
     function finishGame() {
         for (var i in pawnList) {
             pawnList[i].setDragging(false);
         }
-        stop();
-    }
-
-    function endGame() {
-        clear();
-        stop();
     }
 
     function clear() {
@@ -109,14 +86,6 @@ Rectangle {
             pawnList[i].destroy();
         }
         pawnList = {};
-    }
-
-    function start() {
-        isRunning = true;
-    }
-
-    function stop() {
-        isRunning = false;
     }
 
     function getWall(x, y) {
@@ -210,7 +179,7 @@ Rectangle {
         hoverEnabled: true
 
         onPositionChanged: {
-            if (board.playerCurrentActivity == 1) {
+            if (boardFrame.playerCurrentActivity === 1) {
                 var wallInfo = board.getWall(mouseX, mouseY);
 
                 boardMouseArea.wallGameOrientation = wallInfo[0];
@@ -256,9 +225,9 @@ Rectangle {
         }
 
         onClicked: {
-            if (board.playerCurrentActivity == 1) {
+            if (boardFrame.playerCurrentActivity === 1) {
                 boardMouseArea.requestedWallStr = boardMouseArea.tempWallStr;
-                board.wallDropped(activeActorId,
+                boardFrame.wallDropped(activeActorId,
                         boardMouseArea.wallGameOrientation,
                         boardMouseArea.wallGameRow,
                         boardMouseArea.wallGameColumn);

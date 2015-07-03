@@ -94,15 +94,19 @@ private:
 
 class EventData_NewActor : public EventData {
 public:
-    explicit EventData_NewActor(ActorId actor_id);
+    explicit EventData_NewActor(ActorId actor_id, const Node &node, const std::list<Node> &possible_moves);
     virtual ~EventData_NewActor();
     virtual const EventType &event_type() const;
     static const EventType event_type_;
 
     ActorId actor_id() const { return actor_id_; }
+    Node node() const { return node_; }
+    const std::list<Node> &possible_moves() const { return possible_moves_; }
 
 private:
     ActorId actor_id_;
+    Node node_;
+    std::list<Node> possible_moves_;
 };
 
 

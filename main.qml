@@ -14,20 +14,14 @@ ApplicationWindow {
         id: windowMain
         state: "stateMainMenu"
 
-        width: windowApp.width
-        height: windowApp.height
-        x: 0
-        y: 0
+        anchors.fill: parent
 
         // main menu window
         Item {
             id: windowMainMenu
             objectName: "mainMenu"
 
-            x: 20
-            y: 20
-            width: parent.width - 40
-            height: parent.height - 40
+            anchors.fill: parent
 
             RowLayout {
                 height: parent.height / 2
@@ -69,10 +63,7 @@ ApplicationWindow {
         Item {
             id: windowOptions
 
-            x: 20
-            y: 20
-            width: parent.width - 40
-            height: parent.height - 40
+            anchors.fill: parent
 
             Options {
                 id: options
@@ -124,17 +115,14 @@ ApplicationWindow {
         Item {
             id: windowGame
 
-            x: 20
-            y: 20
-            width: parent.width - 300 - 40
-            height: parent.height - 40
+            anchors.fill: parent
 
-            Board {
-                id: board
-                objectName: "board"
+            BoardFrame {
+                id: boardFrame
+                objectName: "boardFrame"
 
-                width: parent.width
-                height: parent.height - 60
+                width: windowApp.width - 300
+                height: windowApp.height - 60
                 x: 0
                 y: 0
             }
@@ -143,7 +131,7 @@ ApplicationWindow {
                 id: movesRecorder
                 objectName: "moveRecorder"
 
-                anchors.left: board.right
+                anchors.left: boardFrame.right
 
                 text: ""
                 readOnly: true
@@ -157,44 +145,25 @@ ApplicationWindow {
                 }
             }
 
-            Rectangle {
-                id: pawnWallSwitcher
-
-                width: parent.width / 4
-                height: 20
-                anchors.top: board.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                color: "sienna"
-
-                MouseArea {
-                    id: pawnWallSwitcherMouseArea
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("pawn/wall switcher clicked");
-                        board.switchPlayerActivity();
-                    }
-                }
-            }
-
             Item {
                 id: buttonsArea
 
                 width: parent.width / 2
-                anchors.top: pawnWallSwitcher.bottom
+                anchors.top: movesRecorder.bottom
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
+                anchors.left: boardFrame.right
 
                 Button {
                     id: buttonBackToOptions
                     objectName: "buttonBackToOptions"
                     text: "Back"
 
-                    anchors.centerIn: parent
+                    anchors.verticalCenter: parent.verticalCenter
 
                     // @fixme change state from C++
                     onClicked: {
-                        board.endGame()
+                        boardFrame.endGame()
                         windowMain.state = "stateOptions"
                     }
                 }

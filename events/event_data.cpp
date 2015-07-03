@@ -114,7 +114,8 @@ const EventType &EventData_RequestNewActor::event_type() const
 }
 
 
-EventData_NewActor::EventData_NewActor(ActorId actor_id) : actor_id_(actor_id)
+EventData_NewActor::EventData_NewActor(ActorId actor_id, const Node &node, const std::list<Node> &possible_moves)
+    : actor_id_(actor_id), node_(node), possible_moves_(possible_moves)
 {
 }
 
