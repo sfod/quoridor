@@ -77,7 +77,7 @@ void GameView::attach(ActorId actor_id)
     actor_id_ = actor_id;
 }
 
-void GameView::new_actor_delegate(const std::shared_ptr<EventData> &event)
+void GameView::new_actor_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     auto new_actor_event = std::dynamic_pointer_cast<EventData_NewActor>(event);
     if (is_main_) {
@@ -102,7 +102,7 @@ void GameView::new_actor_delegate(const std::shared_ptr<EventData> &event)
     }
 }
 
-void GameView::move_actor_delegate(const std::shared_ptr<EventData> &event)
+void GameView::move_actor_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     auto move_event = std::dynamic_pointer_cast<EventData_MoveActor>(event);
     if (is_main_) {
@@ -129,7 +129,7 @@ void GameView::move_actor_delegate(const std::shared_ptr<EventData> &event)
     }
 }
 
-void GameView::set_actor_possible_moves_delegate(const std::shared_ptr<EventData> &event)
+void GameView::set_actor_possible_moves_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     auto pos_move_event = std::dynamic_pointer_cast<EventData_SetActorPossibleMoves>(event);
     if (is_main_) {
@@ -145,7 +145,7 @@ void GameView::set_actor_possible_moves_delegate(const std::shared_ptr<EventData
     }
 }
 
-void GameView::set_wall_delegate(const std::shared_ptr<EventData> &event)
+void GameView::set_wall_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     auto set_wall_event = std::dynamic_pointer_cast<EventData_SetWall>(event);
     const Wall &wall = set_wall_event->wall();
@@ -162,7 +162,7 @@ void GameView::set_wall_delegate(const std::shared_ptr<EventData> &event)
     }
 }
 
-void GameView::set_active_delegate(const std::shared_ptr<EventData> &event)
+void GameView::set_active_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     auto active_event = std::dynamic_pointer_cast<EventData_SetActorActive>(event);
     if (active_event->actor_id() == actor_id_) {
@@ -171,7 +171,7 @@ void GameView::set_active_delegate(const std::shared_ptr<EventData> &event)
     }
 }
 
-void GameView::game_finished_delegate(const std::shared_ptr<EventData> &event)
+void GameView::game_finished_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     if (is_main_) {
         auto game_finished_event = std::dynamic_pointer_cast<EventData_GameFinished>(event);

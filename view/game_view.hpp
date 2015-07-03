@@ -18,12 +18,12 @@ public:
     virtual void on_update();
     virtual void attach(ActorId actor_id);
 
-    void new_actor_delegate(const std::shared_ptr<EventData> &event);
-    void move_actor_delegate(const std::shared_ptr<EventData> &event);
-    void set_actor_possible_moves_delegate(const std::shared_ptr<EventData> &event);
-    void set_wall_delegate(const std::shared_ptr<EventData> &event);
-    void set_active_delegate(const std::shared_ptr<EventData> &event);
-    void game_finished_delegate(const std::shared_ptr<EventData> &event);
+    void new_actor_delegate(const std::shared_ptr<EventDataBase> &event);
+    void move_actor_delegate(const std::shared_ptr<EventDataBase> &event);
+    void set_actor_possible_moves_delegate(const std::shared_ptr<EventDataBase> &event);
+    void set_wall_delegate(const std::shared_ptr<EventDataBase> &event);
+    void set_active_delegate(const std::shared_ptr<EventDataBase> &event);
+    void game_finished_delegate(const std::shared_ptr<EventDataBase> &event);
 
 public slots:
     void on_pawn_dropped(int actor_id, int idx);

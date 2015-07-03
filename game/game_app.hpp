@@ -17,7 +17,7 @@ public:
     int run(int argc, char **argv);
     GameLogic *game_logic() const { return logic_; }
 
-    void quit_delegate(const std::shared_ptr<EventData> &event);
+    void quit_delegate(const std::shared_ptr<EventDataBase> &event);
 
     static GameApp *get();
 

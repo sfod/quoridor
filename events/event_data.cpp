@@ -1,133 +1,35 @@
 #include "event_data.hpp"
-
-const EventType EventData_MainMenu::event_type_(1011);
-const EventType EventData_Options::event_type_(1018);
-const EventType EventData_Game::event_type_(1012);
-const EventType EventData_GameTerminated::event_type_(1020);
-const EventType EventData_GameFinished::event_type_(1022);
-const EventType EventData_Quit::event_type_(1013);
-const EventType EventData_RequestNewActor::event_type_(1019);
-const EventType EventData_NewActor::event_type_(1014);
-const EventType EventData_RequestActorMove::event_type_(1015);
-const EventType EventData_RequestSetWall::event_type_(1023);
-const EventType EventData_MoveActor::event_type_(1016);
-const EventType EventData_SetWall::event_type_(1024);
-const EventType EventData_SetActorPossibleMoves::event_type_(1021);
-const EventType EventData_SetActorActive::event_type_(1017);
+#include <functional>
 
 
-EventData_MainMenu::EventData_MainMenu()
-{
-}
-
-EventData_MainMenu::~EventData_MainMenu()
-{
-}
-
-const EventType &EventData_MainMenu::event_type() const
-{
-    return event_type_;
-}
-
-
-EventData_Options::EventData_Options()
-{
-}
-
-EventData_Options::~EventData_Options()
-{
-}
-
-const EventType &EventData_Options::event_type() const
-{
-    return event_type_;
-}
-
-
-EventData_Game::EventData_Game()
-{
-}
-
-EventData_Game::~EventData_Game()
-{
-}
-
-const EventType &EventData_Game::event_type() const
-{
-    return event_type_;
-}
-
-
-EventData_GameTerminated::EventData_GameTerminated()
-{
-}
-
-EventData_GameTerminated::~EventData_GameTerminated()
-{
-}
-
-const EventType &EventData_GameTerminated::event_type() const
-{
-    return event_type_;
-}
+template<>EventType EventData_MainMenu::EventData<EventData_MainMenu>::event_type_ = std::hash<std::string>()("MainMenu");
+template<>EventType EventData_Options::EventData<EventData_Options>::event_type_ = std::hash<std::string>()("Options");
+template<> EventType EventData_Game::EventData<EventData_Game>::event_type_ = std::hash<std::string>()("Game");
+template<> EventType EventData_GameTerminated::EventData<EventData_GameTerminated>::event_type_ = std::hash<std::string>()("GameTerminated");
+template<> EventType EventData_GameFinished::EventData<EventData_GameFinished>::event_type_ = std::hash<std::string>()("GameFinished");
+template<> EventType EventData_Quit::EventData<EventData_Quit>::event_type_ = std::hash<std::string>()("Quit");
+template<> EventType EventData_RequestNewActor::EventData<EventData_RequestNewActor>::event_type_ = std::hash<std::string>()("RequestNewActor");
+template<> EventType EventData_NewActor::EventData<EventData_NewActor>::event_type_ = std::hash<std::string>()("NewActor");
+template<> EventType EventData_RequestActorMove::EventData<EventData_RequestActorMove>::event_type_ = std::hash<std::string>()("RequestActorMove");
+template<> EventType EventData_RequestSetWall::EventData<EventData_RequestSetWall>::event_type_ = std::hash<std::string>()("RequestSetWall");
+template<> EventType EventData_MoveActor::EventData<EventData_MoveActor>::event_type_ = std::hash<std::string>()("MoveActor");
+template<> EventType EventData_SetWall::EventData<EventData_SetWall>::event_type_ = std::hash<std::string>()("SetWall");
+template<> EventType EventData_SetActorPossibleMoves::EventData<EventData_SetActorPossibleMoves>::event_type_ = std::hash<std::string>()("SetActorPossibleMoves");
+template<> EventType EventData_SetActorActive::EventData<EventData_SetActorActive>::event_type_ = std::hash<std::string>()("SetActorActive");
 
 
 EventData_GameFinished::EventData_GameFinished(ActorId actor_id) : actor_id_(actor_id)
 {
 }
 
-EventData_GameFinished::~EventData_GameFinished()
-{
-}
-
-const EventType &EventData_GameFinished::event_type() const
-{
-    return event_type_;
-}
-
-
-EventData_Quit::EventData_Quit()
-{
-}
-
-EventData_Quit::~EventData_Quit()
-{
-}
-
-const EventType &EventData_Quit::event_type() const
-{
-    return event_type_;
-}
-
-
 EventData_RequestNewActor::EventData_RequestNewActor(PlayerType ptype) : ptype_(ptype)
 {
 }
-
-EventData_RequestNewActor::~EventData_RequestNewActor()
-{
-}
-
-const EventType &EventData_RequestNewActor::event_type() const
-{
-    return event_type_;
-}
-
 
 EventData_NewActor::EventData_NewActor(ActorId actor_id, const Node &node, const std::list<Node> &possible_moves)
     : actor_id_(actor_id), node_(node), possible_moves_(possible_moves)
 {
 }
-
-EventData_NewActor::~EventData_NewActor()
-{
-}
-
-const EventType &EventData_NewActor::event_type() const
-{
-    return event_type_;
-}
-
 
 EventData_RequestActorMove::EventData_RequestActorMove(ActorId actor_id,
         const Node &node)
@@ -135,30 +37,10 @@ EventData_RequestActorMove::EventData_RequestActorMove(ActorId actor_id,
 {
 }
 
-EventData_RequestActorMove::~EventData_RequestActorMove()
-{
-}
-
-const EventType &EventData_RequestActorMove::event_type() const
-{
-    return event_type_;
-}
-
-
 EventData_RequestSetWall::EventData_RequestSetWall(ActorId actor_id, const Wall &wall)
     : actor_id_(actor_id), wall_(wall)
 {
 }
-
-EventData_RequestSetWall::~EventData_RequestSetWall()
-{
-}
-
-const EventType &EventData_RequestSetWall::event_type() const
-{
-    return event_type_;
-}
-
 
 EventData_MoveActor::EventData_MoveActor(ActorId actor_id, const Node &node,
         const std::list<Node> &possible_moves)
@@ -166,30 +48,10 @@ EventData_MoveActor::EventData_MoveActor(ActorId actor_id, const Node &node,
 {
 }
 
-EventData_MoveActor::~EventData_MoveActor()
-{
-}
-
-const EventType &EventData_MoveActor::event_type() const
-{
-    return event_type_;
-}
-
-
 EventData_SetWall::EventData_SetWall(ActorId actor_id, const Wall &wall)
     : actor_id_(actor_id), wall_(wall)
 {
 }
-
-EventData_SetWall::~EventData_SetWall()
-{
-}
-
-const EventType &EventData_SetWall::event_type() const
-{
-    return event_type_;
-}
-
 
 EventData_SetActorPossibleMoves::EventData_SetActorPossibleMoves(
         ActorId actor_id,
@@ -198,26 +60,7 @@ EventData_SetActorPossibleMoves::EventData_SetActorPossibleMoves(
 {
 }
 
-EventData_SetActorPossibleMoves::~EventData_SetActorPossibleMoves()
-{
-}
-
-const EventType &EventData_SetActorPossibleMoves::event_type() const
-{
-    return event_type_;
-}
-
-
 EventData_SetActorActive::EventData_SetActorActive(ActorId actor_id)
     : actor_id_(actor_id)
 {
-}
-
-EventData_SetActorActive::~EventData_SetActorActive()
-{
-}
-
-const EventType &EventData_SetActorActive::event_type() const
-{
-    return event_type_;
 }

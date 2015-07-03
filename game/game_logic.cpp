@@ -96,36 +96,36 @@ void GameLogic::change_view(std::shared_ptr<IView> view)
     view_list_.push_back(view);
 }
 
-void GameLogic::main_menu_win_delegate(const std::shared_ptr<EventData> &/*event*/)
+void GameLogic::main_menu_win_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
 {
     change_state(LogicState::LS_MainMenu);
 }
 
-void GameLogic::options_win_delegate(const std::shared_ptr<EventData> &/*event*/)
+void GameLogic::options_win_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
 {
     change_state(LogicState::LS_Options);
 }
 
-void GameLogic::game_win_delegate(const std::shared_ptr<EventData> &/*event*/)
+void GameLogic::game_win_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
 {
     change_state(LogicState::LS_Game);
 }
 
-void GameLogic::game_terminated_delegate(const std::shared_ptr<EventData> &/*event*/)
+void GameLogic::game_terminated_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
 {
     player_list_.clear();
     player_idx_ = 1;
     player_handler_.clear();
 }
 
-void GameLogic::req_actor_new_delegate(const std::shared_ptr<EventData> &event)
+void GameLogic::req_actor_new_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     auto req_new_event = std::dynamic_pointer_cast<EventData_RequestNewActor>(event);
     create_player(player_idx_, req_new_event->player_type());
     ++player_idx_;
 }
 
-void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventData> &event)
+void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &event)
 {
     auto req_move_event = std::dynamic_pointer_cast<EventData_RequestActorMove>(event);
 
@@ -170,7 +170,7 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventData> &event)
     }
 }
 
-void GameLogic::req_set_wall(const std::shared_ptr<EventData> &event)
+void GameLogic::req_set_wall(const std::shared_ptr<EventDataBase> &event)
 {
     auto req_wall_event = std::dynamic_pointer_cast<EventData_RequestSetWall>(event);
     const std::shared_ptr<Actor> &actor = actor_keeper_->actor(req_wall_event->actor_id());

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <boost/functional/hash.hpp>
+#include <functional>
+#include <memory>
 #include <QJsonObject>
 
 typedef unsigned long ComponentId;
@@ -19,8 +20,7 @@ public:
     virtual std::shared_ptr<Actor> owner() const { return owner_; }
 
     static ComponentId id(const char *name) {
-        boost::hash<std::string> hash;
-        return hash(name);
+        return std::hash<std::string>()(name);
     }
 
 private:
