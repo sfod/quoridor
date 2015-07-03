@@ -273,6 +273,7 @@ void GameLogic::set_players()
             throw std::runtime_error("Invalid player object: no Graph component found");
         }
 
+        // TODO pass number of walls (get whole number from config file)
         auto new_event = std::make_shared<EventData_NewActor>(
                     actor.first->id(),
                     graph_comp->node(),
