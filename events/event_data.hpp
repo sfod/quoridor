@@ -23,6 +23,7 @@ public:
     virtual ~EventData() = default;
     virtual EventType event_type() const override { return event_type_; }
 
+// TODO make field private
 public:
     static EventType event_type_;
 };

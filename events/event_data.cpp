@@ -1,9 +1,9 @@
 #include "event_data.hpp"
 #include <functional>
 
-
-template<>EventType EventData_MainMenu::EventData<EventData_MainMenu>::event_type_ = std::hash<std::string>()("MainMenu");
-template<>EventType EventData_Options::EventData<EventData_Options>::event_type_ = std::hash<std::string>()("Options");
+// TODO simplify
+template<> EventType EventData_MainMenu::EventData<EventData_MainMenu>::event_type_ = std::hash<std::string>()("MainMenu");
+template<> EventType EventData_Options::EventData<EventData_Options>::event_type_ = std::hash<std::string>()("Options");
 template<> EventType EventData_Game::EventData<EventData_Game>::event_type_ = std::hash<std::string>()("Game");
 template<> EventType EventData_GameTerminated::EventData<EventData_GameTerminated>::event_type_ = std::hash<std::string>()("GameTerminated");
 template<> EventType EventData_GameFinished::EventData<EventData_GameFinished>::event_type_ = std::hash<std::string>()("GameFinished");
