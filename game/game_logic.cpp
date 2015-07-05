@@ -56,6 +56,7 @@ void GameLogic::change_state(LogicState state)
             case PlayerType::PT_Human:
                 qDebug() << "creating human player";
                 view.reset(new GameView(qroot_, is_main));
+                is_main = false;
                 break;
             case PlayerType::PT_AI:
                 qDebug() << "creating AI player";
@@ -71,7 +72,6 @@ void GameLogic::change_state(LogicState state)
                 add_view(view);
                 view->attach(actor.first->id());
             }
-            is_main = false;
         }
         set_players();
         break;
