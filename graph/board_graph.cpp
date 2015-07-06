@@ -302,7 +302,7 @@ size_t BoardGraph::shortest_path(const Node &start_node,
 
     size_t min_len = col_num_ * row_num_ - (col_num_ - 1);
 
-    // @todo copy tmp_path into path only once
+    // TODO copy tmp_path into path only once
     for (auto goal_node : goal_nodes) {
         if (auto tmp_path = find_path(start_node, goal_node)) {
             if (tmp_path->size() < min_len) {
@@ -547,7 +547,7 @@ void BoardGraph::block_edge(edge_descriptor e, bool is_tmp)
             boost::remove_edge(e, g_);
         }
     }
-    // @todo handle this situation
+    // TODO handle this situation
     else {
     }
 }

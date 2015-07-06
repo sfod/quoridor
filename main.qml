@@ -38,7 +38,7 @@ ApplicationWindow {
                         text: "New Game"
                         anchors.centerIn: parent
 
-                        // @fixme change state from C++
+                        // FIXME change state from C++
                         onClicked: {
                             windowMain.state = "stateOptions"
                         }
@@ -85,7 +85,7 @@ ApplicationWindow {
                         text: "Start Game"
                         anchors.centerIn: parent
 
-                        // @fixme change state from C++
+                        // FIXME change state from C++
                         onClicked: {
                             windowMain.state = "stateGame"
                         }
@@ -102,7 +102,7 @@ ApplicationWindow {
                         text: "Back"
                         anchors.centerIn: parent
 
-                        // @fixme change state from C++
+                        // FIXME change state from C++
                         onClicked: {
                             windowMain.state = "stateMainMenu"
                         }
@@ -161,7 +161,7 @@ ApplicationWindow {
 
                     anchors.verticalCenter: parent.verticalCenter
 
-                    // @fixme change state from C++
+                    // FIXME change state from C++
                     onClicked: {
                         boardFrame.endGame()
                         windowMain.state = "stateOptions"
