@@ -6,6 +6,7 @@
 
 #include "game/game_app.hpp"
 #include "graph_component.hpp"
+#include "wall_component.hpp"
 #include "ai_component.hpp"
 
 
@@ -90,6 +91,13 @@ std::shared_ptr<ActorComponent> ActorFactory::create_actor_component(
     }
     else if (type == "AIComponent") {
         auto component = std::make_shared<AIComponent>();
+        if (!component->init(component_data)) {
+            return std::shared_ptr<ActorComponent>();
+        }
+        return component;
+    }
+    else if (type == "WallComponent") {
+        auto component = std::make_shared<WallComponent>();
         if (!component->init(component_data)) {
             return std::shared_ptr<ActorComponent>();
         }

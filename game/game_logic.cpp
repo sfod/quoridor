@@ -7,6 +7,7 @@
 #include "view/game_view.hpp"
 #include "view/ai_view.hpp"
 #include "actors/graph_component.hpp"
+#include "actors/wall_component.hpp"
 
 GameLogic::GameLogic(QObject *qroot)
     : state_(LogicState::LS_Uninitialized), qroot_(qroot), conn_list_(),
@@ -252,7 +253,8 @@ void GameLogic::create_player(int idx, PlayerType ptype)
 {
     QString player_cfg_file(":/configs/player_" + player_type_to_str.at(ptype) + ".json");
     std::vector<QString> component_resources = {
-        QString(":/configs/player_position_" + QString::number(idx) + ".json")
+        QString(":/configs/player_position_" + QString::number(idx) + ".json"),
+        QString(":/configs/player_wall_number_" + QString::number(2) + ".json")  // FIXME use number of players
     };
     std::shared_ptr<Actor> actor = actor_factory_->create_actor(player_cfg_file,
             component_resources);
@@ -273,11 +275,18 @@ void GameLogic::set_players()
             throw std::runtime_error("Invalid player object: no Graph component found");
         }
 
+        cid = ActorComponent::id(WallComponent::name_);
+        auto wall_comp = std::dynamic_pointer_cast<WallComponent>(actor.first->component(cid));
+        if (!wall_comp) {
+            throw std::runtime_error("Invalid player object: no Wall component found");
+        }
+
         // TODO pass number of walls (get whole number from config file)
         auto new_event = std::make_shared<EventData_NewActor>(
                     actor.first->id(),
                     graph_comp->node(),
-                    graph_comp->possible_moves()
+                    graph_comp->possible_moves(),
+                    wall_comp->wall_number()
         );
         EventManager::get()->trigger_event(new_event);
     }

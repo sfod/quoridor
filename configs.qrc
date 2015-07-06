@@ -4,6 +4,10 @@
         <file>configs/player_human.json</file>
         <file>configs/player_position_1.json</file>
         <file>configs/player_position_2.json</file>
+        <file>configs/player_position_3.json</file>
+        <file>configs/player_position_4.json</file>
         <file>configs/players.json</file>
+        <file>configs/player_wall_number_2.json</file>
+        <file>configs/player_wall_number_4.json</file>
     </qresource>
 </RCC>

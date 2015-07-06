@@ -7,7 +7,7 @@
 class GraphComponent : public ActorComponent {
 public:
     GraphComponent();
-    virtual ~GraphComponent();
+    virtual ~GraphComponent() = default;
 
     virtual bool init(const QJsonObject &component_data) override;
     virtual void post_init() override;

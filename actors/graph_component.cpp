@@ -1,5 +1,5 @@
-#include <QObject>  // include it first to avoid error with boost::Q_FOREACH
 #include "graph_component.hpp"
+#include <QObject>
 #include "game/game_app.hpp"
 
 const char *GraphComponent::name_ = "GraphComponent";
@@ -7,10 +7,6 @@ const char *GraphComponent::name_ = "GraphComponent";
 GraphComponent::GraphComponent() : node_(), goal_nodes_()
 {
     graph_ = GameApp::get()->game_logic()->graph();
-}
-
-GraphComponent::~GraphComponent()
-{
 }
 
 bool GraphComponent::init(const QJsonObject &component_data)

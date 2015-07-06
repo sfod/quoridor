@@ -85,17 +85,19 @@ private:
 
 class EventData_NewActor : public EventData<EventData_NewActor> {
 public:
-    explicit EventData_NewActor(ActorId actor_id, const Node &node, const std::list<Node> &possible_moves);
+    explicit EventData_NewActor(ActorId actor_id, const Node &node, const std::list<Node> &possible_moves, int wall_num);
     virtual ~EventData_NewActor() = default;
 
     ActorId actor_id() const { return actor_id_; }
     Node node() const { return node_; }
     const std::list<Node> &possible_moves() const { return possible_moves_; }
+    int wall_num() const { return wall_num_; }
 
 private:
     ActorId actor_id_;
     Node node_;
     std::list<Node> possible_moves_;
+    int wall_num_;
 };
 
 
