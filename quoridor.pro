@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     graph/board_graph.cpp \
     AI/straight_brain.cpp \
     graph/wall.cpp \
-    actors/wall_component.cpp
+    actors/wall_component.cpp \
+    graph/wall_grid.cpp
 
 RESOURCES += qml.qrc \
     configs.qrc \
@@ -65,4 +66,5 @@ HEADERS += \
     graph/board_graph.hpp \
     AI/straight_brain.hpp \
     graph/wall.hpp \
-    actors/wall_component.hpp
+    actors/wall_component.hpp \
+    graph/wall_grid.hpp

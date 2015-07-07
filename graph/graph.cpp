@@ -2,11 +2,7 @@
 #include <QDebug>
 
 // FIXME get board size from config file
-Graph::Graph() : board_graph_(new BoardGraph(9, 9)), actor_node_list_()
-{
-}
-
-Graph::~Graph()
+Graph::Graph() : wg_(9), board_graph_(new BoardGraph(9, 9)), actor_node_list_()
 {
 }
 
@@ -46,14 +42,19 @@ bool Graph::set_wall(ActorId id, const Wall &wall)
         goal_nodes_list.push_back(goal_node);
     }
 
-    auto res = board_graph_->remove_edges(wall.affected_nodes(), goal_nodes_list, false);
-    if (res) {
-        for (auto actor_node : actor_node_list_) {
-            set_possible_moves(actor_node.first);
+    bool rc = false;
+    if (wg_.add_tmp_wall(wall)) {
+        rc = board_graph_->remove_edges(wall.affected_nodes(), goal_nodes_list, false);
+        if (rc) {
+            for (auto actor_node : actor_node_list_) {
+                set_possible_moves(actor_node.first);
+            }
+
+            wg_.apply_tmp_wall();
         }
     }
 
-    return res;
+    return rc;
 }
 
 Node Graph::node(ActorId id) const

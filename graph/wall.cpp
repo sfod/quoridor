@@ -21,10 +21,6 @@ Wall::Wall(WallEnumClass::WallOrientation wo, Node node, int len)
     }
 }
 
-Wall::~Wall()
-{
-}
-
 QString Wall::to_string() const
 {
     QString orientation_str;

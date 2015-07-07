@@ -25,11 +25,12 @@ public:
 class Wall {
 public:
     Wall(WallEnumClass::WallOrientation wo, Node node, int len);
-    ~Wall();
+    ~Wall() = default;
 
     const std::vector<std::pair<Node, Node>> &affected_nodes() const { return affected_nodes_; }
     WallEnumClass::WallOrientation orientation() const { return orientation_; }
     const Node &node() const { return node_; }
+    int len() const { return affected_nodes_.size(); }
 
     QString to_string() const;
 
