@@ -1,5 +1,4 @@
-#ifndef ACTOR_KEEPER_HPP
-#define ACTOR_KEEPER_HPP
+#pragma once
 
 #include <map>
 #include <memory>
@@ -17,5 +16,3 @@ public:
 private:
     std::map<ActorId, std::shared_ptr<Actor>> actor_id_list_;
 };
-
-#endif // ACTOR_KEEPER_HPP

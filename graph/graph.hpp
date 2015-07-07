@@ -1,5 +1,4 @@
-#ifndef GRAPH_HPP
-#define GRAPH_HPP
+#pragma once
 
 #include <map>
 #include "node.hpp"
@@ -33,5 +32,3 @@ private:
     std::shared_ptr<BoardGraph> board_graph_;
     std::map<ActorId, actor_node_t> actor_node_list_;
 };
-
-#endif // GRAPH_HPP

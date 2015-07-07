@@ -1,5 +1,4 @@
-#ifndef MAIN_MENU_VIEW_HPP
-#define MAIN_MENU_VIEW_HPP
+#pragma once
 
 #include <list>
 #include <QObject>
@@ -10,7 +9,7 @@ class MainMenuView : public QtView {
 
 public:
     explicit MainMenuView(QObject *qroot, QObject *qparent = 0);
-    virtual ~MainMenuView();
+    virtual ~MainMenuView() = default;
 
     bool init();
     virtual void on_msg();
@@ -28,5 +27,3 @@ private:
     QObject *qroot_;
     ActorId actor_id_;
 };
-
-#endif // MAIN_MENU_VIEW_HPP

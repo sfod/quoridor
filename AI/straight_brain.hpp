@@ -1,5 +1,4 @@
-#ifndef STRAIGHT_BRAIN_HPP
-#define STRAIGHT_BRAIN_HPP
+#pragma once
 
 #include "brain.hpp"
 #include "graph/graph.hpp"
@@ -19,5 +18,3 @@ private:
     std::shared_ptr<Graph> graph_;
     std::set<Node> goal_nodes_;
 };
-
-#endif // STRAIGH_TBRAIN_HPP

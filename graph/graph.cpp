@@ -1,7 +1,7 @@
 #include "graph.hpp"
 #include <QDebug>
 
-// @fixme get board size from config file
+// FIXME get board size from config file
 Graph::Graph() : board_graph_(new BoardGraph(9, 9)), actor_node_list_()
 {
 }
@@ -22,7 +22,7 @@ bool Graph::add_actor(ActorId id, const std::set<Node> &goal_nodes)
 
 bool Graph::move_actor(ActorId id, const Node &node)
 {
-    // @fixme check blocking and unblocking nodes
+    // FIXME check blocking and unblocking nodes
     if (actor_node_list_.count(id) > 0) {
         board_graph_->unblock_node(actor_node_list_[id].node);
         board_graph_->block_node(node);
@@ -77,12 +77,12 @@ std::list<Node> Graph::shortest_path(ActorId id, const std::set<Node> &goal_node
     std::list<Node> path;
     size_t n = board_graph_->shortest_path(actor_node_list_.at(id).node, goal_nodes, &path);
     if (n == 0) {
-        // @todo
+        // TODO
     }
     return path;
 }
 
-// @fixme
+// FIXME
 void Graph::set_possible_moves(ActorId id)
 {
     if (actor_node_list_.count(id) > 0) {

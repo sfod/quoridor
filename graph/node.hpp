@@ -1,5 +1,4 @@
-#ifndef NODE_HPP
-#define NODE_HPP
+#pragma once
 
 #include <QDebug>
 #include <iostream>
@@ -26,12 +25,11 @@ public:
     const Node &operator+=(const Node &node);
     const Node operator+(const Node &node);
 
+    QString to_string() const;
+
 private:
     int row_;
     int col_;
 };
 
-std::ostream &operator<<(std::ostream &os, const Node &node);
 QDebug operator<<(QDebug dbg, const Node &node);
-
-#endif // NODE_HPP

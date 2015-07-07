@@ -1,5 +1,4 @@
-#ifndef GAME_VIEW_HPP
-#define GAME_VIEW_HPP
+#pragma once
 
 #include <QObject>
 #include "qt_view.hpp"
@@ -19,12 +18,12 @@ public:
     virtual void on_update();
     virtual void attach(ActorId actor_id);
 
-    void new_actor_delegate(const std::shared_ptr<EventData> &event);
-    void move_actor_delegate(const std::shared_ptr<EventData> &event);
-    void set_actor_possible_moves_delegate(const std::shared_ptr<EventData> &event);
-    void set_wall_delegate(const std::shared_ptr<EventData> &event);
-    void set_active_delegate(const std::shared_ptr<EventData> &event);
-    void game_finished_delegate(const std::shared_ptr<EventData> &event);
+    void new_actor_delegate(const std::shared_ptr<EventDataBase> &event);
+    void move_actor_delegate(const std::shared_ptr<EventDataBase> &event);
+    void set_actor_possible_moves_delegate(const std::shared_ptr<EventDataBase> &event);
+    void set_wall_delegate(const std::shared_ptr<EventDataBase> &event);
+    void set_active_delegate(const std::shared_ptr<EventDataBase> &event);
+    void game_finished_delegate(const std::shared_ptr<EventDataBase> &event);
 
 public slots:
     void on_pawn_dropped(int actor_id, int idx);
@@ -33,15 +32,14 @@ public slots:
 
 private:
     virtual QObject *find_object_by_name(const char *name) const override;
-    bool connect_board();
+    bool connect_objects();
 
 private:
     std::list<bs2::connection> conn_list_;
     QObject *qroot_;
     QObject *qboard_;
+    QObject *qrecorder_;
     QObject *qbutton_;
     ActorId actor_id_;
     bool is_main_;
 };
-
-#endif // GAME_VIEW_HPP

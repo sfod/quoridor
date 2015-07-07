@@ -1,5 +1,4 @@
-#ifndef PLAYER_HANDLER_HPP
-#define PLAYER_HANDLER_HPP
+#pragma once
 
 #include <list>
 #include "actors/actor.hpp"
@@ -20,5 +19,3 @@ private:
     std::list<ActorId> player_list_;
     ActorId current_player_;
 };
-
-#endif // PLAYER_HANDLER_HPP

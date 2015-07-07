@@ -6,7 +6,7 @@ ApplicationWindow {
     id: windowApp
 
     visible: true
-    width: 500
+    width: 800
     height: 600
     title: qsTr("Quoridor")
 
@@ -14,20 +14,14 @@ ApplicationWindow {
         id: windowMain
         state: "stateMainMenu"
 
-        width: windowApp.width
-        height: windowApp.height
-        x: 0
-        y: 0
+        anchors.fill: parent
 
         // main menu window
         Item {
             id: windowMainMenu
             objectName: "mainMenu"
 
-            x: 20
-            y: 20
-            width: parent.width - 40
-            height: parent.height - 40
+            anchors.fill: parent
 
             RowLayout {
                 height: parent.height / 2
@@ -44,7 +38,7 @@ ApplicationWindow {
                         text: "New Game"
                         anchors.centerIn: parent
 
-                        // @fixme change state from C++
+                        // FIXME change state from C++
                         onClicked: {
                             windowMain.state = "stateOptions"
                         }
@@ -69,10 +63,7 @@ ApplicationWindow {
         Item {
             id: windowOptions
 
-            x: 20
-            y: 20
-            width: parent.width - 40
-            height: parent.height - 40
+            anchors.fill: parent
 
             Options {
                 id: options
@@ -94,7 +85,7 @@ ApplicationWindow {
                         text: "Start Game"
                         anchors.centerIn: parent
 
-                        // @fixme change state from C++
+                        // FIXME change state from C++
                         onClicked: {
                             windowMain.state = "stateGame"
                         }
@@ -111,7 +102,7 @@ ApplicationWindow {
                         text: "Back"
                         anchors.centerIn: parent
 
-                        // @fixme change state from C++
+                        // FIXME change state from C++
                         onClicked: {
                             windowMain.state = "stateMainMenu"
                         }
@@ -124,38 +115,33 @@ ApplicationWindow {
         Item {
             id: windowGame
 
-            x: 20
-            y: 20
-            width: parent.width - 40
-            height: parent.height - 40
+            anchors.fill: parent
 
-            Board {
-                id: board
-                objectName: "board"
+            BoardFrame {
+                id: boardFrame
+                objectName: "boardFrame"
 
-                width: parent.width
-                height: parent.height - 60
+                width: windowApp.width - 300
+                height: windowApp.height - 60
                 x: 0
                 y: 0
             }
 
-            Rectangle {
-                id: pawnWallSwitcher
+            TextArea {
+                id: movesRecorder
+                objectName: "moveRecorder"
 
-                width: parent.width / 4
-                height: 20
-                anchors.top: board.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.left: boardFrame.right
 
-                color: "sienna"
+                text: ""
+                readOnly: true
 
-                MouseArea {
-                    id: pawnWallSwitcherMouseArea
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("pawn/wall switcher clicked");
-                        board.switchPlayerActivity();
-                    }
+                function init() {
+                    movesRecorder.text = "";
+                }
+
+                function addMessage(message) {
+                    movesRecorder.append(message);
                 }
             }
 
@@ -163,20 +149,21 @@ ApplicationWindow {
                 id: buttonsArea
 
                 width: parent.width / 2
-                anchors.top: pawnWallSwitcher.bottom
+                anchors.top: movesRecorder.bottom
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
+                anchors.left: boardFrame.right
 
                 Button {
                     id: buttonBackToOptions
                     objectName: "buttonBackToOptions"
                     text: "Back"
 
-                    anchors.centerIn: parent
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    // @fixme change state from C++
+                    // FIXME change state from C++
                     onClicked: {
-                        board.endGame()
+                        boardFrame.endGame()
                         windowMain.state = "stateOptions"
                     }
                 }

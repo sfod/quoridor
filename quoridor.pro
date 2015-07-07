@@ -25,9 +25,12 @@ SOURCES += main.cpp \
     AI/randomer_brain.cpp \
     graph/board_graph.cpp \
     AI/straight_brain.cpp \
-    graph/wall.cpp
+    graph/wall.cpp \
+    actors/wall_component.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    configs.qrc \
+    images.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -61,11 +64,5 @@ HEADERS += \
     game/game_data.hpp \
     graph/board_graph.hpp \
     AI/straight_brain.hpp \
-    graph/wall.hpp
-
-OTHER_FILES += \
-    data/players.json \
-    data/player_position_1.json \
-    data/player_position_2.json \
-    data/player_human.json \
-    data/player_AI.json
+    graph/wall.hpp \
+    actors/wall_component.hpp

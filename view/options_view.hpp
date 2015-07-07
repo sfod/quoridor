@@ -1,5 +1,4 @@
-#ifndef OPTIONS_VIEW_HPP
-#define OPTIONS_VIEW_HPP
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -13,7 +12,7 @@ class OptionsView : public QtView {
 
 public:
     explicit OptionsView(QObject *qroot, QObject *qparent = 0);
-    virtual ~OptionsView();
+    virtual ~OptionsView() = default;
 
     bool init();
     virtual void on_msg();
@@ -35,9 +34,7 @@ private:
     QObject *qroot_;
     QObject *qoptions_;
     ActorId actor_id_;
-    std::vector<std::string> player_types_;
+    std::vector<QString> player_types_;
     std::vector<int> player_nums_;
     std::vector<PlayerType> selected_players_;
 };
-
-#endif // OPTIONS_VIEW_HPP

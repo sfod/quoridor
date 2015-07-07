@@ -10,7 +10,7 @@ DropArea {
     height: (parent.height - (parent.rows - 1) * parent.spacing) / parent.rows
 
     onDropped: {
-        parent.parent.pawnDropped(drag.source.actorId, index)
+        boardFrame.pawnDropped(drag.source.actorId, index)
     }
 
     Rectangle {

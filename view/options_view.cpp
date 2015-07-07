@@ -1,22 +1,14 @@
 #include "options_view.hpp"
 #include <QDebug>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include "game/game_data.hpp"
 #include "events/event_data.hpp"
 #include "events/event_manager.hpp"
 
-namespace boost_pt = boost::property_tree;
 
 OptionsView::OptionsView(QObject *qroot, QObject *qparent)
     : QtView(qparent), qroot_(qroot), qoptions_(), actor_id_(-1),
       player_types_(), player_nums_(), selected_players_()
 {
-}
-
-OptionsView::~OptionsView()
-{
-    qDebug() << "destroying OptionsView";
 }
 
 bool OptionsView::init()
@@ -31,7 +23,7 @@ bool OptionsView::init()
 
     QVariantList types;
     for (const auto &type : player_types_) {
-        types << type.c_str();
+        types << type;
     }
     QMetaObject::invokeMethod(qoptions_, "setPlayerTypes",
             Q_ARG(QVariant, QVariant::fromValue(types)));
@@ -68,8 +60,6 @@ void OptionsView::attach(ActorId actor_id)
 
 void OptionsView::button_start_game_clicked()
 {
-    qDebug() << "button_start_game_clicked";
-
     send_new_actors_data();
 
     auto event = std::make_shared<EventData_Game>();
@@ -80,7 +70,6 @@ void OptionsView::button_start_game_clicked()
 
 void OptionsView::button_back_clicked()
 {
-    qDebug() << "button_back_clicked";
     auto event = std::make_shared<EventData_MainMenu>();
     if (!EventManager::get()->queue_event(event)) {
         qDebug() << "failed to queue MainMenu event";
@@ -92,12 +81,8 @@ void OptionsView::on_players_changed(QVariant player_list)
     QVariantList lst = player_list.toList();
     selected_players_.clear();
     for (QVariant ptype_str : lst) {
-        PlayerType ptype = str_to_player_type.at(ptype_str.toString().toStdString());
+        PlayerType ptype = str_to_player_type.at(ptype_str.toString());
         selected_players_.push_back(ptype);
-    }
-    qDebug() << "selected players:";
-    for (auto ptype : selected_players_) {
-        qDebug() << "\t" << player_type_to_str.at(ptype).c_str();
     }
 }
 
@@ -108,33 +93,30 @@ QObject *OptionsView::find_object_by_name(const char *name) const
 
 bool OptionsView::load_players_data()
 {
-    static const char *players_file = "../data/players.json";
-
-    boost_pt::ptree pt;
-    try {
-        boost_pt::read_json(players_file, pt);
-    }
-    catch (boost_pt::ptree_error &e) {
-        qDebug() << "failed to open file:" << e.what();
+    QFile players_file;
+    players_file.setFileName(":/configs/players.json");
+    if (!players_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "failed to open file";
         return false;
     }
 
-    boost::optional<boost_pt::ptree &> types = pt.get_child_optional("types");
-    if (!types) {
+    QJsonDocument jd = QJsonDocument::fromJson(players_file.readAll());
+    QJsonObject players = jd.object();
+
+    QJsonArray player_types = players["types"].toArray();
+    if (player_types.isEmpty()) {
         return false;
     }
-    player_types_.clear();
-    for (auto type : *types) {
-        player_types_.push_back(type.second.get_value<std::string>());
+    for (auto type : player_types) {
+        player_types_.push_back(type.toString());
     }
 
-    boost::optional<boost_pt::ptree &> nums = pt.get_child_optional("nums");
-    if (!nums) {
+    QJsonArray player_nums = players["nums"].toArray();
+    if (player_nums.isEmpty()) {
         return false;
     }
-    player_nums_.clear();
-    for (auto num : *nums) {
-        player_nums_.push_back(num.second.get_value<int>());
+    for (auto num : player_nums) {
+        player_nums_.push_back(num.toInt());
     }
 
     return true;

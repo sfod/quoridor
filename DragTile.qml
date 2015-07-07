@@ -61,7 +61,7 @@ Item {
             Drag.hotSpot.y: parent.height / 2
 
             Image {
-                source: "resources/pawn.png"
+                source: "qrc:/resources/pawn.png"
                 anchors.fill: parent
             }
 

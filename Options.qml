@@ -41,7 +41,7 @@ Item {
         playersChanged(selectedPlayers);
     }
 
-    // @todo check for available player types
+    // TODO check for available player types
     function setPlayerNums(nums) {
         if (numsList.length > 0) {
             clearNums();

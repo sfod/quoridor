@@ -1,5 +1,4 @@
-#ifndef GRAPH_COMPONENT_HPP
-#define GRAPH_COMPONENT_HPP
+#pragma once
 
 #include "actor_component.hpp"
 #include "graph/graph.hpp"
@@ -8,9 +7,9 @@
 class GraphComponent : public ActorComponent {
 public:
     GraphComponent();
-    virtual ~GraphComponent();
+    virtual ~GraphComponent() = default;
 
-    virtual bool init(const boost_pt::ptree &component_data) override;
+    virtual bool init(const QJsonObject &component_data) override;
     virtual void post_init() override;
     virtual const char *name() const override { return name_; }
 
@@ -31,5 +30,3 @@ private:
     Node node_;
     std::set<Node> goal_nodes_;
 };
-
-#endif // GRAPH_COMPONENT_HPP

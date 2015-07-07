@@ -1,85 +1,80 @@
-#ifndef EVENT_DATA_HPP
-#define EVENT_DATA_HPP
+#pragma once
 
 #include "actors/actor.hpp"
 #include "game/game_data.hpp"
 #include "graph/node.hpp"
 #include "graph/wall.hpp"
 
-typedef unsigned long EventType;
+typedef std::size_t EventType;
 
-class EventData {
+/*
+ * Base class for events
+ */
+class EventDataBase {
 public:
-    explicit EventData(float ts = 0) : ts_(ts) {}
-    virtual ~EventData() {}
-    virtual const EventType &event_type() const = 0;
-    virtual float ts() const { return ts_; }
+    virtual ~EventDataBase() = default;
+    virtual EventType event_type() const = 0;
+};
+
+
+template<typename Derived>
+class EventData : public EventDataBase {
+public:
+    virtual ~EventData() = default;
+    virtual EventType event_type() const override { return event_type_; }
+
+// TODO make field private
+public:
+    static EventType event_type_;
+};
+
+
+class EventData_MainMenu : public EventData<EventData_MainMenu> {
+public:
+    virtual ~EventData_MainMenu() = default;
+};
+
+
+class EventData_Options : public EventData<EventData_Options> {
+public:
+    virtual ~EventData_Options() = default;
+};
+
+
+class EventData_Game : public EventData<EventData_Game> {
+public:
+    virtual ~EventData_Game() = default;
+};
+
+
+class EventData_GameTerminated : public EventData<EventData_GameTerminated> {
+public:
+    virtual ~EventData_GameTerminated() = default;
+};
+
+
+class EventData_GameFinished : public EventData<EventData_GameFinished> {
+public:
+    explicit EventData_GameFinished(ActorId actor_id);
+    virtual ~EventData_GameFinished() = default;
+
+    ActorId actor_id() const { return actor_id_; }
 
 private:
-    float ts_;
+    ActorId actor_id_;
 };
 
 
-class EventData_MainMenu : public EventData {
+class EventData_Quit : public EventData<EventData_Quit> {
 public:
-    EventData_MainMenu();
-    virtual ~EventData_MainMenu();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_Quit() = default;
 };
 
 
-class EventData_Options : public EventData {
-public:
-    EventData_Options();
-    virtual ~EventData_Options();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
-};
-
-
-class EventData_Game : public EventData {
-public:
-    EventData_Game();
-    virtual ~EventData_Game();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
-};
-
-
-class EventData_GameTerminated : public EventData {
-public:
-    EventData_GameTerminated();
-    virtual ~EventData_GameTerminated();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
-};
-
-
-class EventData_GameFinished : public EventData {
-public:
-    EventData_GameFinished();
-    virtual ~EventData_GameFinished();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
-};
-
-
-class EventData_Quit : public EventData {
-public:
-    EventData_Quit();
-    virtual ~EventData_Quit();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
-};
-
-
-class EventData_RequestNewActor : public EventData {
+class EventData_RequestNewActor : public EventData<EventData_RequestNewActor> {
 public:
     explicit EventData_RequestNewActor(PlayerType ptype);
-    virtual ~EventData_RequestNewActor();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_RequestNewActor() = default;
 
     PlayerType player_type() const { return ptype_; }
 
@@ -88,26 +83,28 @@ private:
 };
 
 
-class EventData_NewActor : public EventData {
+class EventData_NewActor : public EventData<EventData_NewActor> {
 public:
-    explicit EventData_NewActor(ActorId actor_id);
-    virtual ~EventData_NewActor();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    explicit EventData_NewActor(ActorId actor_id, const Node &node, const std::list<Node> &possible_moves, int wall_num);
+    virtual ~EventData_NewActor() = default;
 
     ActorId actor_id() const { return actor_id_; }
+    Node node() const { return node_; }
+    const std::list<Node> &possible_moves() const { return possible_moves_; }
+    int wall_num() const { return wall_num_; }
 
 private:
     ActorId actor_id_;
+    Node node_;
+    std::list<Node> possible_moves_;
+    int wall_num_;
 };
 
 
-class EventData_RequestActorMove : public EventData {
+class EventData_RequestActorMove : public EventData<EventData_RequestActorMove> {
 public:
     EventData_RequestActorMove(ActorId actor_id, const Node &node);
-    virtual ~EventData_RequestActorMove();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_RequestActorMove() = default;
 
     ActorId actor_id() const { return actor_id_; }
     Node node() const { return node_; }
@@ -118,12 +115,10 @@ private:
 };
 
 
-class EventData_RequestSetWall : public EventData {
+class EventData_RequestSetWall : public EventData<EventData_RequestSetWall> {
 public:
     EventData_RequestSetWall(ActorId actor_id, const Wall &wall);
-    virtual ~EventData_RequestSetWall();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_RequestSetWall() = default;
 
     ActorId actor_id() const { return actor_id_; }
     const Wall &wall() const { return wall_; }
@@ -134,13 +129,11 @@ private:
 };
 
 
-class EventData_MoveActor : public EventData {
+class EventData_MoveActor : public EventData<EventData_MoveActor> {
 public:
     EventData_MoveActor(ActorId actor_id, const Node &node,
             const std::list<Node> &possible_moves);
-    virtual ~EventData_MoveActor();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_MoveActor() = default;
 
     ActorId actor_id() const { return actor_id_; }
     Node node() const { return node_; }
@@ -153,12 +146,10 @@ private:
 };
 
 
-class EventData_SetWall : public EventData {
+class EventData_SetWall : public EventData<EventData_SetWall> {
 public:
     EventData_SetWall(ActorId actor_id, const Wall &wall);
-    virtual ~EventData_SetWall();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_SetWall() = default;
 
     ActorId actor_id() const { return actor_id_; }
     const Wall &wall() const { return wall_; }
@@ -169,13 +160,11 @@ private:
 };
 
 
-class EventData_SetActorPossibleMoves : public EventData {
+class EventData_SetActorPossibleMoves : public EventData<EventData_SetActorPossibleMoves> {
 public:
     EventData_SetActorPossibleMoves(ActorId actor_id,
             const std::list<Node> &possible_moves);
-    virtual ~EventData_SetActorPossibleMoves();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_SetActorPossibleMoves() = default;
 
     ActorId actor_id() const { return actor_id_; }
     const std::list<Node> &possible_moves() const { return possible_moves_; }
@@ -185,17 +174,14 @@ private:
     std::list<Node> possible_moves_;
 };
 
-class EventData_SetActorActive : public EventData {
+
+class EventData_SetActorActive : public EventData<EventData_SetActorActive> {
 public:
     explicit EventData_SetActorActive(ActorId actor_id);
-    virtual ~EventData_SetActorActive();
-    virtual const EventType &event_type() const;
-    static const EventType event_type_;
+    virtual ~EventData_SetActorActive() = default;
 
     ActorId actor_id() const { return actor_id_; }
 
 private:
     ActorId actor_id_;
 };
-
-#endif // EVENT_DATA_HPP

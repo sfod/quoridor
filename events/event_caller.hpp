@@ -1,5 +1,4 @@
-#ifndef EVENT_CALLER_HPP
-#define EVENT_CALLER_HPP
+#pragma once
 
 #include <QObject>
 
@@ -13,5 +12,3 @@ signals:
 public slots:
     bool update() const;
 };
-
-#endif // EVENT_CALLER_HPP

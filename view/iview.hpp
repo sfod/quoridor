@@ -1,5 +1,4 @@
-#ifndef IVIEW_HPP
-#define IVIEW_HPP
+#pragma once
 
 #include "actors/actor.hpp"
 
@@ -13,5 +12,3 @@ public:
     virtual void on_update() = 0;
     virtual void attach(ActorId actor_id) = 0;
 };
-
-#endif // IVIEW_HPP

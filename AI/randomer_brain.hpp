@@ -1,5 +1,4 @@
-#ifndef RANDOMER_BRAIN_HPP
-#define RANDOMER_BRAIN_HPP
+#pragma once
 
 #include "brain.hpp"
 #include <boost/random/mersenne_twister.hpp>
@@ -19,5 +18,3 @@ private:
     std::shared_ptr<Graph> graph_;
     boost::random::mt19937 gen_;
 };
-
-#endif // RANDOMER_BRAIN_HPP

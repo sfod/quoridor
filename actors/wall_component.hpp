@@ -1,23 +1,21 @@
 #pragma once
 
-#include <memory>
 #include "actor_component.hpp"
-#include "AI/brain.hpp"
 
-class AIComponent : public ActorComponent {
+class WallComponent : public ActorComponent {
 public:
-    AIComponent();
-    virtual ~AIComponent();
+    WallComponent();
+    virtual ~WallComponent() = default;
 
     virtual bool init(const QJsonObject &component_data) override;
     virtual void post_init() override;
     virtual const char *name() const override { return name_; }
 
-    void make_move();
+    int wall_number() const { return wall_num_; }
 
 public:
     static const char *name_;
 
 private:
-    std::shared_ptr<Brain> brain_;
+    int wall_num_;
 };

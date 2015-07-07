@@ -1,5 +1,4 @@
-#ifndef WALL_HPP
-#define WALL_HPP
+#pragma once
 
 #include <vector>
 #include <QObject>
@@ -32,10 +31,10 @@ public:
     WallEnumClass::WallOrientation orientation() const { return orientation_; }
     const Node &node() const { return node_; }
 
+    QString to_string() const;
+
 private:
     WallEnumClass::WallOrientation orientation_;
     Node node_;
     std::vector<std::pair<Node, Node>> affected_nodes_;
 };
-
-#endif // WALL_HPP
