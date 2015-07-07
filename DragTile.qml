@@ -27,6 +27,7 @@ Item {
         width: parent.width
         height: parent.height
         anchors.centerIn: parent
+        propagateComposedEvents: true
 
         drag.target: pawn.isDraggingEnabled ? pawn : null
         onReleased: {
