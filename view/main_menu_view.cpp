@@ -8,11 +8,6 @@ MainMenuView::MainMenuView(QObject *qroot, QObject *qparent)
 {
 }
 
-MainMenuView::~MainMenuView()
-{
-    qDebug() << "destroying MainMenuView";
-}
-
 bool MainMenuView::init()
 {
     if (!connect_button("buttonNewGame", SLOT(button_new_game_clicked()))) {

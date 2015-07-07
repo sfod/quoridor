@@ -12,7 +12,7 @@ class OptionsView : public QtView {
 
 public:
     explicit OptionsView(QObject *qroot, QObject *qparent = 0);
-    virtual ~OptionsView();
+    virtual ~OptionsView() = default;
 
     bool init();
     virtual void on_msg();

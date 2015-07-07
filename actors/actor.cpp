@@ -1,5 +1,4 @@
 #include "actor.hpp"
-#include <QDebug>
 
 Actor::Actor(ActorId id) : component_list_(), id_(id), type_()
 {
@@ -15,7 +14,6 @@ bool Actor::init(QJsonObject actor_data)
     if (type_.isEmpty()) {
         return false;
     }
-    qDebug() << "actor type: " << type_;
     return true;
 }
 

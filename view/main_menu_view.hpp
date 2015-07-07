@@ -9,7 +9,7 @@ class MainMenuView : public QtView {
 
 public:
     explicit MainMenuView(QObject *qroot, QObject *qparent = 0);
-    virtual ~MainMenuView();
+    virtual ~MainMenuView() = default;
 
     bool init();
     virtual void on_msg();

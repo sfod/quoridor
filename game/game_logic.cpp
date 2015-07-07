@@ -55,12 +55,10 @@ void GameLogic::change_state(LogicState state)
         for (auto actor : player_list_) {
             switch(actor.second) {
             case PlayerType::PT_Human:
-                qDebug() << "creating human player";
                 view.reset(new GameView(qroot_, is_main));
                 is_main = false;
                 break;
             case PlayerType::PT_AI:
-                qDebug() << "creating AI player";
                 view.reset(new AIView());
                 break;
             case PlayerType::PT_Invalid:
@@ -158,7 +156,6 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &ev
             }
 
             if (graph_comp->is_at_goal_node()) {
-                qDebug() << "player" << actor->id() << "win";
                 auto game_finished_event = std::make_shared<EventData_GameFinished>(actor->id());
                 EventManager::get()->queue_event(game_finished_event);
             }

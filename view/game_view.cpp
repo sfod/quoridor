@@ -10,7 +10,6 @@ GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
 
 GameView::~GameView()
 {
-    qDebug() << "destroying PlayerView";
     for (auto conn : conn_list_) {
         conn.disconnect();
     }
@@ -84,8 +83,6 @@ void GameView::new_actor_delegate(const std::shared_ptr<EventDataBase> &event)
         const Node &node = new_actor_event->node();
         int idx = (8 - node.row()) * 9 + node.col();
 
-        qDebug() << "move actor delegate";
-
         QVariantList possible_idx_list;
         for (auto &node : new_actor_event->possible_moves()) {
             int idx = (8 - node.row()) * 9 + node.col();
@@ -108,8 +105,6 @@ void GameView::move_actor_delegate(const std::shared_ptr<EventDataBase> &event)
     if (is_main_) {
         const Node &node = move_event->node();
         int idx = (8 - node.row()) * 9 + node.col();
-
-        qDebug() << "move actor delegate";
 
         QVariantList possible_idx_list;
         for (auto &node : move_event->possible_moves()) {
@@ -175,7 +170,6 @@ void GameView::game_finished_delegate(const std::shared_ptr<EventDataBase> &even
 {
     if (is_main_) {
         auto game_finished_event = std::dynamic_pointer_cast<EventData_GameFinished>(event);
-        qDebug() << "finishing game!";
         QMetaObject::invokeMethod(qboard_, "finishGame");
 
         QString msg = QString::number(game_finished_event->actor_id()) + " wins";

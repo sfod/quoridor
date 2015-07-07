@@ -11,11 +11,6 @@ OptionsView::OptionsView(QObject *qroot, QObject *qparent)
 {
 }
 
-OptionsView::~OptionsView()
-{
-    qDebug() << "destroying OptionsView";
-}
-
 bool OptionsView::init()
 {
     if (!load_players_data()) {
@@ -65,8 +60,6 @@ void OptionsView::attach(ActorId actor_id)
 
 void OptionsView::button_start_game_clicked()
 {
-    qDebug() << "button_start_game_clicked";
-
     send_new_actors_data();
 
     auto event = std::make_shared<EventData_Game>();
@@ -77,7 +70,6 @@ void OptionsView::button_start_game_clicked()
 
 void OptionsView::button_back_clicked()
 {
-    qDebug() << "button_back_clicked";
     auto event = std::make_shared<EventData_MainMenu>();
     if (!EventManager::get()->queue_event(event)) {
         qDebug() << "failed to queue MainMenu event";
@@ -91,10 +83,6 @@ void OptionsView::on_players_changed(QVariant player_list)
     for (QVariant ptype_str : lst) {
         PlayerType ptype = str_to_player_type.at(ptype_str.toString());
         selected_players_.push_back(ptype);
-    }
-    qDebug() << "selected players:";
-    for (auto ptype : selected_players_) {
-        qDebug() << "\t" << player_type_to_str.at(ptype);
     }
 }
 

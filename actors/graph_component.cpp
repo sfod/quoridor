@@ -1,5 +1,4 @@
 #include "graph_component.hpp"
-#include <QObject>
 #include "game/game_app.hpp"
 
 const char *GraphComponent::name_ = "GraphComponent";
@@ -11,8 +10,6 @@ GraphComponent::GraphComponent() : node_(), goal_nodes_()
 
 bool GraphComponent::init(const QJsonObject &component_data)
 {
-    qDebug() << component_data;
-
     // set player initial position
     QJsonArray pos = component_data["position"].toArray();
     if (pos.size() != 2) {
