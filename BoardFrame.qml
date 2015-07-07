@@ -7,6 +7,7 @@ Rectangle {
     property list<WallStock> wallStocks
 
     property var playerList: ({})
+    property var wallList: ({})
     property var wallStockList: ({})
     property int activeActorId: -1
     property int playerCurrentActivity: 0
@@ -18,8 +19,9 @@ Rectangle {
         start();
     }
 
-    function addPlayer(actorId, nodeIdx, possibleMoves, walls) {
+    function addPlayer(actorId, nodeIdx, possibleMoves, wallNum) {
         playerList[actorId] = 1;
+        wallList [actorId] = wallNum;
         wallStockList[actorId] = wallStocks[playerNum];
 
         board.addPawn(actorId);
@@ -39,6 +41,8 @@ Rectangle {
 
     function setWall(actorId, orientation, row, col) {
         board.setWall(actorId, orientation, row, col);
+        wallList[actorId]--;
+        console.log("walls: " + wallList[actorId]);
     }
 
     function setActivePlayer(actorId) {
@@ -57,8 +61,10 @@ Rectangle {
     }
 
     function switchPlayerActivity() {
-        playerCurrentActivity = 1 - playerCurrentActivity;
-        board.switchPlayerActivity(activeActorId, playerCurrentActivity);
+        if (wallList[activeActorId] > 0) {
+            playerCurrentActivity = 1 - playerCurrentActivity;
+            board.switchPlayerActivity(activeActorId, playerCurrentActivity);
+        }
     }
 
     function start() {
