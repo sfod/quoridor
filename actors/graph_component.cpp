@@ -58,7 +58,7 @@ bool GraphComponent::is_at_goal_node() const
 
 bool GraphComponent::set_wall(const Wall &wall)
 {
-    return graph_->set_wall(owner()->id(), wall);
+    return graph_->set_wall(wall);
 }
 
 std::list<Node> GraphComponent::possible_moves() const

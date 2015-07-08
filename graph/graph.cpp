@@ -32,7 +32,7 @@ bool Graph::move_actor(ActorId id, const Node &node)
     return false;
 }
 
-bool Graph::set_wall(ActorId id, const Wall &wall)
+bool Graph::set_wall(const Wall &wall)
 {
     std::vector<goal_nodes_t> goal_nodes_list;
     goal_nodes_t goal_node;
