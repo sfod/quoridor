@@ -11,13 +11,12 @@ class OptionsView : public QtView {
     Q_OBJECT
 
 public:
-    explicit OptionsView(QObject *qroot, QObject *qparent = 0);
+    explicit OptionsView(QObject *qroot, QObject *qparent = nullptr);
     virtual ~OptionsView() = default;
 
-    bool init();
-    virtual void on_msg();
-    virtual void on_update();
-    virtual void attach(ActorId actor_id);
+    virtual void on_msg() override;
+    virtual void on_update() override;
+    virtual void attach(ActorId actor_id) override;
 
 public slots:
     void button_start_game_clicked();
@@ -26,8 +25,8 @@ public slots:
 
 private:
     virtual QObject *find_object_by_name(const char *name) const override;
-    bool load_players_data();
-    bool connect_options();
+    void load_players_data();
+    void connect_options();
     void send_new_actors_data() const;
 
 private:

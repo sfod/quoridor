@@ -5,6 +5,10 @@
 
 AIView::AIView() : conn_list_(), actor_id_(-1)
 {
+    bs2::connection conn = EventManager::get()->add_listener(
+            boost::bind(&AIView::set_active_delegate, this, _1),
+            EventData_SetActorActive::event_type_);
+    conn_list_.push_back(conn);
 }
 
 AIView::~AIView()
@@ -12,17 +16,6 @@ AIView::~AIView()
     for (auto conn : conn_list_) {
         conn.disconnect();
     }
-}
-
-bool AIView::init()
-{
-    bs2::connection conn;
-    conn = EventManager::get()->add_listener(
-            boost::bind(&AIView::set_active_delegate, this, _1),
-            EventData_SetActorActive::event_type_);
-    conn_list_.push_back(conn);
-
-    return true;
 }
 
 void AIView::on_msg()

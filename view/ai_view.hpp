@@ -8,7 +8,6 @@ public:
     AIView();
     virtual ~AIView();
 
-    virtual bool init() override;
     virtual void on_msg() override;
     virtual void on_update() override;
     virtual void attach(ActorId actor_id) override;

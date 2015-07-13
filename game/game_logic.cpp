@@ -39,15 +39,11 @@ void GameLogic::change_state(LogicState state)
         break;
     case LogicState::LS_MainMenu:
         view.reset(new MainMenuView(qroot_));
-        if (view->init()) {
-            change_view(view);
-        }
+        change_view(view);
         break;
     case LogicState::LS_Options:
         view.reset(new OptionsView(qroot_));
-        if (view->init()) {
-            change_view(view);
-        }
+        change_view(view);
         break;
     case LogicState::LS_Game: {
         view_list_.clear();
@@ -67,10 +63,8 @@ void GameLogic::change_state(LogicState state)
                 break;
             }
 
-            if (view->init()) {
-                add_view(view);
-                view->attach(actor.first->id());
-            }
+            add_view(view);
+            view->attach(actor.first->id());
         }
         set_players();
         break;

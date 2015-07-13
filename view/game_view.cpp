@@ -1,28 +1,15 @@
 #include "game_view.hpp"
 #include <QQuickItem>
-#include <QDebug>
+#include "exceptions/exception.hpp"
 
 GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
     : QtView(qparent), conn_list_(), qroot_(qroot), qboard_(), qrecorder_(),
       qbutton_(), actor_id_(-1), is_main_(is_main)
 {
-}
+    connect_objects();
 
-GameView::~GameView()
-{
-    for (auto conn : conn_list_) {
-        conn.disconnect();
-    }
-}
-
-bool GameView::init()
-{
-    if (!connect_objects()) {
-        return false;
-    }
-
-    if (is_main_ && !connect_button("buttonBackToOptions", SLOT(button_back_clicked()), &qbutton_)) {
-        return false;
+    if (is_main_) {
+        connect_button("buttonBackToOptions", SLOT(button_back_clicked()), &qbutton_);
     }
 
     bs2::connection conn;
@@ -59,8 +46,13 @@ bool GameView::init()
         QMetaObject::invokeMethod(qboard_, "init");
         QMetaObject::invokeMethod(qrecorder_, "init");
     }
+}
 
-    return true;
+GameView::~GameView()
+{
+    for (auto conn : conn_list_) {
+        conn.disconnect();
+    }
 }
 
 void GameView::on_msg()
@@ -223,24 +215,26 @@ QObject *GameView::find_object_by_name(const char *name) const
     return qroot_->findChild<QObject*>(name);
 }
 
-bool GameView::connect_objects()
+void GameView::connect_objects()
 {
     qboard_ = find_object_by_name("boardFrame");
-    if (qboard_ == NULL) {
-        return false;
+    if (!qboard_) {
+        throw qml_missing_element_error();
     }
 
     qrecorder_ = find_object_by_name("moveRecorder");
-    if (qrecorder_ == NULL) {
-        return false;
+    if (!qrecorder_) {
+        throw qml_missing_element_error();
     }
 
-    QObject::connect(
+    if (!QObject::connect(
             qboard_, SIGNAL(pawnDropped(int, int)),
-            this, SLOT(on_pawn_dropped(int, int))
-    );
-    QObject::connect(
+            this, SLOT(on_pawn_dropped(int, int)))) {
+        throw qml_connect_error();
+    }
+    if (!QObject::connect(
             qboard_, SIGNAL(wallDropped(int, int, int, int)),
-            this, SLOT(on_wall_dropped(int, int, int, int)));
-    return true;
+            this, SLOT(on_wall_dropped(int, int, int, int)))) {
+        throw qml_connect_error();
+    }
 }

@@ -1,20 +1,22 @@
 #include "qt_view.hpp"
+#include "exceptions/exception.hpp"
 
 QtView::QtView(QObject *qparent) : QObject(qparent)
 {
 }
 
-bool QtView::connect_button(const char *name, const char *slot, QObject **obj)
+void QtView::connect_button(const char *name, const char *slot, QObject **obj)
 {
     QObject *qbutton = find_object_by_name(name);
-    if (qbutton == NULL) {
-        return false;
+    if (!qbutton) {
+        throw qml_missing_element_error();
     }
-    QObject::connect(
-            qbutton, SIGNAL(clicked()),
-            this, slot);
+
+    if (!QObject::connect(qbutton, SIGNAL(clicked()), this, slot)) {
+        throw qml_connect_error();
+    }
+
     if (obj != NULL) {
         *obj = qbutton;
     }
-    return true;
 }

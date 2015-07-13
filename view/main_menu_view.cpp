@@ -1,22 +1,14 @@
 #include "main_menu_view.hpp"
-#include <QDebug>
 #include "events/event_data.hpp"
 #include "events/event_manager.hpp"
+#include "exceptions/exception.hpp"
+
 
 MainMenuView::MainMenuView(QObject *qroot, QObject *qparent)
     : QtView(qparent), qroot_(qroot), actor_id_(-1)
 {
-}
-
-bool MainMenuView::init()
-{
-    if (!connect_button("buttonNewGame", SLOT(button_new_game_clicked()))) {
-        return false;
-    }
-    if (!connect_button("buttonQuit", SLOT(button_quit_clicked()))) {
-        return false;
-    }
-    return true;
+    connect_button("buttonNewGame", SLOT(button_new_game_clicked()));
+    connect_button("buttonQuit", SLOT(button_quit_clicked()));
 }
 
 void MainMenuView::on_msg()
@@ -36,7 +28,7 @@ void MainMenuView::button_new_game_clicked()
 {
     auto event = std::make_shared<EventData_Options>();
     if (!EventManager::get()->queue_event(event)) {
-        qDebug() << "failed to queue Options event";
+
     }
 }
 
@@ -44,7 +36,6 @@ void MainMenuView::button_quit_clicked()
 {
     auto event = std::make_shared<EventData_Quit>();
     if (!EventManager::get()->queue_event(event)) {
-        qDebug() << "failed to queue Quit event";
     }
 }
 

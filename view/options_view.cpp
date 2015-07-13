@@ -1,25 +1,16 @@
 #include "options_view.hpp"
-#include <QDebug>
 #include "game/game_data.hpp"
 #include "events/event_data.hpp"
 #include "events/event_manager.hpp"
+#include "exceptions/exception.hpp"
 
 
 OptionsView::OptionsView(QObject *qroot, QObject *qparent)
     : QtView(qparent), qroot_(qroot), qoptions_(), actor_id_(-1),
       player_types_(), player_nums_(), selected_players_()
 {
-}
-
-bool OptionsView::init()
-{
-    if (!load_players_data()) {
-        return false;
-    }
-
-    if (!connect_options()) {
-        return false;
-    }
+    load_players_data();
+    connect_options();
 
     QVariantList types;
     for (const auto &type : player_types_) {
@@ -35,14 +26,8 @@ bool OptionsView::init()
     QMetaObject::invokeMethod(qoptions_, "setPlayerNums",
             Q_ARG(QVariant, QVariant::fromValue(nums)));
 
-    if (!connect_button("buttonStartGame", SLOT(button_start_game_clicked()))) {
-        return false;
-    }
-    if (!connect_button("buttonBackToMainMenu", SLOT(button_back_clicked()))) {
-        return false;
-    }
-
-    return true;
+    connect_button("buttonStartGame", SLOT(button_start_game_clicked()));
+    connect_button("buttonBackToMainMenu", SLOT(button_back_clicked()));
 }
 
 void OptionsView::on_msg()
@@ -91,48 +76,47 @@ QObject *OptionsView::find_object_by_name(const char *name) const
     return qroot_->findChild<QObject*>(name);
 }
 
-bool OptionsView::load_players_data()
+void OptionsView::load_players_data()
 {
     QFile players_file;
     players_file.setFileName(":/configs/players.json");
     if (!players_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "failed to open file";
-        return false;
+        throw open_file_error();
     }
 
     QJsonDocument jd = QJsonDocument::fromJson(players_file.readAll());
-    QJsonObject players = jd.object();
+    QJsonObject players = jd.object();  // FIXME check if jd is an object
 
     QJsonArray player_types = players["types"].toArray();
     if (player_types.isEmpty()) {
-        return false;
+        throw invalid_json_error();
     }
+
     for (auto type : player_types) {
         player_types_.push_back(type.toString());
     }
 
     QJsonArray player_nums = players["nums"].toArray();
     if (player_nums.isEmpty()) {
-        return false;
+        throw invalid_json_error();
     }
+
     for (auto num : player_nums) {
         player_nums_.push_back(num.toInt());
     }
-
-    return true;
 }
 
-bool OptionsView::connect_options()
+void OptionsView::connect_options()
 {
     qoptions_ = find_object_by_name("options");
-    if (qoptions_ == NULL) {
-        return false;
+    if (!qoptions_) {
+        throw qml_missing_element_error();
     }
-    QObject::connect(
+    if (!QObject::connect(
             qoptions_, SIGNAL(playersChanged(QVariant)),
-            this, SLOT(on_players_changed(QVariant))
-    );
-    return true;
+            this, SLOT(on_players_changed(QVariant)))) {
+        throw qml_connect_error();
+    }
 }
 
 void OptionsView::send_new_actors_data() const

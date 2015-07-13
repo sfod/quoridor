@@ -67,4 +67,5 @@ HEADERS += \
     AI/straight_brain.hpp \
     graph/wall.hpp \
     actors/wall_component.hpp \
-    graph/wall_grid.hpp
+    graph/wall_grid.hpp \
+    exceptions/exception.hpp
