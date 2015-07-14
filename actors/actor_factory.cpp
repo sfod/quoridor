@@ -79,7 +79,7 @@ std::shared_ptr<ActorComponent> ActorFactory::create_actor_component(
         const QString &type, const QJsonObject &component_data)
 {
     if (type == "GraphComponent") {
-        std::shared_ptr<ActorComponent> component(new GraphComponent);
+        auto component = std::make_shared<GraphComponent>();
         if (!component->init(component_data)) {
             return std::shared_ptr<ActorComponent>();
         }
