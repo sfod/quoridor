@@ -1,6 +1,5 @@
 #include "game_app.hpp"
 
-#include <QGuiApplication>
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QTimer>
@@ -9,13 +8,27 @@
 #include "events/event_manager.hpp"
 #include "events/event_caller.hpp"
 #include "graph/wall.hpp"
+#include "exceptions/exception.hpp"
 
 static GameApp *g_app;
 
-GameApp::GameApp()
-    : event_manager_(new EventManager), conn_list_(), logic_(),
-      qengine_(), qcomponent_(), qroot_()
+GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
+    qcomponent_(&qengine_), conn_list_()
 {
+    WallEnumClass::declareQML();
+    qcomponent_.loadUrl(QUrl(QStringLiteral("qrc:///main.qml")));
+    if (qcomponent_.isError()) {
+        for (auto qerr : qcomponent_.errors()) {
+            qDebug() << qerr;
+        }
+        throw qml_error();
+    }
+
+    qroot_ = qcomponent_.create();
+
+    event_manager_ = std::make_shared<EventManager>();
+    logic_ = std::make_shared<GameLogic>(qroot_);
+
     g_app = this;
 }
 
@@ -24,24 +37,11 @@ GameApp::~GameApp()
     for (auto conn : conn_list_) {
         conn.disconnect();
     }
+    delete qroot_;
 }
 
-int GameApp::run(int argc, char **argv)
+int GameApp::run()
 {
-    std::shared_ptr<QGuiApplication> qapp = std::make_shared<QGuiApplication>(argc, argv);
-
-    WallEnumClass::declareQML();
-
-    qengine_ = new QQmlEngine;
-    qcomponent_ = new QQmlComponent(qengine_, QUrl(QStringLiteral("qrc:///main.qml")));
-    qroot_ = qcomponent_->create();
-
-    logic_ = new GameLogic(qroot_);
-    if (!logic_->init()) {
-        qDebug() << "failed to init game logic";
-        return 1;
-    }
-
     logic_->change_state(LogicState::LS_MainMenu);
     register_delegates();
 
@@ -50,7 +50,7 @@ int GameApp::run(int argc, char **argv)
     QObject::connect(&qtimer, SIGNAL(timeout()), &event_caller, SLOT(update()));
     qtimer.start(10);  // call event_caller every 10 ms
 
-    return qapp->exec();
+    return qapp_.exec();
 }
 
 void GameApp::quit_delegate(const std::shared_ptr<EventDataBase> &event)

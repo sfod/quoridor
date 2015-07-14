@@ -7,10 +7,14 @@ public:
     invalid_argument_error() : std::runtime_error("") {}
 };
 
-
 class graph_state_error : public std::runtime_error {
 public:
     graph_state_error() : std::runtime_error("") {}
+};
+
+class qml_error : public std::runtime_error {
+public:
+    qml_error() : std::runtime_error("") {}
 };
 
 class qml_missing_element_error : public std::runtime_error {

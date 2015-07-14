@@ -15,6 +15,7 @@ GameLogic::GameLogic(QObject *qroot)
     player_list_(), graph_(new Graph), view_list_(), player_idx_(1),
     player_handler_()
 {
+    register_delegates();
 }
 
 GameLogic::~GameLogic()
@@ -22,12 +23,6 @@ GameLogic::~GameLogic()
     for (auto conn : conn_list_) {
         conn.disconnect();
     }
-}
-
-bool GameLogic::init()
-{
-    register_delegates();
-    return true;
 }
 
 void GameLogic::change_state(LogicState state)

@@ -29,8 +29,6 @@ public:
     explicit GameLogic(QObject *qroot);
     ~GameLogic();
 
-    bool init();
-
     std::shared_ptr<ActorKeeper> actor_keeper() const { return actor_keeper_; }
     std::shared_ptr<Graph> graph() const { return graph_; }
 
@@ -55,7 +53,7 @@ private:
     LogicState state_;
     QObject *qroot_;
     std::list<bs2::connection> conn_list_;
-    ActorFactory *actor_factory_;
+    std::shared_ptr<ActorFactory> actor_factory_;
     std::shared_ptr<ActorKeeper> actor_keeper_;
     std::list<player_actor_t> player_list_;
     std::shared_ptr<Graph> graph_;

@@ -5,10 +5,10 @@
 class EventCaller : public QObject {
     Q_OBJECT
 public:
-    explicit EventCaller(QObject *parent = 0);
+    explicit EventCaller(QObject *parent = nullptr);
 
 signals:
 
 public slots:
-    bool update() const;
+    void update() const;
 };

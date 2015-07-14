@@ -6,9 +6,7 @@
 
 class ActorFactory {
 public:
-    ActorFactory();
-    ~ActorFactory();
-
+    ActorFactory() = default;
     std::shared_ptr<Actor> create_actor(QString &resource_file,
             const std::vector<QString> &component_resource_files);
 

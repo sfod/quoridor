@@ -7,10 +7,6 @@ EventManager::EventManager()
     g_event_mgr = this;
 }
 
-EventManager::~EventManager()
-{
-}
-
 bs2::connection EventManager::add_listener(const slot_t &listener,
         const EventType &event_type)
 {
@@ -48,7 +44,7 @@ bool EventManager::abort_event(const std::shared_ptr<EventDataBase> &event)
     return success;
 }
 
-bool EventManager::update()
+void EventManager::update()
 {
     while (!event_list_.empty()) {
         std::shared_ptr<EventDataBase> event = event_list_.front();
@@ -57,11 +53,10 @@ bool EventManager::update()
             signal_list_.at(event->event_type())(event);
         }
     }
-    return true;
 }
 
 EventManager *EventManager::get()
 {
-    BOOST_ASSERT(g_event_mgr != NULL);
+    BOOST_ASSERT(g_event_mgr != nullptr);
     return g_event_mgr;
 }

@@ -1,12 +1,11 @@
 #include "event_caller.hpp"
 #include "event_manager.hpp"
 
-EventCaller::EventCaller(QObject *parent) :
-    QObject(parent)
+EventCaller::EventCaller(QObject *parent) : QObject(parent)
 {
 }
 
-bool EventCaller::update() const
+void EventCaller::update() const
 {
-    return EventManager::get()->update();
+    EventManager::get()->update();
 }

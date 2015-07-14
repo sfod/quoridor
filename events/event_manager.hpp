@@ -12,7 +12,6 @@ class EventManager {
 
 public:
     EventManager();
-    virtual ~EventManager();
 
     bs2::connection add_listener(const slot_t &listener,
             const EventType &event_type);
@@ -21,7 +20,7 @@ public:
     bool queue_event(const std::shared_ptr<EventDataBase> &event);
     bool abort_event(const std::shared_ptr<EventDataBase> &event);
 
-    bool update();
+    void update();
 
     static EventManager *get();
 

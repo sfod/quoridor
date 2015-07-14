@@ -12,10 +12,6 @@
 
 static ActorId g_actor_id = 0;
 
-ActorFactory::ActorFactory()
-{
-}
-
 std::shared_ptr<Actor> ActorFactory::create_actor(QString &resource_file,
         const std::vector<QString> &component_resource_files)
 {
