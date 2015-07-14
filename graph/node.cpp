@@ -13,7 +13,7 @@ Node::Node(int row, int col)
     }
 
     row_ = row;
-    col = col_;
+    col_ = col;
 }
 
 Node::Node(const Node &node)
