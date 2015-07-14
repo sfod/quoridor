@@ -6,10 +6,9 @@
 
 class AIComponent : public ActorComponent {
 public:
-    AIComponent();
-    virtual ~AIComponent();
+    explicit AIComponent(const QJsonObject &component_data);
+    virtual ~AIComponent() = default;
 
-    virtual bool init(const QJsonObject &component_data) override;
     virtual void post_init() override;
     virtual const char *name() const override { return name_; }
 

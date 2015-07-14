@@ -11,9 +11,8 @@ class Actor;
 
 class ActorComponent {
 public:
-    virtual ~ActorComponent() {}
+    virtual ~ActorComponent() = default;
 
-    virtual bool init(const QJsonObject &component_data) = 0;
     virtual void post_init() {}
     virtual const char *name() const = 0;
     virtual void set_owner(std::shared_ptr<Actor> &owner) { owner_ = owner; }

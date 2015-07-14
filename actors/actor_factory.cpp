@@ -8,6 +8,7 @@
 #include "graph_component.hpp"
 #include "wall_component.hpp"
 #include "ai_component.hpp"
+#include "exceptions/exception.hpp"
 
 
 static ActorId g_actor_id = 0;
@@ -25,10 +26,7 @@ std::shared_ptr<Actor> ActorFactory::create_actor(QString &resource_file,
     QJsonObject player = jd.object();
     QJsonObject actor_data = player["actor"].toObject();
 
-    std::shared_ptr<Actor> actor(new Actor(++g_actor_id));
-    if (!actor->init(actor_data)) {
-        return std::shared_ptr<Actor>();
-    }
+    auto actor = std::make_shared<Actor>(++g_actor_id, actor_data);
 
     QJsonObject actor_components = actor_data["components"].toObject();
     if (!actor_components.isEmpty()) {
@@ -79,27 +77,14 @@ std::shared_ptr<ActorComponent> ActorFactory::create_actor_component(
         const QString &type, const QJsonObject &component_data)
 {
     if (type == "GraphComponent") {
-        auto component = std::make_shared<GraphComponent>();
-        if (!component->init(component_data)) {
-            return std::shared_ptr<ActorComponent>();
-        }
-        return component;
+        return std::make_shared<GraphComponent>(component_data);
     }
     else if (type == "AIComponent") {
-        auto component = std::make_shared<AIComponent>();
-        if (!component->init(component_data)) {
-            return std::shared_ptr<ActorComponent>();
-        }
-        return component;
+        return std::make_shared<AIComponent>(component_data);
     }
     else if (type == "WallComponent") {
-        auto component = std::make_shared<WallComponent>();
-        if (!component->init(component_data)) {
-            return std::shared_ptr<ActorComponent>();
-        }
-        return component;
+        return std::make_shared<WallComponent>(component_data);
     }
-    else {
-        return std::shared_ptr<ActorComponent>();
-    }
+
+    throw invalid_json_error();
 }

@@ -4,24 +4,17 @@
 #include "graph_component.hpp"
 #include "AI/randomer_brain.hpp"
 #include "AI/straight_brain.hpp"
+#include "exceptions/exception.hpp"
 
 const char *AIComponent::name_ = "AIComponent";
 
-AIComponent::AIComponent() : brain_()
+AIComponent::AIComponent(const QJsonObject &component_data)
 {
-}
-
-AIComponent::~AIComponent()
-{
-}
-
-bool AIComponent::init(const QJsonObject &component_data)
-{
-    QString brain_type = component_data["brain"].toString();
-    if (brain_type.isEmpty()) {
-        return false;
+    if (component_data["brain"].isUndefined()) {
+        throw invalid_json_error();
     }
 
+    QString brain_type = component_data["brain"].toString();
     if (brain_type == "randomer") {
         brain_ = std::make_shared<RandomerBrain>();
     }
@@ -29,10 +22,8 @@ bool AIComponent::init(const QJsonObject &component_data)
         brain_ = std::make_shared<StraightBrain>();
     }
     else {
-        return false;
+        throw invalid_json_error();
     }
-
-    return true;
 }
 
 void AIComponent::post_init()

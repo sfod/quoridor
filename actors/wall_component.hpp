@@ -4,10 +4,9 @@
 
 class WallComponent : public ActorComponent {
 public:
-    WallComponent();
+    WallComponent(const QJsonObject &component_data);
     virtual ~WallComponent() = default;
 
-    virtual bool init(const QJsonObject &component_data) override;
     virtual void post_init() override;
     virtual const char *name() const override { return name_; }
 

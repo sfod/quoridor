@@ -1,20 +1,12 @@
 #include "actor.hpp"
+#include "exceptions/exception.hpp"
 
-Actor::Actor(ActorId id) : component_list_(), id_(id), type_()
+Actor::Actor(ActorId id, QJsonObject actor_data) : component_list_(), id_(id)
 {
-}
-
-Actor::~Actor()
-{
-}
-
-bool Actor::init(QJsonObject actor_data)
-{
-    type_ = actor_data["type"].toString();
-    if (type_.isEmpty()) {
-        return false;
+    if (actor_data["type"].isUndefined()) {
+        throw invalid_json_error();
     }
-    return true;
+    type_ = actor_data["type"].toString();
 }
 
 void Actor::post_init()
@@ -31,8 +23,5 @@ void Actor::add_component(std::shared_ptr<ActorComponent> &component)
 
 std::shared_ptr<ActorComponent> Actor::component(ComponentId id) const
 {
-    if (component_list_.count(id) > 0) {
-        return component_list_.at(id);
-    }
-    return std::shared_ptr<ActorComponent>();
+    return component_list_.at(id);
 }
