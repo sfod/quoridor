@@ -123,7 +123,7 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &ev
         auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor->component(cid));
 
         // TODO(?) move this logic into GraphComponent
-        if (graph_comp && graph_comp->move_actor(req_move_event->node())) {
+        if (graph_comp->move_actor(req_move_event->node())) {
             // update active player position
             auto move_event = std::make_shared<EventData_MoveActor>(
                     actor->id(),
@@ -168,8 +168,7 @@ void GameLogic::req_set_wall(const std::shared_ptr<EventDataBase> &event)
         const Wall &wall = req_wall_event->wall();
         if (graph_comp && graph_comp->set_wall(wall)) {
             // update active player position
-            auto set_wall_event = std::make_shared<EventData_SetWall>(
-                    actor->id(), wall);
+            auto set_wall_event = std::make_shared<EventData_SetWall>(actor->id(), wall);
             EventManager::get()->queue_event(set_wall_event);
 
             // update other players possible moves
@@ -242,13 +241,9 @@ void GameLogic::create_player(int idx, PlayerType ptype)
         QString(":/configs/player_position_" + QString::number(idx) + ".json"),
         QString(":/configs/player_wall_number_" + QString::number(2) + ".json")  // FIXME use number of players
     };
-    std::shared_ptr<Actor> actor = actor_factory_->create_actor(player_cfg_file,
-            component_resources);
-    if (actor) {
-        player_actor_t player_actor = {actor, ptype};
-        player_list_.push_back(player_actor);
-        player_handler_.add_player(actor->id());
-    }
+    std::shared_ptr<Actor> actor = actor_factory_->create_actor(player_cfg_file, component_resources);
+    player_list_.push_back(player_actor_t(actor, ptype));
+    player_handler_.add_player(actor->id());
 }
 
 void GameLogic::set_players()
@@ -256,18 +251,10 @@ void GameLogic::set_players()
     for (auto actor : player_list_) {
         ComponentId cid = ActorComponent::id(GraphComponent::name_);
         auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor.first->component(cid));
-        // FIXME
-        if (!graph_comp) {
-            throw std::runtime_error("Invalid player object: no Graph component found");
-        }
 
         cid = ActorComponent::id(WallComponent::name_);
         auto wall_comp = std::dynamic_pointer_cast<WallComponent>(actor.first->component(cid));
-        if (!wall_comp) {
-            throw std::runtime_error("Invalid player object: no Wall component found");
-        }
 
-        // TODO pass number of walls (get whole number from config file)
         auto new_event = std::make_shared<EventData_NewActor>(
                     actor.first->id(),
                     graph_comp->node(),
