@@ -201,37 +201,37 @@ void GameLogic::register_delegates()
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::main_menu_win_delegate, this, _1),
-            EventData_MainMenu::event_type_);
+            EventData_MainMenu::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::options_win_delegate, this, _1),
-            EventData_Options::event_type_);
+            EventData_Options::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::game_win_delegate, this, _1),
-            EventData_Game::event_type_);
+            EventData_Game::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::game_terminated_delegate, this, _1),
-            EventData_GameTerminated::event_type_);
+            EventData_GameTerminated::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::req_actor_new_delegate, this, _1),
-            EventData_RequestNewActor::event_type_);
+            EventData_RequestNewActor::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::req_actor_move_delegate, this, _1),
-            EventData_RequestActorMove::event_type_);
+            EventData_RequestActorMove::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::req_set_wall, this, _1),
-            EventData_RequestSetWall::event_type_);
+            EventData_RequestSetWall::static_event_type());
     conn_list_.push_back(conn);
 }
 

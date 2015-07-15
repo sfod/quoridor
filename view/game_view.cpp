@@ -15,31 +15,31 @@ GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
     bs2::connection conn;
     conn = EventManager::get()->add_listener(
             boost::bind(&GameView::new_actor_delegate, this, _1),
-            EventData_NewActor::event_type_);
+            EventData_NewActor::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameView::move_actor_delegate, this, _1),
-            EventData_MoveActor::event_type_);
+            EventData_MoveActor::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameView::set_wall_delegate, this, _1),
-            EventData_SetWall::event_type_);
+            EventData_SetWall::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameView::set_actor_possible_moves_delegate, this, _1),
-            EventData_SetActorPossibleMoves::event_type_);
+            EventData_SetActorPossibleMoves::static_event_type());
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameView::set_active_delegate, this, _1),
-            EventData_SetActorActive::event_type_);
+            EventData_SetActorActive::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameView::game_finished_delegate, this, _1),
-            EventData_GameFinished::event_type_);
+            EventData_GameFinished::static_event_type());
     conn_list_.push_back(conn);
 
     if (is_main_) {

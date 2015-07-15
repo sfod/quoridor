@@ -70,6 +70,6 @@ void GameApp::register_delegates()
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameApp::quit_delegate, this, _1),
-            EventData_Quit::event_type_);
+            EventData_Quit::static_event_type());
     conn_list_.push_back(conn);
 }

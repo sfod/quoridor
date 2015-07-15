@@ -7,7 +7,7 @@ AIView::AIView() : conn_list_(), actor_id_(-1)
 {
     bs2::connection conn = EventManager::get()->add_listener(
             boost::bind(&AIView::set_active_delegate, this, _1),
-            EventData_SetActorActive::event_type_);
+            EventData_SetActorActive::static_event_type());
     conn_list_.push_back(conn);
 }
 
