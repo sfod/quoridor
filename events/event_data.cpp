@@ -1,21 +1,23 @@
 #include "event_data.hpp"
 #include <functional>
 
-// TODO simplify
-template<> EventType EventData_MainMenu::EventData<EventData_MainMenu>::event_type_ = std::hash<std::string>()("MainMenu");
-template<> EventType EventData_Options::EventData<EventData_Options>::event_type_ = std::hash<std::string>()("Options");
-template<> EventType EventData_Game::EventData<EventData_Game>::event_type_ = std::hash<std::string>()("Game");
-template<> EventType EventData_GameTerminated::EventData<EventData_GameTerminated>::event_type_ = std::hash<std::string>()("GameTerminated");
-template<> EventType EventData_GameFinished::EventData<EventData_GameFinished>::event_type_ = std::hash<std::string>()("GameFinished");
-template<> EventType EventData_Quit::EventData<EventData_Quit>::event_type_ = std::hash<std::string>()("Quit");
-template<> EventType EventData_RequestNewActor::EventData<EventData_RequestNewActor>::event_type_ = std::hash<std::string>()("RequestNewActor");
-template<> EventType EventData_NewActor::EventData<EventData_NewActor>::event_type_ = std::hash<std::string>()("NewActor");
-template<> EventType EventData_RequestActorMove::EventData<EventData_RequestActorMove>::event_type_ = std::hash<std::string>()("RequestActorMove");
-template<> EventType EventData_RequestSetWall::EventData<EventData_RequestSetWall>::event_type_ = std::hash<std::string>()("RequestSetWall");
-template<> EventType EventData_MoveActor::EventData<EventData_MoveActor>::event_type_ = std::hash<std::string>()("MoveActor");
-template<> EventType EventData_SetWall::EventData<EventData_SetWall>::event_type_ = std::hash<std::string>()("SetWall");
-template<> EventType EventData_SetActorPossibleMoves::EventData<EventData_SetActorPossibleMoves>::event_type_ = std::hash<std::string>()("SetActorPossibleMoves");
-template<> EventType EventData_SetActorActive::EventData<EventData_SetActorActive>::event_type_ = std::hash<std::string>()("SetActorActive");
+
+typedef std::hash<std::string> strhash;
+
+template<> EventType EventData_MainMenu::Base::event_type_ = strhash()("MainMenu");
+template<> EventType EventData_Options::Base::event_type_ = strhash()("Options");
+template<> EventType EventData_Game::Base::event_type_ = strhash()("Game");
+template<> EventType EventData_GameTerminated::Base::event_type_ = strhash()("GameTerminated");
+template<> EventType EventData_GameFinished::Base::event_type_ = strhash()("GameFinished");
+template<> EventType EventData_Quit::Base::event_type_ = strhash()("Quit");
+template<> EventType EventData_RequestNewActor::Base::event_type_ = strhash()("RequestNewActor");
+template<> EventType EventData_NewActor::Base::event_type_ = strhash()("NewActor");
+template<> EventType EventData_RequestActorMove::Base::event_type_ = strhash()("RequestActorMove");
+template<> EventType EventData_RequestSetWall::Base::event_type_ = strhash()("RequestSetWall");
+template<> EventType EventData_MoveActor::Base::event_type_ = strhash()("MoveActor");
+template<> EventType EventData_SetWall::Base::event_type_ = strhash()("SetWall");
+template<> EventType EventData_SetActorPossibleMoves::Base::event_type_ = strhash()("SetActorPossibleMoves");
+template<> EventType EventData_SetActorActive::Base::event_type_ = strhash()("SetActorActive");
 
 
 EventData_GameFinished::EventData_GameFinished(ActorId actor_id) : actor_id_(actor_id)

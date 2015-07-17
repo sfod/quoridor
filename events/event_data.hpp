@@ -20,6 +20,8 @@ public:
 template<typename Derived>
 class EventData : public EventDataBase {
 public:
+    typedef EventData<Derived> Base;
+
     static EventType static_event_type() { return event_type_; }
     virtual EventType event_type() const override { return event_type_; }
 
