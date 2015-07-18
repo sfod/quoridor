@@ -242,6 +242,7 @@ void GameLogic::create_player(int idx, PlayerType ptype)
         QString(":/configs/player_wall_number_" + QString::number(2) + ".json")  // FIXME use number of players
     };
     std::shared_ptr<Actor> actor = actor_factory_->create_actor(player_cfg_file, component_resources);
+    actor_keeper_->add_actor(actor);
     player_list_.push_back(player_actor_t(actor, ptype));
     player_handler_.add_player(actor->id());
 }
