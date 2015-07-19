@@ -2,7 +2,7 @@
 #include "game/game_app.hpp"
 #include "exceptions/exception.hpp"
 
-const char *GraphComponent::name_ = "GraphComponent";
+template<> const char *GraphComponent::Base::name_ = "GraphComponent";
 
 GraphComponent::GraphComponent(const QJsonObject &component_data) : node_(), goal_nodes_()
 {

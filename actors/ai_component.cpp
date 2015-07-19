@@ -6,7 +6,7 @@
 #include "AI/straight_brain.hpp"
 #include "exceptions/exception.hpp"
 
-const char *AIComponent::name_ = "AIComponent";
+template<> const char *AIComponent::Base::name_ = "AIComponent";
 
 AIComponent::AIComponent(const QJsonObject &component_data)
 {
@@ -31,8 +31,9 @@ void AIComponent::post_init()
     brain_->set_graph(GameApp::get()->game_logic()->graph());
     brain_->set_actor_id(owner()->id());
 
-    auto cid = GraphComponent::id(GraphComponent::name_);
-    auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(owner()->component(cid));
+    auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                owner()->component(GraphComponent::id())
+    );
     brain_->set_goal_nodes(graph_comp->goal_nodes());
 }
 

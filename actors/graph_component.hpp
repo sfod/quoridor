@@ -4,13 +4,11 @@
 #include "graph/graph.hpp"
 #include "graph/wall.hpp"
 
-class GraphComponent : public ActorComponent {
+class GraphComponent : public ActorComponentCRTP<GraphComponent> {
 public:
     explicit GraphComponent(const QJsonObject &component_data);
-    virtual ~GraphComponent() = default;
 
     virtual void post_init() override;
-    virtual const char *name() const override { return name_; }
 
     bool move_actor(const Node &node);
     bool is_at_goal_node() const;
@@ -20,9 +18,6 @@ public:
     Node node() const { return node_; }
     std::list<Node> possible_moves() const;
     std::set<Node> goal_nodes() const { return goal_nodes_; }
-
-public:
-    static const char *name_;
 
 private:
     std::shared_ptr<Graph> graph_;

@@ -38,10 +38,7 @@ void AIView::set_active_delegate(const std::shared_ptr<EventDataBase> &event)
         // FIXME remove actor_keeper from chain
         const std::shared_ptr<Actor> &actor =
                 GameApp::get()->game_logic()->actor_keeper()->actor(active_event->actor_id());
-        ComponentId cid = ActorComponent::id(AIComponent::name_);
-        auto ai_comp = std::dynamic_pointer_cast<AIComponent>(actor->component(cid));
-        if (ai_comp) {
-            ai_comp->make_move();
-        }
+        auto ai_comp = std::dynamic_pointer_cast<AIComponent>(actor->component(AIComponent::id()));
+        ai_comp->make_move();
     }
 }

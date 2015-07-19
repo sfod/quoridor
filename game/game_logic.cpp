@@ -119,8 +119,9 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &ev
 
     const std::shared_ptr<Actor> &actor = actor_keeper_->actor(req_move_event->actor_id());
     if (actor) {
-        ComponentId cid = ActorComponent::id(GraphComponent::name_);
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor->component(cid));
+        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                    actor->component(GraphComponent::id())
+        );
 
         // TODO(?) move this logic into GraphComponent
         if (graph_comp->move_actor(req_move_event->node())) {
@@ -139,8 +140,12 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &ev
                     continue;
                 }
 
-                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(player_actor.first->component(cid));
-                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(aid, gcomp->possible_moves());
+                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
+                            player_actor.first->component(GraphComponent::id())
+                );
+                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
+                            aid, gcomp->possible_moves()
+                );
                 EventManager::get()->queue_event(pos_move_event);
             }
 
@@ -162,8 +167,9 @@ void GameLogic::req_set_wall(const std::shared_ptr<EventDataBase> &event)
     auto req_wall_event = std::dynamic_pointer_cast<EventData_RequestSetWall>(event);
     const std::shared_ptr<Actor> &actor = actor_keeper_->actor(req_wall_event->actor_id());
     if (actor) {
-        ComponentId cid = ActorComponent::id(GraphComponent::name_);
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor->component(cid));
+        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                    actor->component(GraphComponent::id())
+        );
 
         const Wall &wall = req_wall_event->wall();
         if (graph_comp && graph_comp->set_wall(wall)) {
@@ -179,8 +185,12 @@ void GameLogic::req_set_wall(const std::shared_ptr<EventDataBase> &event)
                     continue;
                 }
 
-                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(player_actor.first->component(cid));
-                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(aid, gcomp->possible_moves());
+                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
+                            player_actor.first->component(GraphComponent::id())
+                );
+                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
+                            aid, gcomp->possible_moves()
+                );
                 EventManager::get()->queue_event(pos_move_event);
             }
 
@@ -250,12 +260,12 @@ void GameLogic::create_player(int idx, PlayerType ptype)
 void GameLogic::set_players()
 {
     for (auto actor : player_list_) {
-        ComponentId cid = ActorComponent::id(GraphComponent::name_);
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor.first->component(cid));
-
-        cid = ActorComponent::id(WallComponent::name_);
-        auto wall_comp = std::dynamic_pointer_cast<WallComponent>(actor.first->component(cid));
-
+        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                    actor.first->component(GraphComponent::id())
+        );
+        auto wall_comp = std::dynamic_pointer_cast<WallComponent>(
+                    actor.first->component(WallComponent::id())
+        );
         auto new_event = std::make_shared<EventData_NewActor>(
                     actor.first->id(),
                     graph_comp->node(),
