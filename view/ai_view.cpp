@@ -31,7 +31,7 @@ void AIView::attach(ActorId actor_id)
     actor_id_ = actor_id;
 }
 
-void AIView::set_active_delegate(const std::shared_ptr<EventDataBase> &event)
+void AIView::set_active_delegate(const std::shared_ptr<EventData> &event)
 {
     auto active_event = std::dynamic_pointer_cast<EventData_SetActorActive>(event);
     if (active_event->actor_id() == actor_id_) {

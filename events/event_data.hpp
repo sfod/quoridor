@@ -10,17 +10,17 @@ typedef std::size_t EventType;
 /*
  * Base class for events
  */
-class EventDataBase {
+class EventData {
 public:
-    virtual ~EventDataBase() = default;
+    virtual ~EventData() = default;
     virtual EventType event_type() const = 0;
 };
 
 
 template<typename Derived>
-class EventData : public EventDataBase {
+class EventDataCRTP : public EventData {
 public:
-    typedef EventData<Derived> Base;
+    typedef EventDataCRTP<Derived> Base;
 
     static EventType static_event_type() { return event_type_; }
     virtual EventType event_type() const override { return event_type_; }

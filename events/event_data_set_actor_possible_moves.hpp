@@ -2,7 +2,7 @@
 
 #include "event_data.hpp"
 
-class EventData_SetActorPossibleMoves : public EventData<EventData_SetActorPossibleMoves> {
+class EventData_SetActorPossibleMoves : public EventDataCRTP<EventData_SetActorPossibleMoves> {
 public:
     EventData_SetActorPossibleMoves(ActorId actor_id,
             const std::list<Node> &possible_moves);

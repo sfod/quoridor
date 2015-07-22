@@ -54,7 +54,7 @@ int GameApp::run()
     return qapp_.exec();
 }
 
-void GameApp::quit_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameApp::quit_delegate(const std::shared_ptr<EventData> &event)
 {
     (void) event;
     QGuiApplication::quit();

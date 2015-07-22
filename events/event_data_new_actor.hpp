@@ -2,7 +2,7 @@
 
 #include "event_data.hpp"
 
-class EventData_NewActor : public EventData<EventData_NewActor> {
+class EventData_NewActor : public EventDataCRTP<EventData_NewActor> {
 public:
     explicit EventData_NewActor(ActorId actor_id, const Node &node, const std::list<Node> &possible_moves, int wall_num);
     ActorId actor_id() const;

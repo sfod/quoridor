@@ -2,5 +2,5 @@
 
 #include "event_data.hpp"
 
-class EventData_Options : public EventData<EventData_Options> {
+class EventData_Options : public EventDataCRTP<EventData_Options> {
 };

@@ -2,5 +2,5 @@
 
 #include "event_data.hpp"
 
-class EventData_MainMenu : public EventData<EventData_MainMenu> {
+class EventData_MainMenu : public EventDataCRTP<EventData_MainMenu> {
 };

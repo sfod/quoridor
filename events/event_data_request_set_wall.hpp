@@ -2,7 +2,7 @@
 
 #include "event_data.hpp"
 
-class EventData_RequestSetWall : public EventData<EventData_RequestSetWall> {
+class EventData_RequestSetWall : public EventDataCRTP<EventData_RequestSetWall> {
 public:
     EventData_RequestSetWall(ActorId actor_id, const Wall &wall);
     ActorId actor_id() const;
