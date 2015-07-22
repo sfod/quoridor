@@ -4,10 +4,6 @@ PlayerHandler::PlayerHandler() : player_list_(), current_player_(-1)
 {
 }
 
-PlayerHandler::~PlayerHandler()
-{
-}
-
 bool PlayerHandler::add_player(ActorId actor_id)
 {
     player_list_.push_back(actor_id);

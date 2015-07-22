@@ -11,7 +11,7 @@ typedef unsigned long ActorId;
 class Actor {
 public:
     Actor(ActorId id, QJsonObject actor_data);
-    ~Actor() = default;
+    virtual ~Actor() = default;
 
     void post_init();
     void add_component(std::shared_ptr<ActorComponent> &component);

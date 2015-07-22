@@ -12,7 +12,6 @@ class OptionsView : public QtView {
 
 public:
     explicit OptionsView(QObject *qroot, QObject *qparent = nullptr);
-    virtual ~OptionsView() = default;
 
     virtual void on_msg() override;
     virtual void on_update() override;

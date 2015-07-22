@@ -8,7 +8,6 @@
 class WallGrid {
 public:
     explicit WallGrid(int size);
-    virtual ~WallGrid() = default;
 
     int add_wall(const Wall &wall);
     bool add_tmp_wall(const Wall &wall) const;

@@ -1,14 +1,6 @@
 #include "board_graph.hpp"
 #include "exceptions/exception.hpp"
 
-FilterEdges::FilterEdges() : edges_()
-{
-}
-
-FilterEdges::~FilterEdges()
-{
-}
-
 void FilterEdges::add_edge(const edge_descriptor &e)
 {
     edges_.insert(e);
@@ -104,10 +96,6 @@ BoardGraph::BoardGraph(int row_num, int col_num)
         g_[e].weight = 1;
         g_[e].is_tmp = false;
     }
-}
-
-BoardGraph::~BoardGraph()
-{
 }
 
 bool BoardGraph::remove_edges(

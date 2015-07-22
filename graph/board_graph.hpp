@@ -43,9 +43,6 @@ typedef boost::graph_traits<graph_t>::in_edge_iterator in_edge_iterator;
 
 class FilterEdges {
 public:
-    FilterEdges();
-    ~FilterEdges();
-
     void add_edge(const edge_descriptor &e);
     void rm_edge(const edge_descriptor &e);
     bool exists(const edge_descriptor &e) const;
@@ -140,7 +137,6 @@ struct goal_nodes_t {
 class BoardGraph {
 public:
     BoardGraph(int row_num, int col_num);
-    ~BoardGraph();
 
     bool remove_edges(const std::vector<std::pair<Node, Node>> &node_pair_list,
             const std::vector<goal_nodes_t> &goal_nodes_list, bool check_only);

@@ -6,7 +6,6 @@
 class PlayerHandler {
 public:
     PlayerHandler();
-    virtual ~PlayerHandler();
 
     bool add_player(ActorId actor_id);
     bool remove_player(ActorId actor_id);

@@ -8,7 +8,6 @@ class QtView : public QObject, public IView {
 
 public:
     explicit QtView(QObject *qparent = nullptr);
-    virtual ~QtView() = default;
 
     virtual void on_msg() override = 0;
     virtual void on_update() override = 0;

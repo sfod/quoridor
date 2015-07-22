@@ -9,7 +9,6 @@ class MainMenuView : public QtView {
 
 public:
     explicit MainMenuView(QObject *qroot, QObject *qparent = nullptr);
-    virtual ~MainMenuView() = default;
 
     virtual void on_msg() override;
     virtual void on_update() override;
