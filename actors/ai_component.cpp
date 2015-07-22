@@ -1,4 +1,3 @@
-#include <QObject>  // include it to avoid error with boost::Q_FOREACH
 #include "ai_component.hpp"
 #include "game/game_app.hpp"
 #include "graph_component.hpp"
