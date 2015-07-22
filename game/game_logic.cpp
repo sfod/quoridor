@@ -9,12 +9,27 @@
 #include "actors/graph_component.hpp"
 #include "actors/wall_component.hpp"
 
+#include "events/event_data_main_menu.hpp"
+#include "events/event_data_options.hpp"
+#include "events/event_data_game.hpp"
+#include "events/event_data_new_actor.hpp"
+#include "events/event_data_request_new_actor.hpp"
+#include "events/event_data_request_actor_move.hpp"
+#include "events/event_data_request_set_wall.hpp"
+#include "events/event_data_move_actor.hpp"
+#include "events/event_data_set_wall.hpp"
+#include "events/event_data_set_actor_possible_moves.hpp"
+#include "events/event_data_set_actor_active.hpp"
+#include "events/event_data_game_finished.hpp"
+#include "events/event_data_game_terminated.hpp"
+
 GameLogic::GameLogic(QObject *qroot)
     : state_(LogicState::LS_Uninitialized), qroot_(qroot), conn_list_(),
     actor_factory_(new ActorFactory), actor_keeper_(new ActorKeeper),
     player_list_(), graph_(new Graph), view_list_(), player_idx_(1),
     player_handler_()
 {
+    register_delegates();
 }
 
 GameLogic::~GameLogic()
@@ -22,12 +37,6 @@ GameLogic::~GameLogic()
     for (auto conn : conn_list_) {
         conn.disconnect();
     }
-}
-
-bool GameLogic::init()
-{
-    register_delegates();
-    return true;
 }
 
 void GameLogic::change_state(LogicState state)
@@ -39,15 +48,11 @@ void GameLogic::change_state(LogicState state)
         break;
     case LogicState::LS_MainMenu:
         view.reset(new MainMenuView(qroot_));
-        if (view->init()) {
-            change_view(view);
-        }
+        change_view(view);
         break;
     case LogicState::LS_Options:
         view.reset(new OptionsView(qroot_));
-        if (view->init()) {
-            change_view(view);
-        }
+        change_view(view);
         break;
     case LogicState::LS_Game: {
         view_list_.clear();
@@ -67,10 +72,8 @@ void GameLogic::change_state(LogicState state)
                 break;
             }
 
-            if (view->init()) {
-                add_view(view);
-                view->attach(actor.first->id());
-            }
+            add_view(view);
+            view->attach(actor.first->id());
         }
         set_players();
         break;
@@ -95,46 +98,47 @@ void GameLogic::change_view(std::shared_ptr<IView> view)
     view_list_.push_back(view);
 }
 
-void GameLogic::main_menu_win_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
+void GameLogic::main_menu_win_delegate(const std::shared_ptr<EventData> &/*event*/)
 {
     change_state(LogicState::LS_MainMenu);
 }
 
-void GameLogic::options_win_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
+void GameLogic::options_win_delegate(const std::shared_ptr<EventData> &/*event*/)
 {
     change_state(LogicState::LS_Options);
 }
 
-void GameLogic::game_win_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
+void GameLogic::game_win_delegate(const std::shared_ptr<EventData> &/*event*/)
 {
     change_state(LogicState::LS_Game);
 }
 
-void GameLogic::game_terminated_delegate(const std::shared_ptr<EventDataBase> &/*event*/)
+void GameLogic::game_terminated_delegate(const std::shared_ptr<EventData> &/*event*/)
 {
     player_list_.clear();
     player_idx_ = 1;
     player_handler_.clear();
 }
 
-void GameLogic::req_actor_new_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameLogic::req_actor_new_delegate(const std::shared_ptr<EventData> &event)
 {
     auto req_new_event = std::dynamic_pointer_cast<EventData_RequestNewActor>(event);
     create_player(player_idx_, req_new_event->player_type());
     ++player_idx_;
 }
 
-void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventData> &event)
 {
     auto req_move_event = std::dynamic_pointer_cast<EventData_RequestActorMove>(event);
 
     const std::shared_ptr<Actor> &actor = actor_keeper_->actor(req_move_event->actor_id());
     if (actor) {
-        ComponentId cid = ActorComponent::id(GraphComponent::name_);
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor->component(cid));
+        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                    actor->component(GraphComponent::id())
+        );
 
         // TODO(?) move this logic into GraphComponent
-        if (graph_comp && graph_comp->move_actor(req_move_event->node())) {
+        if (graph_comp->move_actor(req_move_event->node())) {
             // update active player position
             auto move_event = std::make_shared<EventData_MoveActor>(
                     actor->id(),
@@ -150,8 +154,12 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &ev
                     continue;
                 }
 
-                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(player_actor.first->component(cid));
-                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(aid, gcomp->possible_moves());
+                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
+                            player_actor.first->component(GraphComponent::id())
+                );
+                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
+                            aid, gcomp->possible_moves()
+                );
                 EventManager::get()->queue_event(pos_move_event);
             }
 
@@ -168,19 +176,19 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventDataBase> &ev
     }
 }
 
-void GameLogic::req_set_wall(const std::shared_ptr<EventDataBase> &event)
+void GameLogic::req_set_wall(const std::shared_ptr<EventData> &event)
 {
     auto req_wall_event = std::dynamic_pointer_cast<EventData_RequestSetWall>(event);
     const std::shared_ptr<Actor> &actor = actor_keeper_->actor(req_wall_event->actor_id());
     if (actor) {
-        ComponentId cid = ActorComponent::id(GraphComponent::name_);
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor->component(cid));
+        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                    actor->component(GraphComponent::id())
+        );
 
         const Wall &wall = req_wall_event->wall();
         if (graph_comp && graph_comp->set_wall(wall)) {
             // update active player position
-            auto set_wall_event = std::make_shared<EventData_SetWall>(
-                    actor->id(), wall);
+            auto set_wall_event = std::make_shared<EventData_SetWall>(actor->id(), wall);
             EventManager::get()->queue_event(set_wall_event);
 
             // update other players possible moves
@@ -191,8 +199,12 @@ void GameLogic::req_set_wall(const std::shared_ptr<EventDataBase> &event)
                     continue;
                 }
 
-                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(player_actor.first->component(cid));
-                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(aid, gcomp->possible_moves());
+                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
+                            player_actor.first->component(GraphComponent::id())
+                );
+                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
+                            aid, gcomp->possible_moves()
+                );
                 EventManager::get()->queue_event(pos_move_event);
             }
 
@@ -212,37 +224,37 @@ void GameLogic::register_delegates()
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::main_menu_win_delegate, this, _1),
-            EventData_MainMenu::event_type_);
+            EventData_MainMenu::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::options_win_delegate, this, _1),
-            EventData_Options::event_type_);
+            EventData_Options::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::game_win_delegate, this, _1),
-            EventData_Game::event_type_);
+            EventData_Game::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::game_terminated_delegate, this, _1),
-            EventData_GameTerminated::event_type_);
+            EventData_GameTerminated::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::req_actor_new_delegate, this, _1),
-            EventData_RequestNewActor::event_type_);
+            EventData_RequestNewActor::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::req_actor_move_delegate, this, _1),
-            EventData_RequestActorMove::event_type_);
+            EventData_RequestActorMove::static_event_type());
     conn_list_.push_back(conn);
 
     conn = EventManager::get()->add_listener(
             boost::bind(&GameLogic::req_set_wall, this, _1),
-            EventData_RequestSetWall::event_type_);
+            EventData_RequestSetWall::static_event_type());
     conn_list_.push_back(conn);
 }
 
@@ -253,32 +265,21 @@ void GameLogic::create_player(int idx, PlayerType ptype)
         QString(":/configs/player_position_" + QString::number(idx) + ".json"),
         QString(":/configs/player_wall_number_" + QString::number(2) + ".json")  // FIXME use number of players
     };
-    std::shared_ptr<Actor> actor = actor_factory_->create_actor(player_cfg_file,
-            component_resources);
-    if (actor) {
-        player_actor_t player_actor = {actor, ptype};
-        player_list_.push_back(player_actor);
-        player_handler_.add_player(actor->id());
-    }
+    std::shared_ptr<Actor> actor = actor_factory_->create_actor(player_cfg_file, component_resources);
+    actor_keeper_->add_actor(actor);
+    player_list_.push_back(player_actor_t(actor, ptype));
+    player_handler_.add_player(actor->id());
 }
 
 void GameLogic::set_players()
 {
     for (auto actor : player_list_) {
-        ComponentId cid = ActorComponent::id(GraphComponent::name_);
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(actor.first->component(cid));
-        // FIXME
-        if (!graph_comp) {
-            throw std::runtime_error("Invalid player object: no Graph component found");
-        }
-
-        cid = ActorComponent::id(WallComponent::name_);
-        auto wall_comp = std::dynamic_pointer_cast<WallComponent>(actor.first->component(cid));
-        if (!wall_comp) {
-            throw std::runtime_error("Invalid player object: no Wall component found");
-        }
-
-        // TODO pass number of walls (get whole number from config file)
+        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                    actor.first->component(GraphComponent::id())
+        );
+        auto wall_comp = std::dynamic_pointer_cast<WallComponent>(
+                    actor.first->component(WallComponent::id())
+        );
         auto new_event = std::make_shared<EventData_NewActor>(
                     actor.first->id(),
                     graph_comp->node(),

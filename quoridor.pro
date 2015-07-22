@@ -8,7 +8,6 @@ SOURCES += main.cpp \
     game/game_logic.cpp \
     view/main_menu_view.cpp \
     events/event_manager.cpp \
-    events/event_data.cpp \
     events/event_caller.cpp \
     actors/actor.cpp \
     actors/actor_factory.cpp \
@@ -27,7 +26,21 @@ SOURCES += main.cpp \
     AI/straight_brain.cpp \
     graph/wall.cpp \
     actors/wall_component.cpp \
-    graph/wall_grid.cpp
+    graph/wall_grid.cpp \
+    events/event_data_main_menu.cpp \
+    events/event_data_options.cpp \
+    events/event_data_game.cpp \
+    events/event_data_game_terminated.cpp \
+    events/event_data_game_finished.cpp \
+    events/event_data_quit.cpp \
+    events/event_data_request_new_actor.cpp \
+    events/event_data_new_actor.cpp \
+    events/event_data_request_actor_move.cpp \
+    events/event_data_request_set_wall.cpp \
+    events/event_data_move_actor.cpp \
+    events/event_data_set_wall.cpp \
+    events/event_data_set_actor_possible_moves.cpp \
+    events/event_data_set_actor_active.cpp
 
 RESOURCES += qml.qrc \
     configs.qrc \
@@ -67,4 +80,19 @@ HEADERS += \
     AI/straight_brain.hpp \
     graph/wall.hpp \
     actors/wall_component.hpp \
-    graph/wall_grid.hpp
+    graph/wall_grid.hpp \
+    exceptions/exception.hpp \
+    events/event_data_main_menu.hpp \
+    events/event_data_options.hpp \
+    events/event_data_game.hpp \
+    events/event_data_game_terminated.hpp \
+    events/event_data_game_finished.hpp \
+    events/event_data_quit.hpp \
+    events/event_data_request_new_actor.hpp \
+    events/event_data_new_actor.hpp \
+    events/event_data_request_actor_move.hpp \
+    events/event_data_request_set_wall.hpp \
+    events/event_data_move_actor.hpp \
+    events/event_data_set_wall.hpp \
+    events/event_data_set_actor_possible_moves.hpp \
+    events/event_data_set_actor_active.hpp

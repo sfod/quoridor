@@ -1,12 +1,8 @@
 #include "straight_brain.hpp"
 #include "events/event_manager.hpp"
+#include "events/event_data_request_actor_move.hpp"
 
 StraightBrain::StraightBrain() : actor_id_(-1), graph_(), goal_nodes_()
-{
-
-}
-
-StraightBrain::~StraightBrain()
 {
 }
 

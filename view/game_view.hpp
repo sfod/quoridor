@@ -5,25 +5,23 @@
 #include "events/event_manager.hpp"
 #include "graph/wall.hpp"
 
-class GameView : public QtView
-{
+class GameView : public QtView {
     Q_OBJECT
 
 public:
     explicit GameView(QObject *qroot, bool is_main, QObject *qparent = 0);
     virtual ~GameView();
 
-    bool init();
-    virtual void on_msg();
-    virtual void on_update();
-    virtual void attach(ActorId actor_id);
+    virtual void on_msg() override;
+    virtual void on_update() override;
+    virtual void attach(ActorId actor_id) override;
 
-    void new_actor_delegate(const std::shared_ptr<EventDataBase> &event);
-    void move_actor_delegate(const std::shared_ptr<EventDataBase> &event);
-    void set_actor_possible_moves_delegate(const std::shared_ptr<EventDataBase> &event);
-    void set_wall_delegate(const std::shared_ptr<EventDataBase> &event);
-    void set_active_delegate(const std::shared_ptr<EventDataBase> &event);
-    void game_finished_delegate(const std::shared_ptr<EventDataBase> &event);
+    void new_actor_delegate(const std::shared_ptr<EventData> &event);
+    void move_actor_delegate(const std::shared_ptr<EventData> &event);
+    void set_actor_possible_moves_delegate(const std::shared_ptr<EventData> &event);
+    void set_wall_delegate(const std::shared_ptr<EventData> &event);
+    void set_active_delegate(const std::shared_ptr<EventData> &event);
+    void game_finished_delegate(const std::shared_ptr<EventData> &event);
 
 public slots:
     void on_pawn_dropped(int actor_id, int idx);
@@ -32,7 +30,7 @@ public slots:
 
 private:
     virtual QObject *find_object_by_name(const char *name) const override;
-    bool connect_objects();
+    void connect_objects();
 
 private:
     std::list<bs2::connection> conn_list_;

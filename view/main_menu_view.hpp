@@ -8,12 +8,10 @@ class MainMenuView : public QtView {
     Q_OBJECT
 
 public:
-    explicit MainMenuView(QObject *qroot, QObject *qparent = 0);
-    virtual ~MainMenuView() = default;
+    explicit MainMenuView(QObject *qroot, QObject *qparent = nullptr);
 
-    bool init();
-    virtual void on_msg();
-    virtual void on_update();
+    virtual void on_msg() override;
+    virtual void on_update() override;
     virtual void attach(ActorId actor_id);
 
 public slots:

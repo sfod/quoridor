@@ -8,12 +8,11 @@ public:
     AIView();
     virtual ~AIView();
 
-    virtual bool init() override;
     virtual void on_msg() override;
     virtual void on_update() override;
     virtual void attach(ActorId actor_id) override;
 
-    void set_active_delegate(const std::shared_ptr<EventDataBase> &event);
+    void set_active_delegate(const std::shared_ptr<EventData> &event);
 
 private:
     std::list<bs2::connection> conn_list_;

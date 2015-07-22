@@ -2,6 +2,11 @@
 
 int main(int argc, char **argv)
 {
-    GameApp app;
-    return app.run(argc, argv);
+    try {
+        GameApp app(argc, argv);
+        return app.run();
+    }
+    catch (...) {
+        return EXIT_FAILURE;
+    }
 }

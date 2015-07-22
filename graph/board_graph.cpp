@@ -1,12 +1,5 @@
 #include "board_graph.hpp"
-
-FilterEdges::FilterEdges() : edges_()
-{
-}
-
-FilterEdges::~FilterEdges()
-{
-}
+#include "exceptions/exception.hpp"
 
 void FilterEdges::add_edge(const edge_descriptor &e)
 {
@@ -66,8 +59,7 @@ BoardGraph::BoardGraph(int row_num, int col_num)
 #endif
 {
     if ((row_num <= 0) || (col_num <= 0)) {
-//        throw Exception("invalid size");
-        return;
+        throw invalid_argument_error();
     }
 
     g_ = graph_t(row_num_ * col_num_);
@@ -104,10 +96,6 @@ BoardGraph::BoardGraph(int row_num, int col_num)
         g_[e].weight = 1;
         g_[e].is_tmp = false;
     }
-}
-
-BoardGraph::~BoardGraph()
-{
 }
 
 bool BoardGraph::remove_edges(
@@ -400,10 +388,7 @@ bool BoardGraph::check_paths_to_goal_nodes(
             fe.add_edge(e);
         }
         else {
-//            throw Exception("graph is inconsistent: temporary edge "
-//                    + std::to_string(edge_inodes.first) + ":"
-//                    + std::to_string(edge_inodes.second) + " does not exist");
-            return false;
+            throw graph_state_error();
         }
     }
 
@@ -579,11 +564,7 @@ bool BoardGraph::unblock_edge(int from_inode, int to_inode, bool is_tmp, int int
 
 bool BoardGraph::is_inode_valid(int inode) const
 {
-    if ((inode < 0)
-            || (static_cast<size_t>(inode) >= boost::num_vertices(g_))) {
-        return false;
-    }
-    return true;
+    return ((inode >= 0) && (static_cast<size_t>(inode) < boost::num_vertices(g_)));
 }
 
 std::vector<edge_descriptor> BoardGraph::find_tmp_edges(int inode) const

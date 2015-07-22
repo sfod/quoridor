@@ -1,11 +1,62 @@
 #include "game_view.hpp"
 #include <QQuickItem>
-#include <QDebug>
+#include "events/event_data_options.hpp"
+#include "events/event_data_new_actor.hpp"
+#include "events/event_data_move_actor.hpp"
+#include "events/event_data_set_wall.hpp"
+#include "events/event_data_set_actor_possible_moves.hpp"
+#include "events/event_data_set_actor_active.hpp"
+#include "events/event_data_game_finished.hpp"
+#include "events/event_data_new_actor.hpp"
+#include "events/event_data_request_actor_move.hpp"
+#include "events/event_data_request_set_wall.hpp"
+#include "events/event_data_game_terminated.hpp"
+#include "exceptions/exception.hpp"
 
 GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
     : QtView(qparent), conn_list_(), qroot_(qroot), qboard_(), qrecorder_(),
       qbutton_(), actor_id_(-1), is_main_(is_main)
 {
+    connect_objects();
+
+    if (is_main_) {
+        connect_button("buttonBackToOptions", SLOT(button_back_clicked()), &qbutton_);
+    }
+
+    bs2::connection conn;
+    conn = EventManager::get()->add_listener(
+            boost::bind(&GameView::new_actor_delegate, this, _1),
+            EventData_NewActor::static_event_type());
+    conn_list_.push_back(conn);
+
+    conn = EventManager::get()->add_listener(
+            boost::bind(&GameView::move_actor_delegate, this, _1),
+            EventData_MoveActor::static_event_type());
+    conn_list_.push_back(conn);
+
+    conn = EventManager::get()->add_listener(
+            boost::bind(&GameView::set_wall_delegate, this, _1),
+            EventData_SetWall::static_event_type());
+    conn_list_.push_back(conn);
+
+    conn = EventManager::get()->add_listener(
+            boost::bind(&GameView::set_actor_possible_moves_delegate, this, _1),
+            EventData_SetActorPossibleMoves::static_event_type());
+
+    conn = EventManager::get()->add_listener(
+            boost::bind(&GameView::set_active_delegate, this, _1),
+            EventData_SetActorActive::static_event_type());
+    conn_list_.push_back(conn);
+
+    conn = EventManager::get()->add_listener(
+            boost::bind(&GameView::game_finished_delegate, this, _1),
+            EventData_GameFinished::static_event_type());
+    conn_list_.push_back(conn);
+
+    if (is_main_) {
+        QMetaObject::invokeMethod(qboard_, "init");
+        QMetaObject::invokeMethod(qrecorder_, "init");
+    }
 }
 
 GameView::~GameView()
@@ -13,54 +64,6 @@ GameView::~GameView()
     for (auto conn : conn_list_) {
         conn.disconnect();
     }
-}
-
-bool GameView::init()
-{
-    if (!connect_objects()) {
-        return false;
-    }
-
-    if (is_main_ && !connect_button("buttonBackToOptions", SLOT(button_back_clicked()), &qbutton_)) {
-        return false;
-    }
-
-    bs2::connection conn;
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::new_actor_delegate, this, _1),
-            EventData_NewActor::event_type_);
-    conn_list_.push_back(conn);
-
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::move_actor_delegate, this, _1),
-            EventData_MoveActor::event_type_);
-    conn_list_.push_back(conn);
-
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::set_wall_delegate, this, _1),
-            EventData_SetWall::event_type_);
-    conn_list_.push_back(conn);
-
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::set_actor_possible_moves_delegate, this, _1),
-            EventData_SetActorPossibleMoves::event_type_);
-
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::set_active_delegate, this, _1),
-            EventData_SetActorActive::event_type_);
-    conn_list_.push_back(conn);
-
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::game_finished_delegate, this, _1),
-            EventData_GameFinished::event_type_);
-    conn_list_.push_back(conn);
-
-    if (is_main_) {
-        QMetaObject::invokeMethod(qboard_, "init");
-        QMetaObject::invokeMethod(qrecorder_, "init");
-    }
-
-    return true;
 }
 
 void GameView::on_msg()
@@ -76,7 +79,7 @@ void GameView::attach(ActorId actor_id)
     actor_id_ = actor_id;
 }
 
-void GameView::new_actor_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameView::new_actor_delegate(const std::shared_ptr<EventData> &event)
 {
     auto new_actor_event = std::dynamic_pointer_cast<EventData_NewActor>(event);
     if (is_main_) {
@@ -99,7 +102,7 @@ void GameView::new_actor_delegate(const std::shared_ptr<EventDataBase> &event)
     }
 }
 
-void GameView::move_actor_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameView::move_actor_delegate(const std::shared_ptr<EventData> &event)
 {
     auto move_event = std::dynamic_pointer_cast<EventData_MoveActor>(event);
     if (is_main_) {
@@ -124,7 +127,7 @@ void GameView::move_actor_delegate(const std::shared_ptr<EventDataBase> &event)
     }
 }
 
-void GameView::set_actor_possible_moves_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameView::set_actor_possible_moves_delegate(const std::shared_ptr<EventData> &event)
 {
     auto pos_move_event = std::dynamic_pointer_cast<EventData_SetActorPossibleMoves>(event);
     if (is_main_) {
@@ -140,7 +143,7 @@ void GameView::set_actor_possible_moves_delegate(const std::shared_ptr<EventData
     }
 }
 
-void GameView::set_wall_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameView::set_wall_delegate(const std::shared_ptr<EventData> &event)
 {
     auto set_wall_event = std::dynamic_pointer_cast<EventData_SetWall>(event);
     const Wall &wall = set_wall_event->wall();
@@ -157,7 +160,7 @@ void GameView::set_wall_delegate(const std::shared_ptr<EventDataBase> &event)
     }
 }
 
-void GameView::set_active_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameView::set_active_delegate(const std::shared_ptr<EventData> &event)
 {
     auto active_event = std::dynamic_pointer_cast<EventData_SetActorActive>(event);
     if (active_event->actor_id() == actor_id_) {
@@ -166,7 +169,7 @@ void GameView::set_active_delegate(const std::shared_ptr<EventDataBase> &event)
     }
 }
 
-void GameView::game_finished_delegate(const std::shared_ptr<EventDataBase> &event)
+void GameView::game_finished_delegate(const std::shared_ptr<EventData> &event)
 {
     if (is_main_) {
         auto game_finished_event = std::dynamic_pointer_cast<EventData_GameFinished>(event);
@@ -223,24 +226,26 @@ QObject *GameView::find_object_by_name(const char *name) const
     return qroot_->findChild<QObject*>(name);
 }
 
-bool GameView::connect_objects()
+void GameView::connect_objects()
 {
     qboard_ = find_object_by_name("boardFrame");
-    if (qboard_ == NULL) {
-        return false;
+    if (!qboard_) {
+        throw qml_missing_element_error();
     }
 
     qrecorder_ = find_object_by_name("moveRecorder");
-    if (qrecorder_ == NULL) {
-        return false;
+    if (!qrecorder_) {
+        throw qml_missing_element_error();
     }
 
-    QObject::connect(
+    if (!QObject::connect(
             qboard_, SIGNAL(pawnDropped(int, int)),
-            this, SLOT(on_pawn_dropped(int, int))
-    );
-    QObject::connect(
+            this, SLOT(on_pawn_dropped(int, int)))) {
+        throw qml_connect_error();
+    }
+    if (!QObject::connect(
             qboard_, SIGNAL(wallDropped(int, int, int, int)),
-            this, SLOT(on_wall_dropped(int, int, int, int)));
-    return true;
+            this, SLOT(on_wall_dropped(int, int, int, int)))) {
+        throw qml_connect_error();
+    }
 }

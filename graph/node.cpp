@@ -1,12 +1,19 @@
 #include "node.hpp"
 #include <tuple>
+#include "exceptions/exception.hpp"
 
 Node::Node() : row_(-1), col_(-1)
 {
 }
 
-Node::Node(int row, int col) : row_(row), col_(col)
+Node::Node(int row, int col)
 {
+    if ((row < 0) || (col < 0)) {
+        throw invalid_argument_error();
+    }
+
+    row_ = row;
+    col_ = col;
 }
 
 Node::Node(const Node &node)

@@ -1,36 +1,41 @@
 #include "graph_component.hpp"
 #include "game/game_app.hpp"
+#include "exceptions/exception.hpp"
 
-const char *GraphComponent::name_ = "GraphComponent";
+template<> const char *GraphComponent::Base::name_ = "GraphComponent";
 
-GraphComponent::GraphComponent() : node_(), goal_nodes_()
+GraphComponent::GraphComponent(const QJsonObject &component_data) : node_(), goal_nodes_()
 {
-    graph_ = GameApp::get()->game_logic()->graph();
-}
+    QJsonValue json_position = component_data["position"];
+    QJsonValue json_goals = component_data["goals"];
 
-bool GraphComponent::init(const QJsonObject &component_data)
-{
-    // set player initial position
-    QJsonArray pos = component_data["position"].toArray();
-    if (pos.size() != 2) {
-        return false;
+    if ((!json_position.isArray()) || (!json_goals.isArray())) {
+        throw invalid_json_error();
     }
-    node_.set_row(pos.at(0).toInt());
-    node_.set_col(pos.at(1).toInt());
+
+    graph_ = GameApp::get()->game_logic()->graph();
+
+    // set player initial position
+    QJsonArray position = json_position.toArray();
+    if (position.size() != 2) {
+        throw invalid_json_error();
+    }
+    node_.set_row(position.at(0).toInt());
+    node_.set_col(position.at(1).toInt());
 
     // set player goal nodes
-    bool rc = true;
-    QJsonArray goals = component_data["goals"].toArray();
-    for (const auto &goal : goals) {
-        QJsonArray g = goal.toArray();
-        if (g.size() != 2) {
-            rc = false;
-            break;
+    QJsonArray goals = json_goals.toArray();
+    for (const auto &json_goal : goals) {
+        if (!json_goal.isArray()) {
+            throw invalid_json_error();
         }
-        goal_nodes_.emplace(g.at(0).toInt(), g.at(1).toInt());
-    }
 
-    return rc;
+        QJsonArray goal = json_goal.toArray();
+        if (goal.size() != 2) {
+            throw invalid_json_error();
+        }
+        goal_nodes_.emplace(goal.at(0).toInt(), goal.at(1).toInt());
+    }
 }
 
 void GraphComponent::post_init()

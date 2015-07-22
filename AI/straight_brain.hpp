@@ -6,7 +6,6 @@
 class StraightBrain : public Brain {
 public:
     StraightBrain();
-    ~StraightBrain();
 
     virtual void make_move() override;
     virtual void set_actor_id(ActorId actor_id) { actor_id_ = actor_id; }

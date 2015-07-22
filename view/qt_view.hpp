@@ -7,14 +7,13 @@ class QtView : public QObject, public IView {
     Q_OBJECT
 
 public:
-    explicit QtView(QObject *qparent = 0);
-    virtual bool init() = 0;
-    virtual void on_msg() = 0;
-    virtual void on_update() = 0;
-    virtual void attach(ActorId actor_id) = 0;
+    explicit QtView(QObject *qparent = nullptr);
+
+    virtual void on_msg() override = 0;
+    virtual void on_update() override = 0;
+    virtual void attach(ActorId actor_id) override = 0;
 
 protected:
     virtual QObject *find_object_by_name(const char *name) const = 0;
-    virtual bool connect_button(const char *name, const char *slot,
-            QObject **obj = NULL);
+    virtual void connect_button(const char *name, const char *slot, QObject **obj = NULL);
 };

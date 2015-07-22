@@ -3,11 +3,9 @@
 #include <list>
 #include "actors/actor.hpp"
 
-class PlayerHandler
-{
+class PlayerHandler {
 public:
     PlayerHandler();
-    virtual ~PlayerHandler();
 
     bool add_player(ActorId actor_id);
     bool remove_player(ActorId actor_id);
