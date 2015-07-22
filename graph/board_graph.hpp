@@ -73,8 +73,7 @@ private:
 
 // visitor that terminates when we find the goal
 template <class Vertex>
-class astar_goal_visitor : public boost::default_astar_visitor
-{
+class astar_goal_visitor : public boost::default_astar_visitor {
 public:
     astar_goal_visitor(Vertex goal);
     template<class Graph> void examine_vertex(Vertex u, Graph& /* g */);

@@ -2,8 +2,7 @@
 
 #include "actors/actor.hpp"
 
-class IView
-{
+class IView {
 public:
     virtual ~IView() = default;
 

@@ -4,8 +4,7 @@
 #include <memory>
 #include "actor.hpp"
 
-class ActorKeeper
-{
+class ActorKeeper {
 public:
     ActorKeeper();
     ~ActorKeeper();

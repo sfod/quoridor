@@ -5,8 +5,7 @@
 #include "events/event_manager.hpp"
 #include "graph/wall.hpp"
 
-class GameView : public QtView
-{
+class GameView : public QtView {
     Q_OBJECT
 
 public:
