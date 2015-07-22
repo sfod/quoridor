@@ -7,6 +7,7 @@
 
 #include "events/event_manager.hpp"
 #include "events/event_caller.hpp"
+#include "events/event_data_quit.hpp"
 #include "graph/wall.hpp"
 #include "exceptions/exception.hpp"
 

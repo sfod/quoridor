@@ -2,6 +2,7 @@
 #include "ai_view.hpp"
 #include "game/game_app.hpp"
 #include "actors/ai_component.hpp"
+#include "events/event_data_set_actor_active.hpp"
 
 AIView::AIView() : conn_list_(), actor_id_(-1)
 {

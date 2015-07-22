@@ -1,5 +1,16 @@
 #include "game_view.hpp"
 #include <QQuickItem>
+#include "events/event_data_options.hpp"
+#include "events/event_data_new_actor.hpp"
+#include "events/event_data_move_actor.hpp"
+#include "events/event_data_set_wall.hpp"
+#include "events/event_data_set_actor_possible_moves.hpp"
+#include "events/event_data_set_actor_active.hpp"
+#include "events/event_data_game_finished.hpp"
+#include "events/event_data_new_actor.hpp"
+#include "events/event_data_request_actor_move.hpp"
+#include "events/event_data_request_set_wall.hpp"
+#include "events/event_data_game_terminated.hpp"
 #include "exceptions/exception.hpp"
 
 GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)

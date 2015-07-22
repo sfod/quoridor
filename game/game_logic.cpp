@@ -9,6 +9,20 @@
 #include "actors/graph_component.hpp"
 #include "actors/wall_component.hpp"
 
+#include "events/event_data_main_menu.hpp"
+#include "events/event_data_options.hpp"
+#include "events/event_data_game.hpp"
+#include "events/event_data_new_actor.hpp"
+#include "events/event_data_request_new_actor.hpp"
+#include "events/event_data_request_actor_move.hpp"
+#include "events/event_data_request_set_wall.hpp"
+#include "events/event_data_move_actor.hpp"
+#include "events/event_data_set_wall.hpp"
+#include "events/event_data_set_actor_possible_moves.hpp"
+#include "events/event_data_set_actor_active.hpp"
+#include "events/event_data_game_finished.hpp"
+#include "events/event_data_game_terminated.hpp"
+
 GameLogic::GameLogic(QObject *qroot)
     : state_(LogicState::LS_Uninitialized), qroot_(qroot), conn_list_(),
     actor_factory_(new ActorFactory), actor_keeper_(new ActorKeeper),

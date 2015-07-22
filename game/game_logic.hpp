@@ -6,7 +6,7 @@
 #include <QObject>
 
 #include "events/event_manager.hpp"
-#include "events/event_data.hpp"
+
 #include "actors/actor_factory.hpp"
 #include "actors/actor_keeper.hpp"
 #include "graph/graph.hpp"

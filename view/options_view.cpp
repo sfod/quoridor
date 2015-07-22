@@ -1,7 +1,9 @@
 #include "options_view.hpp"
 #include "game/game_data.hpp"
-#include "events/event_data.hpp"
 #include "events/event_manager.hpp"
+#include "events/event_data_main_menu.hpp"
+#include "events/event_data_game.hpp"
+#include "events/event_data_request_new_actor.hpp"
 #include "exceptions/exception.hpp"
 
 

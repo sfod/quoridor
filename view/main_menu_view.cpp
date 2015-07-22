@@ -1,6 +1,7 @@
 #include "main_menu_view.hpp"
-#include "events/event_data.hpp"
 #include "events/event_manager.hpp"
+#include "events/event_data_options.hpp"
+#include "events/event_data_quit.hpp"
 #include "exceptions/exception.hpp"
 
 

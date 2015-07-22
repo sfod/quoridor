@@ -2,6 +2,7 @@
 #include <ctime>
 #include <boost/random/uniform_int_distribution.hpp>
 #include "events/event_manager.hpp"
+#include "events/event_data_request_actor_move.hpp"
 
 RandomerBrain::RandomerBrain() : actor_id_(-1), graph_(), gen_()
 {
