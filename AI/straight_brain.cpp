@@ -4,11 +4,6 @@
 
 StraightBrain::StraightBrain() : actor_id_(-1), graph_(), goal_nodes_()
 {
-
-}
-
-StraightBrain::~StraightBrain()
-{
 }
 
 void StraightBrain::make_move()
