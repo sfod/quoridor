@@ -6,6 +6,15 @@
 
 namespace bs2 = boost::signals2;
 
+
+class EventSignal : public QObject {
+    Q_OBJECT
+
+signals:
+    void eventFired(const std::shared_ptr<EventData> &event);
+};
+
+
 class EventManager {
     typedef bs2::signal<void (const std::shared_ptr<EventData>&)> signal_t;
     typedef signal_t::slot_type slot_t;
@@ -26,5 +35,6 @@ public:
 
 private:
     std::map<EventType, signal_t> signal_list_;
+    std::map<EventType, EventSignal> qsignal_list_;
     std::list<std::shared_ptr<EventData>> event_list_;
 };
