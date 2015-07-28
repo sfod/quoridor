@@ -1,6 +1,5 @@
 #include "game_logic.hpp"
 #include <QDebug>
-#include <boost/bind.hpp>
 
 #include "view/main_menu_view.hpp"
 #include "view/options_view.hpp"
@@ -24,19 +23,12 @@
 #include "events/event_data_game_terminated.hpp"
 
 GameLogic::GameLogic(QObject *qroot)
-    : state_(LogicState::LS_Uninitialized), qroot_(qroot), conn_list_(),
+    : state_(LogicState::LS_Uninitialized), qroot_(qroot),
     actor_factory_(new ActorFactory), actor_keeper_(new ActorKeeper),
     player_list_(), graph_(new Graph), view_list_(), player_idx_(1),
     player_handler_()
 {
     register_delegates();
-}
-
-GameLogic::~GameLogic()
-{
-    for (auto conn : conn_list_) {
-        conn.disconnect();
-    }
 }
 
 void GameLogic::change_state(LogicState state)
@@ -220,42 +212,33 @@ void GameLogic::req_set_wall(const std::shared_ptr<EventData> &event)
 
 void GameLogic::register_delegates()
 {
-    bs2::connection conn;
-
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameLogic::main_menu_win_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameLogic::main_menu_win_delegate, this, std::placeholders::_1),
             EventData_MainMenu::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameLogic::options_win_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameLogic::options_win_delegate, this, std::placeholders::_1),
             EventData_Options::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameLogic::game_win_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameLogic::game_win_delegate, this, std::placeholders::_1),
             EventData_Game::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameLogic::game_terminated_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameLogic::game_terminated_delegate, this, std::placeholders::_1),
             EventData_GameTerminated::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameLogic::req_actor_new_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameLogic::req_actor_new_delegate, this, std::placeholders::_1),
             EventData_RequestNewActor::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameLogic::req_actor_move_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameLogic::req_actor_move_delegate, this, std::placeholders::_1),
             EventData_RequestActorMove::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameLogic::req_set_wall, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameLogic::req_set_wall, this, std::placeholders::_1),
             EventData_RequestSetWall::static_event_type());
-    conn_list_.push_back(conn);
 }
 
 void GameLogic::create_player(int idx, PlayerType ptype)
