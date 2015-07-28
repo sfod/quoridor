@@ -10,7 +10,6 @@ class GameView : public QtView {
 
 public:
     explicit GameView(QObject *qroot, bool is_main, QObject *qparent = 0);
-    virtual ~GameView();
 
     virtual void on_msg() override;
     virtual void on_update() override;
@@ -33,7 +32,6 @@ private:
     void connect_objects();
 
 private:
-    std::list<bs2::connection> conn_list_;
     QObject *qroot_;
     QObject *qboard_;
     QObject *qrecorder_;

@@ -14,7 +14,7 @@
 #include "exceptions/exception.hpp"
 
 GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
-    : QtView(qparent), conn_list_(), qroot_(qroot), qboard_(), qrecorder_(),
+    : QtView(qparent), qroot_(qroot), qboard_(), qrecorder_(),
       qbutton_(), actor_id_(-1), is_main_(is_main)
 {
     connect_objects();
@@ -23,46 +23,33 @@ GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
         connect_button("buttonBackToOptions", SLOT(button_back_clicked()), &qbutton_);
     }
 
-    bs2::connection conn;
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::new_actor_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameView::new_actor_delegate, this, std::placeholders::_1),
             EventData_NewActor::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::move_actor_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameView::move_actor_delegate, this, std::placeholders::_1),
             EventData_MoveActor::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::set_wall_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameView::set_wall_delegate, this, std::placeholders::_1),
             EventData_SetWall::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::set_actor_possible_moves_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameView::set_actor_possible_moves_delegate, this, std::placeholders::_1),
             EventData_SetActorPossibleMoves::static_event_type());
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::set_active_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameView::set_active_delegate, this, std::placeholders::_1),
             EventData_SetActorActive::static_event_type());
-    conn_list_.push_back(conn);
 
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameView::game_finished_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameView::game_finished_delegate, this, std::placeholders::_1),
             EventData_GameFinished::static_event_type());
-    conn_list_.push_back(conn);
 
     if (is_main_) {
         QMetaObject::invokeMethod(qboard_, "init");
         QMetaObject::invokeMethod(qrecorder_, "init");
-    }
-}
-
-GameView::~GameView()
-{
-    for (auto conn : conn_list_) {
-        conn.disconnect();
     }
 }
 
