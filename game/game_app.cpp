@@ -16,7 +16,7 @@ GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
     qcomponent_(&qengine_)
 {
     WallEnumClass::declareQML();
-    qcomponent_.loadUrl(QUrl(QStringLiteral("qrc:///main.qml")));
+    qcomponent_.loadUrl(QUrl(QStringLiteral("qrc:///qml/main.qml")));
     if (qcomponent_.isError()) {
         for (auto qerr : qcomponent_.errors()) {
             qDebug() << qerr;
