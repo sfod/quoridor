@@ -5,6 +5,9 @@
 
 AIView::AIView() : actor_id_(-1)
 {
+    EventManager::get()->add_listener(this,
+            std::bind(&AIView::set_active_delegate, this, std::placeholders::_1),
+            EventData_SetActorActive::static_event_type());
 }
 
 void AIView::on_msg()

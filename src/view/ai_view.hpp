@@ -3,7 +3,9 @@
 #include "iview.hpp"
 #include "events/event_manager.hpp"
 
-class AIView : public IView {
+class AIView : public QObject, public IView {
+    Q_OBJECT
+
 public:
     AIView();
 
