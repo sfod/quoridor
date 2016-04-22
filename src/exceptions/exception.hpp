@@ -36,3 +36,13 @@ class invalid_json_error : public std::runtime_error {
 public:
     invalid_json_error() : std::runtime_error("") {}
 };
+
+class event_error : public std::runtime_error {
+public:
+    event_error() : std::runtime_error("") {}
+};
+
+class actor_error : public std::runtime_error {
+public:
+    actor_error() : std::runtime_error("") {}
+};

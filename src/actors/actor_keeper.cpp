@@ -1,4 +1,5 @@
 #include "actor_keeper.hpp"
+#include "exceptions/exception.hpp"
 
 void ActorKeeper::add_actor(std::shared_ptr<Actor> &actor)
 {
@@ -12,5 +13,5 @@ std::shared_ptr<Actor> ActorKeeper::actor(ActorId id) const
     if (actor_id_list_.count(id) != 0) {
         return actor_id_list_.at(id);
     }
-    return std::shared_ptr<Actor>();
+    throw actor_error();
 }

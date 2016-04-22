@@ -173,7 +173,7 @@ void GameView::on_pawn_dropped(int actor_id, int idx)
         Node node(8 - idx / 9, idx % 9);
         auto event = std::make_shared<EventData_RequestActorMove>(actor_id, node);
         if (!event_manager_->queue_event(event)) {
-            qDebug() << "failed to queue MoveActor event";
+            throw event_error();
         }
     }
 }
@@ -193,18 +193,20 @@ void GameView::on_wall_dropped(int actor_id, int wo, int row, int column)
 
     auto event = std::make_shared<EventData_RequestSetWall>(actor_id, wall);
     if (!event_manager_->queue_event(event)) {
-        qDebug() << "failed to queue RequestSetWall event";
+        throw event_error();
     }
 }
 
 void GameView::button_back_clicked()
 {
     auto game_terminated_event = std::make_shared<EventData_GameTerminated>();
-    event_manager_->queue_event(game_terminated_event);
+    if (!event_manager_->queue_event(game_terminated_event)) {
+        throw event_error();
+    }
 
     auto event = std::make_shared<EventData_Options>();
     if (!event_manager_->queue_event(event)) {
-        qDebug() << "failed to queue MainMenu event";
+        throw event_error();
     }
 }
 

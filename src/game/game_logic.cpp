@@ -124,89 +124,86 @@ void GameLogic::req_actor_move_delegate(const std::shared_ptr<EventData> &event)
     auto req_move_event = std::dynamic_pointer_cast<EventData_RequestActorMove>(event);
 
     const std::shared_ptr<Actor> &actor = actor_keeper_->actor(req_move_event->actor_id());
-    if (actor) {
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
-                    actor->component(GraphComponent::id())
-        );
+    auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                actor->component(GraphComponent::id())
+    );
 
-        // TODO(?) move this logic into GraphComponent
-        if (graph_comp->move_actor(req_move_event->node())) {
-            // update active player position
-            auto move_event = std::make_shared<EventData_MoveActor>(
-                    actor->id(),
-                    graph_comp->node(),
-                    graph_comp->possible_moves());
-            event_manager_->queue_event(move_event);
+    // TODO(?) move this logic into GraphComponent
+    if (graph_comp->move_actor(req_move_event->node())) {
+        // update active player position
+        auto move_event = std::make_shared<EventData_MoveActor>(
+                actor->id(),
+                graph_comp->node(),
+                graph_comp->possible_moves());
+        event_manager_->queue_event(move_event);
 
-            // update other players possible moves
-            for (auto player_actor : player_list_) {
-                ActorId aid = player_actor.first->id();
-                // active player possible moves are already updated
-                if (aid == actor->id()) {
-                    continue;
-                }
-
-                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
-                            player_actor.first->component(GraphComponent::id())
-                );
-                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
-                            aid, gcomp->possible_moves()
-                );
-                event_manager_->queue_event(pos_move_event);
+        // update other players possible moves
+        for (auto player_actor : player_list_) {
+            ActorId aid = player_actor.first->id();
+            // active player possible moves are already updated
+            if (aid == actor->id()) {
+                continue;
             }
 
-            if (graph_comp->is_at_goal_node()) {
-                auto game_finished_event = std::make_shared<EventData_GameFinished>(actor->id());
-                event_manager_->queue_event(game_finished_event);
-            }
-            else {
-                auto active_player = player_handler_.next_player();
-                auto act_event = std::make_shared<EventData_SetActorActive>(active_player);
-                event_manager_->queue_event(act_event);
-            }
+            auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
+                        player_actor.first->component(GraphComponent::id())
+            );
+            auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
+                        aid, gcomp->possible_moves()
+            );
+            event_manager_->queue_event(pos_move_event);
+        }
+
+        if (graph_comp->is_at_goal_node()) {
+            auto game_finished_event = std::make_shared<EventData_GameFinished>(actor->id());
+            event_manager_->queue_event(game_finished_event);
+        }
+        else {
+            auto active_player = player_handler_.next_player();
+            auto act_event = std::make_shared<EventData_SetActorActive>(active_player);
+            event_manager_->queue_event(act_event);
         }
     }
+
 }
 
 void GameLogic::req_set_wall(const std::shared_ptr<EventData> &event)
 {
     auto req_wall_event = std::dynamic_pointer_cast<EventData_RequestSetWall>(event);
     const std::shared_ptr<Actor> &actor = actor_keeper_->actor(req_wall_event->actor_id());
-    if (actor) {
-        auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
-                    actor->component(GraphComponent::id())
-        );
+    auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
+                actor->component(GraphComponent::id())
+    );
 
-        const Wall &wall = req_wall_event->wall();
-        if (graph_comp && graph_comp->set_wall(wall)) {
-            // update active player position
-            auto set_wall_event = std::make_shared<EventData_SetWall>(actor->id(), wall);
-            event_manager_->queue_event(set_wall_event);
+    const Wall &wall = req_wall_event->wall();
+    if (graph_comp && graph_comp->set_wall(wall)) {
+        // update active player position
+        auto set_wall_event = std::make_shared<EventData_SetWall>(actor->id(), wall);
+        event_manager_->queue_event(set_wall_event);
 
-            // update other players possible moves
-            for (auto player_actor : player_list_) {
-                ActorId aid = player_actor.first->id();
-                // active player possible moves will be updated on the next player turn
-                if (aid == actor->id()) {
-                    continue;
-                }
-
-                auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
-                            player_actor.first->component(GraphComponent::id())
-                );
-                auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
-                            aid, gcomp->possible_moves()
-                );
-                event_manager_->queue_event(pos_move_event);
+        // update other players possible moves
+        for (auto player_actor : player_list_) {
+            ActorId aid = player_actor.first->id();
+            // active player possible moves will be updated on the next player turn
+            if (aid == actor->id()) {
+                continue;
             }
 
-            auto active_player = player_handler_.next_player();
-            auto act_event = std::make_shared<EventData_SetActorActive>(active_player);
-            event_manager_->queue_event(act_event);
+            auto gcomp = std::dynamic_pointer_cast<GraphComponent>(
+                        player_actor.first->component(GraphComponent::id())
+            );
+            auto pos_move_event = std::make_shared<EventData_SetActorPossibleMoves>(
+                        aid, gcomp->possible_moves()
+            );
+            event_manager_->queue_event(pos_move_event);
         }
-        else {
-            qDebug() << "failed to set wall";
-        }
+
+        auto active_player = player_handler_.next_player();
+        auto act_event = std::make_shared<EventData_SetActorActive>(active_player);
+        event_manager_->queue_event(act_event);
+    }
+    else {
+        qDebug() << "failed to set wall";
     }
 }
 
