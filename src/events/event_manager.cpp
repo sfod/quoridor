@@ -7,17 +7,22 @@ EventManager::EventManager()
     g_event_mgr = this;
 }
 
-bs2::connection EventManager::add_listener(const slot_t &listener,
+void EventManager::add_listener(const QObject *receiver,
+        std::function<void(const std::shared_ptr<EventData>&)> slot,
         const EventType &event_type)
 {
-    return signal_list_[event_type].connect(listener);
+    if (signal_list_.count(event_type) == 0) {
+        signal_list_[event_type] = std::make_shared<EventSignal>();
+    }
+
+    QObject::connect(signal_list_[event_type].get(), &EventSignal::eventFired, receiver, slot);
 }
 
 bool EventManager::trigger_event(const std::shared_ptr<EventData> &event) const
 {
     bool processed = false;
     if (signal_list_.count(event->event_type()) != 0) {
-        signal_list_.at(event->event_type())(event);
+        signal_list_.at(event->event_type())->eventFired(event);
         processed = true;
     }
     return processed;
@@ -50,13 +55,13 @@ void EventManager::update()
         std::shared_ptr<EventData> event = event_list_.front();
         event_list_.pop_front();
         if (signal_list_.count(event->event_type()) != 0) {
-            signal_list_.at(event->event_type())(event);
+            signal_list_.at(event->event_type())->eventFired(event);
         }
     }
 }
 
 EventManager *EventManager::get()
 {
-    BOOST_ASSERT(g_event_mgr != nullptr);
+    Q_ASSERT(g_event_mgr != nullptr);
     return g_event_mgr;
 }

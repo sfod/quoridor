@@ -3,19 +3,11 @@
 #include "actors/ai_component.hpp"
 #include "events/event_data_set_actor_active.hpp"
 
-AIView::AIView() : conn_list_(), actor_id_(-1)
+AIView::AIView() : actor_id_(-1)
 {
-    bs2::connection conn = EventManager::get()->add_listener(
-            boost::bind(&AIView::set_active_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&AIView::set_active_delegate, this, std::placeholders::_1),
             EventData_SetActorActive::static_event_type());
-    conn_list_.push_back(conn);
-}
-
-AIView::~AIView()
-{
-    for (auto conn : conn_list_) {
-        conn.disconnect();
-    }
 }
 
 void AIView::on_msg()

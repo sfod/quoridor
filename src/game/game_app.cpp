@@ -3,7 +3,6 @@
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QTimer>
-#include <QDebug>
 
 #include "events/event_manager.hpp"
 #include "events/event_caller.hpp"
@@ -14,10 +13,10 @@
 static GameApp *g_app;
 
 GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
-    qcomponent_(&qengine_), conn_list_()
+    qcomponent_(&qengine_)
 {
     WallEnumClass::declareQML();
-    qcomponent_.loadUrl(QUrl(QStringLiteral("qrc:///main.qml")));
+    qcomponent_.loadUrl(QUrl(QStringLiteral("qrc:///qml/main.qml")));
     if (qcomponent_.isError()) {
         for (auto qerr : qcomponent_.errors()) {
             qDebug() << qerr;
@@ -31,14 +30,6 @@ GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
     logic_ = std::make_shared<GameLogic>(qroot_);
 
     g_app = this;
-}
-
-GameApp::~GameApp()
-{
-    for (auto conn : conn_list_) {
-        conn.disconnect();
-    }
-    delete qroot_;
 }
 
 int GameApp::run()
@@ -67,10 +58,7 @@ GameApp *GameApp::get()
 
 void GameApp::register_delegates()
 {
-    bs2::connection conn;
-
-    conn = EventManager::get()->add_listener(
-            boost::bind(&GameApp::quit_delegate, this, _1),
+    EventManager::get()->add_listener(this,
+            std::bind(&GameApp::quit_delegate, this, std::placeholders::_1),
             EventData_Quit::static_event_type());
-    conn_list_.push_back(conn);
 }

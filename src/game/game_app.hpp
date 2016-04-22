@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include <QObject>
 #include <QGuiApplication>
 #include <QQmlEngine>
 #include <QQmlComponent>
@@ -10,17 +11,19 @@
 #include "events/event_manager.hpp"
 #include "game_logic.hpp"
 
-class GameApp {
+class GameApp : public QObject {
+    Q_OBJECT
+
 public:
     GameApp(int argc, char **argv);
-    virtual ~GameApp();
 
     int run();
     std::shared_ptr<GameLogic> game_logic() const { return logic_; }
 
-    void quit_delegate(const std::shared_ptr<EventData> &event);
-
     static GameApp *get();
+
+public slots:
+    void quit_delegate(const std::shared_ptr<EventData> &event);
 
 private:
     void register_delegates();
@@ -32,6 +35,5 @@ private:
     QObject *qroot_;
 
     std::shared_ptr<EventManager> event_manager_;
-    std::list<bs2::connection> conn_list_;
     std::shared_ptr<GameLogic> logic_;
 };

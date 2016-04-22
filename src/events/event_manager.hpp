@@ -1,19 +1,24 @@
 #pragma once
 
 #include <memory>
-#include <boost/signals2.hpp>
+#include <QObject>
 #include "event_data.hpp"
 
-namespace bs2 = boost::signals2;
+
+class EventSignal : public QObject {
+    Q_OBJECT
+
+signals:
+    void eventFired(const std::shared_ptr<EventData> &event);
+};
+
 
 class EventManager {
-    typedef bs2::signal<void (const std::shared_ptr<EventData>&)> signal_t;
-    typedef signal_t::slot_type slot_t;
-
 public:
     EventManager();
 
-    bs2::connection add_listener(const slot_t &listener,
+    void add_listener(const QObject *receiver,
+            std::function<void(const std::shared_ptr<EventData>&)> slot,
             const EventType &event_type);
 
     bool trigger_event(const std::shared_ptr<EventData> &event) const;
@@ -25,6 +30,6 @@ public:
     static EventManager *get();
 
 private:
-    std::map<EventType, signal_t> signal_list_;
+    std::map<EventType, std::shared_ptr<EventSignal>> signal_list_;
     std::list<std::shared_ptr<EventData>> event_list_;
 };
