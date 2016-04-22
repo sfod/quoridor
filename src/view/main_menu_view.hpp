@@ -3,12 +3,13 @@
 #include <list>
 #include <QObject>
 #include "qt_view.hpp"
+#include "events/event_manager.hpp"
 
 class MainMenuView : public QtView {
     Q_OBJECT
 
 public:
-    explicit MainMenuView(QObject *qroot, QObject *qparent = nullptr);
+    MainMenuView(QObject *qroot, std::shared_ptr<EventManager> event_manager);
 
     virtual void on_msg() override;
     virtual void on_update() override;
@@ -24,4 +25,5 @@ private:
 private:
     QObject *qroot_;
     ActorId actor_id_;
+    std::shared_ptr<EventManager> event_manager_;
 };

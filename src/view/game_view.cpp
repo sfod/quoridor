@@ -13,9 +13,9 @@
 #include "events/event_data_game_terminated.hpp"
 #include "exceptions/exception.hpp"
 
-GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
-    : QtView(qparent), qroot_(qroot), qboard_(), qrecorder_(),
-      qbutton_(), actor_id_(-1), is_main_(is_main)
+GameView::GameView(QObject *qroot, std::shared_ptr<EventManager> event_manager, bool is_main)
+    : QtView(NULL), qroot_(qroot), qboard_(), qrecorder_(),
+      qbutton_(), actor_id_(-1), event_manager_(event_manager), is_main_(is_main)
 {
     connect_objects();
 
@@ -23,27 +23,27 @@ GameView::GameView(QObject *qroot, bool is_main, QObject *qparent)
         connect_button("buttonBackToOptions", SLOT(button_back_clicked()), &qbutton_);
     }
 
-    EventManager::get()->add_listener(this,
+    event_manager_->add_listener(this,
             std::bind(&GameView::new_actor_delegate, this, std::placeholders::_1),
             EventData_NewActor::static_event_type());
 
-    EventManager::get()->add_listener(this,
+    event_manager_->add_listener(this,
             std::bind(&GameView::move_actor_delegate, this, std::placeholders::_1),
             EventData_MoveActor::static_event_type());
 
-    EventManager::get()->add_listener(this,
+    event_manager_->add_listener(this,
             std::bind(&GameView::set_wall_delegate, this, std::placeholders::_1),
             EventData_SetWall::static_event_type());
 
-    EventManager::get()->add_listener(this,
+    event_manager_->add_listener(this,
             std::bind(&GameView::set_actor_possible_moves_delegate, this, std::placeholders::_1),
             EventData_SetActorPossibleMoves::static_event_type());
 
-    EventManager::get()->add_listener(this,
+    event_manager_->add_listener(this,
             std::bind(&GameView::set_active_delegate, this, std::placeholders::_1),
             EventData_SetActorActive::static_event_type());
 
-    EventManager::get()->add_listener(this,
+    event_manager_->add_listener(this,
             std::bind(&GameView::game_finished_delegate, this, std::placeholders::_1),
             EventData_GameFinished::static_event_type());
 
@@ -172,7 +172,7 @@ void GameView::on_pawn_dropped(int actor_id, int idx)
     if (static_cast<ActorId>(actor_id) == actor_id_) {
         Node node(8 - idx / 9, idx % 9);
         auto event = std::make_shared<EventData_RequestActorMove>(actor_id, node);
-        if (!EventManager::get()->queue_event(event)) {
+        if (!event_manager_->queue_event(event)) {
             qDebug() << "failed to queue MoveActor event";
         }
     }
@@ -192,7 +192,7 @@ void GameView::on_wall_dropped(int actor_id, int wo, int row, int column)
              << "wall at" << row << ":" << column;
 
     auto event = std::make_shared<EventData_RequestSetWall>(actor_id, wall);
-    if (!EventManager::get()->queue_event(event)) {
+    if (!event_manager_->queue_event(event)) {
         qDebug() << "failed to queue RequestSetWall event";
     }
 }
@@ -200,10 +200,10 @@ void GameView::on_wall_dropped(int actor_id, int wo, int row, int column)
 void GameView::button_back_clicked()
 {
     auto game_terminated_event = std::make_shared<EventData_GameTerminated>();
-    EventManager::get()->queue_event(game_terminated_event);
+    event_manager_->queue_event(game_terminated_event);
 
     auto event = std::make_shared<EventData_Options>();
-    if (!EventManager::get()->queue_event(event)) {
+    if (!event_manager_->queue_event(event)) {
         qDebug() << "failed to queue MainMenu event";
     }
 }

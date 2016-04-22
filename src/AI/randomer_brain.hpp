@@ -3,10 +3,11 @@
 #include "brain.hpp"
 #include <boost/random/mersenne_twister.hpp>
 #include "graph/graph.hpp"
+#include "events/event_manager.hpp"
 
 class RandomerBrain : public Brain {
 public:
-    RandomerBrain();
+    explicit RandomerBrain(std::shared_ptr<EventManager> event_manager);
 
     virtual void make_move() override;
     virtual void set_actor_id(ActorId actor_id) { actor_id_ = actor_id; }
@@ -15,6 +16,7 @@ public:
 
 private:
     ActorId actor_id_;
+    std::shared_ptr<EventManager> event_manager_;
     std::shared_ptr<Graph> graph_;
     boost::random::mt19937 gen_;
 };

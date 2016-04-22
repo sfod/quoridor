@@ -1,12 +1,5 @@
 #include "event_manager.hpp"
 
-static EventManager *g_event_mgr;
-
-EventManager::EventManager()
-{
-    g_event_mgr = this;
-}
-
 void EventManager::add_listener(const QObject *receiver,
         std::function<void(const std::shared_ptr<EventData>&)> slot,
         const EventType &event_type)
@@ -58,10 +51,4 @@ void EventManager::update()
             signal_list_.at(event->event_type())->eventFired(event);
         }
     }
-}
-
-EventManager *EventManager::get()
-{
-    Q_ASSERT(g_event_mgr != nullptr);
-    return g_event_mgr;
 }

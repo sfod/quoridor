@@ -1,13 +1,14 @@
 #pragma once
 
 #include "iview.hpp"
+#include "actors/actor_keeper.hpp"
 #include "events/event_manager.hpp"
 
 class AIView : public QObject, public IView {
     Q_OBJECT
 
 public:
-    AIView();
+    AIView(std::shared_ptr<ActorKeeper> actor_keeper, std::shared_ptr<EventManager> event_manager);
 
     virtual void on_msg() override;
     virtual void on_update() override;
@@ -17,4 +18,6 @@ public:
 
 private:
     ActorId actor_id_;
+    std::shared_ptr<EventManager> event_manager_;
+    std::shared_ptr<ActorKeeper> actor_keeper_;
 };
