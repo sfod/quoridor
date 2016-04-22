@@ -10,8 +10,6 @@
 #include "graph/wall.hpp"
 #include "exceptions/exception.hpp"
 
-static GameApp *g_app;
-
 GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
     qcomponent_(&qengine_)
 {
@@ -28,8 +26,6 @@ GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
 
     event_manager_ = std::make_shared<EventManager>();
     logic_ = std::make_shared<GameLogic>(qroot_);
-
-    g_app = this;
 }
 
 int GameApp::run()
@@ -49,11 +45,6 @@ void GameApp::quit_delegate(const std::shared_ptr<EventData> &event)
 {
     (void) event;
     QGuiApplication::quit();
-}
-
-GameApp *GameApp::get()
-{
-    return g_app;
 }
 
 void GameApp::register_delegates()

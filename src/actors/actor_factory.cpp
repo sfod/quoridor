@@ -11,7 +11,7 @@
 
 static ActorId g_actor_id = 0;
 
-std::shared_ptr<Actor> ActorFactory::create_actor(QString &resource_file,
+std::shared_ptr<Actor> ActorFactory::create_actor(std::shared_ptr<Graph> graph, QString &resource_file,
         const std::vector<QString> &component_resource_files)
 {
     QFile resource(resource_file);
@@ -26,7 +26,7 @@ std::shared_ptr<Actor> ActorFactory::create_actor(QString &resource_file,
     auto actor = std::make_shared<Actor>(++g_actor_id, actor_data);
 
     QJsonObject actor_components = actor_data["components"].toObject();
-    add_components(actor, actor_components);
+    add_components(graph, actor, actor_components);
 
     for (const auto component_resource_file : component_resource_files) {
         QFile component_resource(component_resource_file);
@@ -38,7 +38,7 @@ std::shared_ptr<Actor> ActorFactory::create_actor(QString &resource_file,
         QJsonObject component = jd.object();
 
         QJsonObject actor_components = component["components"].toObject();
-        add_components(actor, actor_components);
+        add_components(graph, actor, actor_components);
     }
 
     actor->post_init();
@@ -46,10 +46,11 @@ std::shared_ptr<Actor> ActorFactory::create_actor(QString &resource_file,
     return actor;
 }
 
-void ActorFactory::add_components(std::shared_ptr<Actor> &actor, const QJsonObject &actor_components)
+void ActorFactory::add_components(std::shared_ptr<Graph> graph, std::shared_ptr<Actor> &actor, const QJsonObject &actor_components)
 {
     for (const auto &component_type : actor_components.keys()) {
         std::shared_ptr<ActorComponent> component = create_actor_component(
+                    graph,
                     component_type,
                     actor_components[component_type].toObject());
         actor->add_component(component);
@@ -57,17 +58,16 @@ void ActorFactory::add_components(std::shared_ptr<Actor> &actor, const QJsonObje
     }
 }
 
-std::shared_ptr<ActorComponent> ActorFactory::create_actor_component(
-        const QString &type, const QJsonObject &component_data)
+std::shared_ptr<ActorComponent> ActorFactory::create_actor_component(std::shared_ptr<Graph> graph, const QString &type, const QJsonObject &component_data)
 {
     if (type == "GraphComponent") {
-        return std::make_shared<GraphComponent>(component_data);
+        return std::make_shared<GraphComponent>(graph, component_data);
     }
     else if (type == "AIComponent") {
-        return std::make_shared<AIComponent>(component_data);
+        return std::make_shared<AIComponent>(graph, component_data);
     }
     else if (type == "WallComponent") {
-        return std::make_shared<WallComponent>(component_data);
+        return std::make_shared<WallComponent>(graph, component_data);
     }
 
     throw invalid_json_error();

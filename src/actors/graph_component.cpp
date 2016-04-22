@@ -1,10 +1,9 @@
 #include "graph_component.hpp"
-#include "game/game_app.hpp"
 #include "exceptions/exception.hpp"
 
 template<> const char *GraphComponent::Base::name_ = "GraphComponent";
 
-GraphComponent::GraphComponent(const QJsonObject &component_data) : node_(), goal_nodes_()
+GraphComponent::GraphComponent(std::shared_ptr<Graph> graph, const QJsonObject &component_data) : graph_(graph), node_(), goal_nodes_()
 {
     QJsonValue json_position = component_data["position"];
     QJsonValue json_goals = component_data["goals"];
@@ -12,8 +11,6 @@ GraphComponent::GraphComponent(const QJsonObject &component_data) : node_(), goa
     if ((!json_position.isArray()) || (!json_goals.isArray())) {
         throw invalid_json_error();
     }
-
-    graph_ = GameApp::get()->game_logic()->graph();
 
     // set player initial position
     QJsonArray position = json_position.toArray();

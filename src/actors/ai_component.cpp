@@ -1,5 +1,4 @@
 #include "ai_component.hpp"
-#include "game/game_app.hpp"
 #include "graph_component.hpp"
 #include "AI/randomer_brain.hpp"
 #include "AI/straight_brain.hpp"
@@ -7,7 +6,7 @@
 
 template<> const char *AIComponent::Base::name_ = "AIComponent";
 
-AIComponent::AIComponent(const QJsonObject &component_data)
+AIComponent::AIComponent(std::shared_ptr<Graph> graph, const QJsonObject &component_data)
 {
     if (component_data["brain"].isUndefined()) {
         throw invalid_json_error();
@@ -23,13 +22,13 @@ AIComponent::AIComponent(const QJsonObject &component_data)
     else {
         throw invalid_json_error();
     }
+
+    brain_->set_graph(graph);
 }
 
 void AIComponent::post_init()
 {
-    brain_->set_graph(GameApp::get()->game_logic()->graph());
     brain_->set_actor_id(owner()->id());
-
     auto graph_comp = std::dynamic_pointer_cast<GraphComponent>(
                 owner()->component(GraphComponent::id())
     );
