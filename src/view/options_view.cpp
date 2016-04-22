@@ -1,15 +1,14 @@
 #include "options_view.hpp"
 #include "game/game_data.hpp"
-#include "events/event_manager.hpp"
 #include "events/event_data_main_menu.hpp"
 #include "events/event_data_game.hpp"
 #include "events/event_data_request_new_actor.hpp"
 #include "exceptions/exception.hpp"
 
 
-OptionsView::OptionsView(QObject *qroot, QObject *qparent)
-    : QtView(qparent), qroot_(qroot), qoptions_(), actor_id_(-1),
-      player_types_(), player_nums_(), selected_players_()
+OptionsView::OptionsView(QObject *qroot, std::shared_ptr<EventManager> event_manager)
+    : QtView(NULL), qroot_(qroot), qoptions_(), actor_id_(-1),
+      event_manager_(event_manager), player_types_(), player_nums_(), selected_players_()
 {
     load_players_data();
     connect_options();
@@ -50,7 +49,7 @@ void OptionsView::button_start_game_clicked()
     send_new_actors_data();
 
     auto event = std::make_shared<EventData_Game>();
-    if (!EventManager::get()->queue_event(event)) {
+    if (!event_manager_->queue_event(event)) {
         qDebug() << "failed to queue Game event";
     }
 }
@@ -58,7 +57,7 @@ void OptionsView::button_start_game_clicked()
 void OptionsView::button_back_clicked()
 {
     auto event = std::make_shared<EventData_MainMenu>();
-    if (!EventManager::get()->queue_event(event)) {
+    if (!event_manager_->queue_event(event)) {
         qDebug() << "failed to queue MainMenu event";
     }
 }
@@ -125,6 +124,6 @@ void OptionsView::send_new_actors_data() const
 {
     for (PlayerType ptype : selected_players_) {
         auto ev = std::make_shared<EventData_RequestNewActor>(ptype);
-        EventManager::get()->queue_event(ev);
+        event_manager_->queue_event(ev);
     }
 }

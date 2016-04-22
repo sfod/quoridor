@@ -4,7 +4,6 @@
 #include <QQmlComponent>
 #include <QTimer>
 
-#include "events/event_manager.hpp"
 #include "events/event_caller.hpp"
 #include "events/event_data_quit.hpp"
 #include "graph/wall.hpp"
@@ -25,7 +24,7 @@ GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
     qroot_ = qcomponent_.create();
 
     event_manager_ = std::make_shared<EventManager>();
-    logic_ = std::make_shared<GameLogic>(qroot_);
+    logic_ = std::make_shared<GameLogic>(qroot_, event_manager_);
 }
 
 int GameApp::run()
@@ -34,7 +33,7 @@ int GameApp::run()
     register_delegates();
 
     QTimer qtimer;
-    EventCaller event_caller;
+    EventCaller event_caller(event_manager_);
     QObject::connect(&qtimer, SIGNAL(timeout()), &event_caller, SLOT(update()));
     qtimer.start(10);  // call event_caller every 10 ms
 
@@ -49,7 +48,7 @@ void GameApp::quit_delegate(const std::shared_ptr<EventData> &event)
 
 void GameApp::register_delegates()
 {
-    EventManager::get()->add_listener(this,
+    event_manager_->add_listener(this,
             std::bind(&GameApp::quit_delegate, this, std::placeholders::_1),
             EventData_Quit::static_event_type());
 }

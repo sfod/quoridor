@@ -27,7 +27,7 @@ class GameLogic : public QObject {
     typedef std::pair<std::shared_ptr<Actor>, PlayerType> player_actor_t;
 
 public:
-    explicit GameLogic(QObject *qroot);
+    GameLogic(QObject *qroot, std::shared_ptr<EventManager> event_manager);
 
     std::shared_ptr<ActorKeeper> actor_keeper() const { return actor_keeper_; }
     std::shared_ptr<Graph> graph() const { return graph_; }
@@ -52,6 +52,7 @@ private:
 private:
     LogicState state_;
     QObject *qroot_;
+    std::shared_ptr<EventManager> event_manager_;
     std::shared_ptr<ActorFactory> actor_factory_;
     std::shared_ptr<ActorKeeper> actor_keeper_;
     std::list<player_actor_t> player_list_;

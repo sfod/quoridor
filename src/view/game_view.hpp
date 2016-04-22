@@ -9,7 +9,7 @@ class GameView : public QtView {
     Q_OBJECT
 
 public:
-    explicit GameView(QObject *qroot, bool is_main, QObject *qparent = 0);
+    GameView(QObject *qroot, std::shared_ptr<EventManager> event_manager, bool is_main);
 
     virtual void on_msg() override;
     virtual void on_update() override;
@@ -37,5 +37,6 @@ private:
     QObject *qrecorder_;
     QObject *qbutton_;
     ActorId actor_id_;
+    std::shared_ptr<EventManager> event_manager_;
     bool is_main_;
 };

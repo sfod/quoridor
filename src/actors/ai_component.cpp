@@ -6,7 +6,8 @@
 
 template<> const char *AIComponent::Base::name_ = "AIComponent";
 
-AIComponent::AIComponent(std::shared_ptr<Graph> graph, const QJsonObject &component_data)
+AIComponent::AIComponent(std::shared_ptr<EventManager> event_manager, std::shared_ptr<Graph> graph, const QJsonObject &component_data)
+    : event_manager_(event_manager)
 {
     if (component_data["brain"].isUndefined()) {
         throw invalid_json_error();
@@ -14,10 +15,10 @@ AIComponent::AIComponent(std::shared_ptr<Graph> graph, const QJsonObject &compon
 
     QString brain_type = component_data["brain"].toString();
     if (brain_type == "randomer") {
-        brain_ = std::make_shared<RandomerBrain>();
+        brain_ = std::make_shared<RandomerBrain>(event_manager_);
     }
     else if (brain_type == "straight") {
-        brain_ = std::make_shared<StraightBrain>();
+        brain_ = std::make_shared<StraightBrain>(event_manager_);
     }
     else {
         throw invalid_json_error();

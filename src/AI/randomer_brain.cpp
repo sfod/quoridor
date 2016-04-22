@@ -1,10 +1,10 @@
 #include "randomer_brain.hpp"
 #include <ctime>
 #include <boost/random/uniform_int_distribution.hpp>
-#include "events/event_manager.hpp"
 #include "events/event_data_request_actor_move.hpp"
 
-RandomerBrain::RandomerBrain() : actor_id_(-1), graph_(), gen_()
+RandomerBrain::RandomerBrain(std::shared_ptr<EventManager> event_manager)
+    : actor_id_(-1), event_manager_(event_manager), graph_(), gen_()
 {
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));
 }
@@ -23,5 +23,5 @@ void RandomerBrain::make_move()
     }
 
     auto req_move_event = std::make_shared<EventData_RequestActorMove>(actor_id_, *it);
-    EventManager::get()->queue_event(req_move_event);
+    event_manager_->queue_event(req_move_event);
 }

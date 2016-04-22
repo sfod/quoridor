@@ -15,8 +15,6 @@ signals:
 
 class EventManager {
 public:
-    EventManager();
-
     void add_listener(const QObject *receiver,
             std::function<void(const std::shared_ptr<EventData>&)> slot,
             const EventType &event_type);
@@ -26,8 +24,6 @@ public:
     bool abort_event(const std::shared_ptr<EventData> &event);
 
     void update();
-
-    static EventManager *get();
 
 private:
     std::map<EventType, std::shared_ptr<EventSignal>> signal_list_;

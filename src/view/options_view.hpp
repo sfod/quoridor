@@ -6,12 +6,13 @@
 #include <vector>
 #include "qt_view.hpp"
 #include "game/game_data.hpp"
+#include "events/event_manager.hpp"
 
 class OptionsView : public QtView {
     Q_OBJECT
 
 public:
-    explicit OptionsView(QObject *qroot, QObject *qparent = nullptr);
+    explicit OptionsView(QObject *qroot, std::shared_ptr<EventManager> event_manager);
 
     virtual void on_msg() override;
     virtual void on_update() override;
@@ -32,6 +33,7 @@ private:
     QObject *qroot_;
     QObject *qoptions_;
     ActorId actor_id_;
+    std::shared_ptr<EventManager> event_manager_;
     std::vector<QString> player_types_;
     std::vector<int> player_nums_;
     std::vector<PlayerType> selected_players_;
