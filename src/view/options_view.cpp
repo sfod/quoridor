@@ -6,7 +6,7 @@
 #include "exceptions/exception.hpp"
 
 
-OptionsView::OptionsView(QObject *qroot, std::shared_ptr<EventManager> event_manager)
+OptionsView::OptionsView(QObject *qroot, const std::shared_ptr<EventManager> &event_manager)
     : QtView(NULL), qroot_(qroot), qoptions_(), actor_id_(-1),
       event_manager_(event_manager), player_types_(), player_nums_(), selected_players_()
 {

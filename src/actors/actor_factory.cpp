@@ -11,8 +11,8 @@
 
 static ActorId g_actor_id = 0;
 
-std::shared_ptr<Actor> ActorFactory::create_actor(std::shared_ptr<EventManager> event_manager, std::shared_ptr<Graph> graph, QString &resource_file,
-        const std::vector<QString> &component_resource_files)
+std::shared_ptr<Actor> ActorFactory::create_actor(const std::shared_ptr<EventManager> &event_manager, const std::shared_ptr<Graph> &graph,
+        QString &resource_file, const std::vector<QString> &component_resource_files)
 {
     QFile resource(resource_file);
     if (!resource.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -46,7 +46,7 @@ std::shared_ptr<Actor> ActorFactory::create_actor(std::shared_ptr<EventManager> 
     return actor;
 }
 
-void ActorFactory::add_components(std::shared_ptr<EventManager> event_manager, std::shared_ptr<Graph> graph, std::shared_ptr<Actor> &actor,
+void ActorFactory::add_components(const std::shared_ptr<EventManager> &event_manager, const std::shared_ptr<Graph> &graph, std::shared_ptr<Actor> actor,
         const QJsonObject &actor_components)
 {
     for (const auto &component_type : actor_components.keys()) {
@@ -60,8 +60,8 @@ void ActorFactory::add_components(std::shared_ptr<EventManager> event_manager, s
     }
 }
 
-std::shared_ptr<ActorComponent> ActorFactory::create_actor_component(std::shared_ptr<EventManager> event_manager, std::shared_ptr<Graph> graph,
-        const QString &type, const QJsonObject &component_data)
+std::shared_ptr<ActorComponent> ActorFactory::create_actor_component(const std::shared_ptr<EventManager> &event_manager,
+        const std::shared_ptr<Graph> &graph, const QString &type, const QJsonObject &component_data)
 {
     if (type == "GraphComponent") {
         return std::make_shared<GraphComponent>(graph, component_data);

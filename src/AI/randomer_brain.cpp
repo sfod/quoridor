@@ -3,7 +3,7 @@
 #include <boost/random/uniform_int_distribution.hpp>
 #include "events/event_data_request_actor_move.hpp"
 
-RandomerBrain::RandomerBrain(std::shared_ptr<EventManager> event_manager)
+RandomerBrain::RandomerBrain(const std::shared_ptr<EventManager> &event_manager)
     : actor_id_(-1), event_manager_(event_manager), graph_(), gen_()
 {
     gen_.seed(static_cast<unsigned int>(std::time(NULL)));

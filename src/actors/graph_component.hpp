@@ -6,7 +6,7 @@
 
 class GraphComponent : public ActorComponentCRTP<GraphComponent> {
 public:
-    GraphComponent(std::shared_ptr<Graph> graph, const QJsonObject &component_data);
+    GraphComponent(const std::shared_ptr<Graph> &graph, const QJsonObject &component_data);
 
     virtual void post_init() override;
 

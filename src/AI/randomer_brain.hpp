@@ -7,7 +7,7 @@
 
 class RandomerBrain : public Brain {
 public:
-    explicit RandomerBrain(std::shared_ptr<EventManager> event_manager);
+    explicit RandomerBrain(const std::shared_ptr<EventManager> &event_manager);
 
     virtual void make_move() override;
     virtual void set_actor_id(ActorId actor_id) { actor_id_ = actor_id; }

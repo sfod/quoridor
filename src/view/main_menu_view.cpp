@@ -4,7 +4,7 @@
 #include "exceptions/exception.hpp"
 
 
-MainMenuView::MainMenuView(QObject *qroot, std::shared_ptr<EventManager> event_manager)
+MainMenuView::MainMenuView(QObject *qroot, const std::shared_ptr<EventManager> &event_manager)
     : QtView(NULL), qroot_(qroot), actor_id_(-1), event_manager_(event_manager)
 {
     connect_button("buttonNewGame", SLOT(button_new_game_clicked()));

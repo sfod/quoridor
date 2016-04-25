@@ -8,7 +8,7 @@ class AIView : public QObject, public IView {
     Q_OBJECT
 
 public:
-    AIView(std::shared_ptr<ActorKeeper> actor_keeper, std::shared_ptr<EventManager> event_manager);
+    AIView(const std::shared_ptr<ActorKeeper> &actor_keeper, const std::shared_ptr<EventManager> &event_manager);
 
     virtual void on_msg() override;
     virtual void on_update() override;

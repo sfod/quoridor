@@ -8,7 +8,7 @@
 
 class AIComponent : public ActorComponentCRTP<AIComponent> {
 public:
-    AIComponent(std::shared_ptr<EventManager> event_manager, std::shared_ptr<Graph> graph, const QJsonObject &component_data);
+    AIComponent(const std::shared_ptr<EventManager> &event_manager, const std::shared_ptr<Graph> &graph, const QJsonObject &component_data);
 
     virtual void post_init() override;
 

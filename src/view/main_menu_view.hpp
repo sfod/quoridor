@@ -9,7 +9,7 @@ class MainMenuView : public QtView {
     Q_OBJECT
 
 public:
-    MainMenuView(QObject *qroot, std::shared_ptr<EventManager> event_manager);
+    MainMenuView(QObject *qroot, const std::shared_ptr<EventManager> &event_manager);
 
     virtual void on_msg() override;
     virtual void on_update() override;

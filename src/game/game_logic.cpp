@@ -22,7 +22,7 @@
 #include "events/event_data_game_finished.hpp"
 #include "events/event_data_game_terminated.hpp"
 
-GameLogic::GameLogic(QObject *qroot, std::shared_ptr<EventManager> event_manager)
+GameLogic::GameLogic(QObject *qroot, const std::shared_ptr<EventManager> &event_manager)
     : state_(LogicState::LS_Uninitialized), qroot_(qroot), event_manager_(event_manager),
     actor_factory_(new ActorFactory), actor_keeper_(new ActorKeeper),
     player_list_(), graph_(new Graph), view_list_(), player_idx_(1),

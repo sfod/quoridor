@@ -6,7 +6,7 @@
 class EventCaller : public QObject {
     Q_OBJECT
 public:
-    explicit EventCaller(std::shared_ptr<EventManager> event_manager);
+    explicit EventCaller(const std::shared_ptr<EventManager> &event_manager);
 
 signals:
 

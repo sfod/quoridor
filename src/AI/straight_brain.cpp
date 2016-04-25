@@ -1,7 +1,7 @@
 #include "straight_brain.hpp"
 #include "events/event_data_request_actor_move.hpp"
 
-StraightBrain::StraightBrain(std::shared_ptr<EventManager> event_manager)
+StraightBrain::StraightBrain(const std::shared_ptr<EventManager> &event_manager)
     : actor_id_(-1), event_manager_(event_manager), graph_(), goal_nodes_()
 {
 }

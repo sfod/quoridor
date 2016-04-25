@@ -6,7 +6,7 @@
 
 template<> const char *AIComponent::Base::name_ = "AIComponent";
 
-AIComponent::AIComponent(std::shared_ptr<EventManager> event_manager, std::shared_ptr<Graph> graph, const QJsonObject &component_data)
+AIComponent::AIComponent(const std::shared_ptr<EventManager> &event_manager, const std::shared_ptr<Graph> &graph, const QJsonObject &component_data)
     : event_manager_(event_manager)
 {
     if (component_data["brain"].isUndefined()) {

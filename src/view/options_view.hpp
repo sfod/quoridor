@@ -12,7 +12,7 @@ class OptionsView : public QtView {
     Q_OBJECT
 
 public:
-    explicit OptionsView(QObject *qroot, std::shared_ptr<EventManager> event_manager);
+    explicit OptionsView(QObject *qroot, const std::shared_ptr<EventManager> &event_manager);
 
     virtual void on_msg() override;
     virtual void on_update() override;

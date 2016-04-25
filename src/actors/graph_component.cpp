@@ -3,7 +3,7 @@
 
 template<> const char *GraphComponent::Base::name_ = "GraphComponent";
 
-GraphComponent::GraphComponent(std::shared_ptr<Graph> graph, const QJsonObject &component_data) : graph_(graph), node_(), goal_nodes_()
+GraphComponent::GraphComponent(const std::shared_ptr<Graph> &graph, const QJsonObject &component_data) : graph_(graph), node_(), goal_nodes_()
 {
     QJsonValue json_position = component_data["position"];
     QJsonValue json_goals = component_data["goals"];

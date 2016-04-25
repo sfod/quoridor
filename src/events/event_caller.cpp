@@ -1,6 +1,6 @@
 #include "event_caller.hpp"
 
-EventCaller::EventCaller(std::shared_ptr<EventManager> event_manager)
+EventCaller::EventCaller(const std::shared_ptr<EventManager> &event_manager)
     : QObject(NULL), event_manager_(event_manager)
 {
 }

@@ -9,7 +9,7 @@ class GameView : public QtView {
     Q_OBJECT
 
 public:
-    GameView(QObject *qroot, std::shared_ptr<EventManager> event_manager, bool is_main);
+    GameView(QObject *qroot, const std::shared_ptr<EventManager> &event_manager, bool is_main);
 
     virtual void on_msg() override;
     virtual void on_update() override;

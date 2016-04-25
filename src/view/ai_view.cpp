@@ -2,7 +2,7 @@
 #include "actors/ai_component.hpp"
 #include "events/event_data_set_actor_active.hpp"
 
-AIView::AIView(std::shared_ptr<ActorKeeper> actor_keeper, std::shared_ptr<EventManager> event_manager)
+AIView::AIView(const std::shared_ptr<ActorKeeper> &actor_keeper, const std::shared_ptr<EventManager> &event_manager)
     : actor_id_(-1), event_manager_(event_manager), actor_keeper_(actor_keeper)
 {
     event_manager_->add_listener(this,

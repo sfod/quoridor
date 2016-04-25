@@ -6,7 +6,7 @@
 
 class StraightBrain : public Brain {
 public:
-    explicit StraightBrain(std::shared_ptr<EventManager> event_manager);
+    explicit StraightBrain(const std::shared_ptr<EventManager> &event_manager);
 
     virtual void make_move() override;
     virtual void set_actor_id(ActorId actor_id) { actor_id_ = actor_id; }

@@ -13,7 +13,7 @@
 #include "events/event_data_game_terminated.hpp"
 #include "exceptions/exception.hpp"
 
-GameView::GameView(QObject *qroot, std::shared_ptr<EventManager> event_manager, bool is_main)
+GameView::GameView(QObject *qroot, const std::shared_ptr<EventManager> &event_manager, bool is_main)
     : QtView(NULL), qroot_(qroot), qboard_(), qrecorder_(),
       qbutton_(), actor_id_(-1), event_manager_(event_manager), is_main_(is_main)
 {
