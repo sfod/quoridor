@@ -1,6 +1,5 @@
 #include "randomer_brain.hpp"
 #include <ctime>
-#include <boost/random/uniform_int_distribution.hpp>
 #include "events/event_data_request_actor_move.hpp"
 
 RandomerBrain::RandomerBrain(const std::shared_ptr<EventManager> &event_manager)
@@ -12,7 +11,7 @@ RandomerBrain::RandomerBrain(const std::shared_ptr<EventManager> &event_manager)
 void RandomerBrain::make_move()
 {
     const std::list<Node> &moves = graph_->possible_moves(actor_id_);
-    boost::random::uniform_int_distribution<> dist(0, moves.size() - 1);
+    std::uniform_int_distribution<> dist(0, moves.size() - 1);
     int r = dist(gen_);
 
     int i = 0;
