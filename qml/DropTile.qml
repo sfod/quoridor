@@ -17,14 +17,18 @@ DropArea {
         id: dropRectangle
 
         anchors.fill: parent
-        color: "#FFCE9E"
+        Image {
+            id: cell
+            anchors.fill: parent
+            source: "qrc:/resources/cell_empty.png"
+        }
 
         states: [
             State {
                 when: dragTarget.containsDrag && drag.source.allowed(index)
                 PropertyChanges {
-                    target: dropRectangle
-                    color: "lightblue"
+                    target: cell
+                    source: "qrc:/resources/cell_hovered_empty.png"
                 }
             }
         ]

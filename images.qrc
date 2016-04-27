@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/pawn.png</file>
+        <file>resources/cell_down.png</file>
+        <file>resources/cell_empty.png</file>
+        <file>resources/cell_left.png</file>
+        <file>resources/cell_right.png</file>
+        <file>resources/cell_up.png</file>
+        <file>resources/cell_hovered_empty.png</file>
     </qresource>
 </RCC>
