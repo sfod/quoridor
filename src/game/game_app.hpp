@@ -15,7 +15,7 @@ class GameApp : public QObject {
     Q_OBJECT
 
 public:
-    GameApp(int argc, char **argv);
+    GameApp(int &argc, char **argv);
 
     int run();
     std::shared_ptr<GameLogic> game_logic() const { return logic_; }

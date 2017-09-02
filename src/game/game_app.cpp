@@ -9,7 +9,7 @@
 #include "graph/wall.hpp"
 #include "exceptions/exception.hpp"
 
-GameApp::GameApp(int argc, char **argv) : qapp_(argc, argv), qengine_(),
+GameApp::GameApp(int &argc, char **argv) : qapp_(argc, argv), qengine_(),
     qcomponent_(&qengine_)
 {
     WallEnumClass::declareQML();
